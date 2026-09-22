@@ -1,0 +1,23 @@
+\doxysection{Image\+Loader.\+h}
+\hypertarget{_image_loader_8h_source}{}\label{_image_loader_8h_source}\index{IO/ImageLoader.h@{IO/ImageLoader.h}}
+\doxymbox{\hyperlink{_image_loader_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{keyword}{struct\ }ID3D11Device;}
+\DoxyCodeLine{00007\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_texture}{FTexture}};}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{comment}{//\ 현재는\ png\ 파일만\ 지원}}
+\DoxyCodeLine{00010\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_image_loader}{FImageLoader}}}
+\DoxyCodeLine{00011\ \{}
+\DoxyCodeLine{00012\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00013\ \ \ \ \ \textcolor{keyword}{static}\ std::unique\_ptr<FTexture>\ \doxymbox{\hyperlink{class_f_image_loader_a658351126a32095986988dce3c350a94}{LoadAsTexture}}(ID3D11Device\ *Device,\ \textcolor{keyword}{const}\ std::string\ \&\doxymbox{\hyperlink{_types_8h_acb5155edb69157d4a0b96d0afe557006aac70412e939d72a9234cdebb1af5867b}{Path}});}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00015\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00016\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{bool}\ IsPngFile(\textcolor{keyword}{const}\ std::string\ \&\doxymbox{\hyperlink{_types_8h_acb5155edb69157d4a0b96d0afe557006aac70412e939d72a9234cdebb1af5867b}{Path}});}
+\DoxyCodeLine{00017\ \};}
+
+\end{DoxyCode}

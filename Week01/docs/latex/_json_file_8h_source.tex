@@ -1,0 +1,23 @@
+\doxysection{Json\+File.\+h}
+\hypertarget{_json_file_8h_source}{}\label{_json_file_8h_source}\index{IO/JsonFile.h@{IO/JsonFile.h}}
+\doxymbox{\hyperlink{_json_file_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}ThirdParty/nlohmann/json.hpp"{}}}
+\DoxyCodeLine{00005\ }
+\DoxyCodeLine{00006\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_json_file}{FJsonFile}}}
+\DoxyCodeLine{00007\ \{}
+\DoxyCodeLine{00008\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00009\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_json_file_adea9646cdeba1f23178af42c1ca13f3a}{LoadFromFile}}(\textcolor{keyword}{const}\ std::string\ \&\doxymbox{\hyperlink{_types_8h_acb5155edb69157d4a0b96d0afe557006aac70412e939d72a9234cdebb1af5867b}{Path}});}
+\DoxyCodeLine{00010\ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{class_f_json_file_a422edad792c068509fc4acca980181be}{SaveToFile}}(\textcolor{keyword}{const}\ std::string\ \&\doxymbox{\hyperlink{_types_8h_acb5155edb69157d4a0b96d0afe557006aac70412e939d72a9234cdebb1af5867b}{Path}})\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \ \ \ \ nlohmann::json\ \ \ \ \ \ \ \&\doxymbox{\hyperlink{class_f_json_file_af583af0917071ff6d3f69c650d7d8d12}{GetRoot}}();}
+\DoxyCodeLine{00013\ \ \ \ \ \textcolor{keyword}{const}\ nlohmann::json\ \&\doxymbox{\hyperlink{class_f_json_file_af583af0917071ff6d3f69c650d7d8d12}{GetRoot}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00015\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00016\ \ \ \ \ nlohmann::json\ Root;}
+\DoxyCodeLine{00017\ \};}
+
+\end{DoxyCode}

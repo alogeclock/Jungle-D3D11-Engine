@@ -1,0 +1,244 @@
+\doxysection{Descriptor\+Heap.\+h}
+\hypertarget{_descriptor_heap_8h_source}{}\label{_descriptor_heap_8h_source}\index{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/DescriptorHeap.h@{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/DescriptorHeap.h}}
+\doxymbox{\hyperlink{_descriptor_heap_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00002\ \textcolor{comment}{//\ File:\ DescriptorHeap.h}}
+\DoxyCodeLine{00003\ \textcolor{comment}{//}}
+\DoxyCodeLine{00004\ \textcolor{comment}{//\ Copyright\ (c)\ Microsoft\ Corporation.}}
+\DoxyCodeLine{00005\ \textcolor{comment}{//\ Licensed\ under\ the\ MIT\ License.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{//}}
+\DoxyCodeLine{00007\ \textcolor{comment}{//\ http://go.microsoft.com/fwlink/?LinkID=615561}}
+\DoxyCodeLine{00008\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#ifdef\ \_GAMING\_XBOX\_SCARLETT}}
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ <d3d12\_xs.h>}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#elif\ (defined(\_XBOX\_ONE)\ \&\&\ defined(\_TITLE))\ ||\ defined(\_GAMING\_XBOX)}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <d3d12\_x.h>}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#elif\ defined(USING\_DIRECTX\_HEADERS)}}
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#include\ <directx/d3d12.h>}}
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#include\ <dxguids/dxguids.h>}}
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#include\ <d3d12.h>}}
+\DoxyCodeLine{00021\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#include\ <cassert>}}
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#include\ <cstddef>}}
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ <stdexcept>}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ <wrl/client.h>}}
+\DoxyCodeLine{00030\ }
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#ifndef\ DIRECTX\_TOOLKIT\_API}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#ifdef\ DIRECTX\_TOOLKIT\_EXPORT}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#ifdef\ \_\_GNUC\_\_}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_attribute\_\_\ ((dllexport))}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_declspec(dllexport)}}
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00038\ \textcolor{preprocessor}{\#elif\ defined(DIRECTX\_TOOLKIT\_IMPORT)}}
+\DoxyCodeLine{00039\ \textcolor{preprocessor}{\#ifdef\ \_\_GNUC\_\_}}
+\DoxyCodeLine{00040\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_attribute\_\_\ ((dllimport))}}
+\DoxyCodeLine{00041\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00042\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_declspec(dllimport)}}
+\DoxyCodeLine{00043\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00044\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00045\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API}}
+\DoxyCodeLine{00046\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00047\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ }
+\DoxyCodeLine{00050\ \textcolor{keyword}{namespace\ }\doxymbox{\hyperlink{namespace_direct_x}{DirectX}}}
+\DoxyCodeLine{00051\ \{}
+\DoxyCodeLine{00052\ \ \ \ \ \textcolor{comment}{//\ A\ contiguous\ linear\ random-\/access\ descriptor\ heap}}
+\DoxyCodeLine{00053\ \ \ \ \ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_aef15bfe8a630ecb4bbcf0ca04f9f00d1}{DescriptorHeap}}}
+\DoxyCodeLine{00054\ \ \ \ \ \{}
+\DoxyCodeLine{00055\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_aef15bfe8a630ecb4bbcf0ca04f9f00d1}{DescriptorHeap}}(}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12DescriptorHeap*\ pExistingHeap);}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_ae94e0f659d24fbd88505c1643a9c314f}{DescriptorHeap}}(}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ \textcolor{keyword}{const}\ D3D12\_DESCRIPTOR\_HEAP\_DESC*\ pDesc);}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_adfc4c97c363d7de46637b230dcf415d5}{DescriptorHeap}}(}
+\DoxyCodeLine{00062\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_DESCRIPTOR\_HEAP\_TYPE\ type,}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_DESCRIPTOR\_HEAP\_FLAGS\ flags,}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ count);}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keyword}{inline}\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_a9f99b9b2df8fd564dedcc04c9adfee40}{DescriptorHeap}}(}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ count)\ :}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_aef15bfe8a630ecb4bbcf0ca04f9f00d1}{DescriptorHeap}}(device,}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_DESCRIPTOR\_HEAP\_TYPE\_CBV\_SRV\_UAV,}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_DESCRIPTOR\_HEAP\_FLAG\_SHADER\_VISIBLE,\ count)}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \{\}}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_ac09a69c29ebc77d5f2f2c634f9b1e4e1}{DescriptorHeap}}(\doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_aef15bfe8a630ecb4bbcf0ca04f9f00d1}{DescriptorHeap}}\&\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_aef15bfe8a630ecb4bbcf0ca04f9f00d1}{DescriptorHeap}}\&\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_a6feddcc1f4412853190ef3be8cfbf029}{operator=}}(\doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_aef15bfe8a630ecb4bbcf0ca04f9f00d1}{DescriptorHeap}}\&\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00076\ }
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_ab2f7964751403e53c796e5bb5835b209}{DescriptorHeap}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_aef15bfe8a630ecb4bbcf0ca04f9f00d1}{DescriptorHeap}}\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_aef15bfe8a630ecb4bbcf0ca04f9f00d1}{DescriptorHeap}}\&\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_a2ab01428e6445243e0ce1fe0e3a2e093}{operator=}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_aef15bfe8a630ecb4bbcf0ca04f9f00d1}{DescriptorHeap}}\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ D3D12\_GPU\_DESCRIPTOR\_HANDLE\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_ac5136db82c52805dc44d866532e50ebf}{WriteDescriptors}}(}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ offsetIntoHeap,}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ totalDescriptorCount,}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_reads\_(descriptorRangeCount)\ \textcolor{keyword}{const}\ D3D12\_CPU\_DESCRIPTOR\_HANDLE*\ pDescriptorRangeStarts,}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_reads\_(descriptorRangeCount)\ \textcolor{keyword}{const}\ uint32\_t*\ pDescriptorRangeSizes,}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ descriptorRangeCount);}
+\DoxyCodeLine{00087\ }
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ D3D12\_GPU\_DESCRIPTOR\_HANDLE\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_ae7341050866a88a751e8108a35cd4c05}{WriteDescriptors}}(}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ offsetIntoHeap,}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_reads\_(descriptorRangeCount)\ \textcolor{keyword}{const}\ D3D12\_CPU\_DESCRIPTOR\_HANDLE*\ pDescriptorRangeStarts,}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_reads\_(descriptorRangeCount)\ \textcolor{keyword}{const}\ uint32\_t*\ pDescriptorRangeSizes,}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ descriptorRangeCount);}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ D3D12\_GPU\_DESCRIPTOR\_HANDLE\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_a33d8b6f2f45455e69db2496e429fc29e}{WriteDescriptors}}(}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ offsetIntoHeap,}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_reads\_(descriptorCount)\ \textcolor{keyword}{const}\ D3D12\_CPU\_DESCRIPTOR\_HANDLE*\ pDescriptors,}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ descriptorCount);}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keyword}{inline}\ D3D12\_GPU\_DESCRIPTOR\_HANDLE\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_a0b8b146d97678e40c652ef0d9cfb60b6}{GetFirstGpuHandle}}()\ const\ noexcept}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ assert(m\_desc.Flags\ \&\ D3D12\_DESCRIPTOR\_HEAP\_FLAG\_SHADER\_VISIBLE);}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ assert(m\_pHeap\ !=\ \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ m\_hGPU;}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00107\ }
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keyword}{inline}\ D3D12\_CPU\_DESCRIPTOR\_HANDLE\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_a0cb9d3d784b8d4ee8e676bda08a0cb56}{GetFirstCpuHandle}}()\ const\ noexcept}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ assert(m\_pHeap\ !=\ \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ m\_hCPU;}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00113\ }
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keyword}{inline}\ D3D12\_GPU\_DESCRIPTOR\_HANDLE\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_a81ff8aef3952a1c668799dcfbc9f9151}{GetGpuHandle}}(\_In\_\ \textcolor{keywordtype}{size\_t}\ index)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00115\ \textcolor{keyword}{\ \ \ \ \ \ \ \ }\{}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \ \ \ \ assert(m\_pHeap\ !=\ \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (index\ >=\ m\_desc.NumDescriptors)}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}D3DX12\_GPU\_DESCRIPTOR\_HANDLE"{}});}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ assert(m\_desc.Flags\ \&\ D3D12\_DESCRIPTOR\_HEAP\_FLAG\_SHADER\_VISIBLE);}
+\DoxyCodeLine{00122\ }
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_GPU\_DESCRIPTOR\_HANDLE\ handle;}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ handle.ptr\ =\ m\_hGPU.ptr\ +\ UINT64(index)\ *\ UINT64(m\_increment);}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ handle;}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00127\ }
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keyword}{inline}\ D3D12\_CPU\_DESCRIPTOR\_HANDLE\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_a2ce075e5970ed07cd7005c8c5de6658b}{GetCpuHandle}}(\_In\_\ \textcolor{keywordtype}{size\_t}\ index)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00129\ \textcolor{keyword}{\ \ \ \ \ \ \ \ }\{}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ assert(m\_pHeap\ !=\ \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (index\ >=\ m\_desc.NumDescriptors)}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}D3DX12\_CPU\_DESCRIPTOR\_HANDLE"{}});}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00135\ }
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_CPU\_DESCRIPTOR\_HANDLE\ handle;}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ \ handle.ptr\ =\ \textcolor{keyword}{static\_cast<}SIZE\_T\textcolor{keyword}{>}(m\_hCPU.ptr\ +\ UINT64(index)\ *\ UINT64(m\_increment));}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ handle;}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00140\ }
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{size\_t}\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_a40f084a531c6ffeb163b318b85047e0d}{Count}}()\ const\ noexcept\ \{\ \textcolor{keywordflow}{return}\ m\_desc.NumDescriptors;\ \}}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_a0c59d2675e67f96ef503fba8a2dbf2af}{Flags}}()\ const\ noexcept\ \{\ \textcolor{keywordflow}{return}\ m\_desc.Flags;\ \}}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keyword}{inline}\ D3D12\_DESCRIPTOR\_HEAP\_TYPE\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_ac0fe7ea85b007a31ed396b0820b1ed05}{Type}}()\ const\ noexcept\ \{\ \textcolor{keywordflow}{return}\ m\_desc.Type;\ \}}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keyword}{inline}\ uint32\_t\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_a8527f499126642cf77f5e08fdeca07e2}{Increment}}()\ const\ noexcept\ \{\ \textcolor{keywordflow}{return}\ m\_increment;\ \}}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keyword}{inline}\ ID3D12DescriptorHeap*\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_a85276048641b95a3c71d2a2172d29945}{Heap}}()\ const\ noexcept\ \{\ \textcolor{keywordflow}{return}\ m\_pHeap.Get();\ \}}
+\DoxyCodeLine{00146\ }
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_a35c705e746b58e605790a4750f85a3e3}{DefaultDesc}}(}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ D3D12\_DESCRIPTOR\_HEAP\_TYPE\ type,}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ \_Out\_\ D3D12\_DESCRIPTOR\_HEAP\_DESC*\ pDesc)\ \textcolor{keyword}{noexcept};}
+\DoxyCodeLine{00150\ }
+\DoxyCodeLine{00151\ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ Create(\_In\_\ ID3D12Device*\ pDevice,\ \_In\_\ \textcolor{keyword}{const}\ D3D12\_DESCRIPTOR\_HEAP\_DESC*\ pDesc);}
+\DoxyCodeLine{00153\ }
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ Microsoft::WRL::ComPtr<ID3D12DescriptorHeap>\ \ \ \ m\_pHeap;}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ D3D12\_DESCRIPTOR\_HEAP\_DESC\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_desc;}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ D3D12\_CPU\_DESCRIPTOR\_HANDLE\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_hCPU;}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ D3D12\_GPU\_DESCRIPTOR\_HANDLE\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_hGPU;}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ m\_increment;}
+\DoxyCodeLine{00159\ \ \ \ \ \};}
+\DoxyCodeLine{00160\ }
+\DoxyCodeLine{00161\ }
+\DoxyCodeLine{00162\ \ \ \ \ \textcolor{comment}{//\ Helper\ class\ for\ dynamically\ allocating\ descriptor\ indices.}}
+\DoxyCodeLine{00163\ \ \ \ \ \textcolor{comment}{//\ The\ pile\ is\ statically\ sized\ and\ will\ throw\ an\ exception\ if\ it\ becomes\ full.}}
+\DoxyCodeLine{00164\ \ \ \ \ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_ac07d0c3c62850fdc79a7c71dfc35e40b}{DescriptorPile}}\ :\ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_aef15bfe8a630ecb4bbcf0ca04f9f00d1}{DescriptorHeap}}}
+\DoxyCodeLine{00165\ \ \ \ \ \{}
+\DoxyCodeLine{00166\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \textcolor{keyword}{using\ }\doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_a7718f4e5bb01ec671e50a8dd57887271}{IndexType}}\ =\ size\_t;}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_a7718f4e5bb01ec671e50a8dd57887271}{IndexType}}\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_a87870f016740c9676e822297459385b5}{INVALID\_INDEX}}\ =\ size\_t(-\/1);}
+\DoxyCodeLine{00169\ }
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keyword}{inline}\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_ac07d0c3c62850fdc79a7c71dfc35e40b}{DescriptorPile}}(}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12DescriptorHeap*\ pExistingHeap,}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ reserve\ =\ 0)}
+\DoxyCodeLine{00173\ \ \ \ \ \ \ \ \ \ \ \ \ :\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_aef15bfe8a630ecb4bbcf0ca04f9f00d1}{DescriptorHeap}}(pExistingHeap),}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \ \ \ \ m\_top(reserve)}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (reserve\ >\ 0\ \&\&\ m\_top\ >=\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_a40f084a531c6ffeb163b318b85047e0d}{Count}}())}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}Reserve\ descriptor\ range\ is\ too\ large"{}});}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00181\ }
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keyword}{inline}\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_ad3d2d7813c270b80be8561530e561706}{DescriptorPile}}(}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ \textcolor{keyword}{const}\ D3D12\_DESCRIPTOR\_HEAP\_DESC*\ pDesc,}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ reserve\ =\ 0)}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \ \ \ \ :\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_aef15bfe8a630ecb4bbcf0ca04f9f00d1}{DescriptorHeap}}(device,\ pDesc),}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \ \ \ \ m\_top(reserve)}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (reserve\ >\ 0\ \&\&\ m\_top\ >=\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_a40f084a531c6ffeb163b318b85047e0d}{Count}}())}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}Reserve\ descriptor\ range\ is\ too\ large"{}});}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00194\ }
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keyword}{inline}\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_a01fa0e15df94b3d54674143eef7fadc8}{DescriptorPile}}(}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_DESCRIPTOR\_HEAP\_TYPE\ type,}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_DESCRIPTOR\_HEAP\_FLAGS\ flags,}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ capacity,}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ reserve\ =\ 0)}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ :\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_aef15bfe8a630ecb4bbcf0ca04f9f00d1}{DescriptorHeap}}(device,\ type,\ flags,\ capacity),}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ m\_top(reserve)}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (reserve\ >\ 0\ \&\&\ m\_top\ >=\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_heap_a40f084a531c6ffeb163b318b85047e0d}{Count}}())}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::out\_of\_range(\textcolor{stringliteral}{"{}Reserve\ descriptor\ range\ is\ too\ large"{}});}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00209\ }
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keyword}{inline}\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_a0448faab162246a97cc6d9b5951fcc70}{DescriptorPile}}(}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ count,}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ reserve\ =\ 0)\ :}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_ac07d0c3c62850fdc79a7c71dfc35e40b}{DescriptorPile}}(device,}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_DESCRIPTOR\_HEAP\_TYPE\_CBV\_SRV\_UAV,}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_DESCRIPTOR\_HEAP\_FLAG\_SHADER\_VISIBLE,\ count,\ reserve)}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \{\}}
+\DoxyCodeLine{00218\ }
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_aca09ead1824bee5d3150f9f7e10bd998}{DescriptorPile}}(\doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_ac07d0c3c62850fdc79a7c71dfc35e40b}{DescriptorPile}}\&\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_ac07d0c3c62850fdc79a7c71dfc35e40b}{DescriptorPile}}\&\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_ae9156fdde5503bc2af210f6250c71101}{operator=}}(\doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_ac07d0c3c62850fdc79a7c71dfc35e40b}{DescriptorPile}}\&\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00221\ }
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_aa9d60ca967ecdb2ef190fd9d7db083d3}{DescriptorPile}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_ac07d0c3c62850fdc79a7c71dfc35e40b}{DescriptorPile}}\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_ac07d0c3c62850fdc79a7c71dfc35e40b}{DescriptorPile}}\&\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_ad1fb8c1d4a06081529a7aa4b050a439b}{operator=}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_ac07d0c3c62850fdc79a7c71dfc35e40b}{DescriptorPile}}\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00224\ }
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keyword}{inline}\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_a7718f4e5bb01ec671e50a8dd57887271}{IndexType}}\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_a606ba1ab14388012d0a525c6e563ff22}{Allocate}}()}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_a7718f4e5bb01ec671e50a8dd57887271}{IndexType}}\ start,\ end;}
+\DoxyCodeLine{00228\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_a544b25a6a43fae4859b54cb283790017}{AllocateRange}}(1,\ start,\ end);}
+\DoxyCodeLine{00229\ }
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ start;}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00232\ }
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_a544b25a6a43fae4859b54cb283790017}{AllocateRange}}(\textcolor{keywordtype}{size\_t}\ numDescriptors,\ \_Out\_\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_a7718f4e5bb01ec671e50a8dd57887271}{IndexType}}\&\ start,\ \_Out\_\ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_a7718f4e5bb01ec671e50a8dd57887271}{IndexType}}\&\ end);}
+\DoxyCodeLine{00234\ }
+\DoxyCodeLine{00235\ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_descriptor_pile_a7718f4e5bb01ec671e50a8dd57887271}{IndexType}}\ m\_top;}
+\DoxyCodeLine{00237\ \ \ \ \ \};}
+\DoxyCodeLine{00238\ \}}
+
+\end{DoxyCode}

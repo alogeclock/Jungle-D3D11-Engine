@@ -1,0 +1,189 @@
+\doxysection{Primitive\+Batch.\+h}
+\hypertarget{_primitive_batch_8h_source}{}\label{_primitive_batch_8h_source}\index{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/PrimitiveBatch.h@{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/PrimitiveBatch.h}}
+\doxymbox{\hyperlink{_primitive_batch_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00002\ \textcolor{comment}{//\ File:\ PrimitiveBatch.h}}
+\DoxyCodeLine{00003\ \textcolor{comment}{//}}
+\DoxyCodeLine{00004\ \textcolor{comment}{//\ Copyright\ (c)\ Microsoft\ Corporation.}}
+\DoxyCodeLine{00005\ \textcolor{comment}{//\ Licensed\ under\ the\ MIT\ License.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{//}}
+\DoxyCodeLine{00007\ \textcolor{comment}{//\ http://go.microsoft.com/fwlink/?LinkID=615561}}
+\DoxyCodeLine{00008\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#ifdef\ \_GAMING\_XBOX\_SCARLETT}}
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ <d3d12\_xs.h>}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#elif\ (defined(\_XBOX\_ONE)\ \&\&\ defined(\_TITLE))\ ||\ defined(\_GAMING\_XBOX)}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <d3d12\_x.h>}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#elif\ defined(USING\_DIRECTX\_HEADERS)}}
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#include\ <directx/d3d12.h>}}
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#include\ <dxguids/dxguids.h>}}
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#include\ <d3d12.h>}}
+\DoxyCodeLine{00021\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#include\ <cstddef>}}
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ <cstring>}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ <utility>}}
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#ifndef\ DIRECTX\_TOOLKIT\_API}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#ifdef\ DIRECTX\_TOOLKIT\_EXPORT}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#ifdef\ \_\_GNUC\_\_}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_attribute\_\_\ ((dllexport))}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_declspec(dllexport)}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#elif\ defined(DIRECTX\_TOOLKIT\_IMPORT)}}
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\#ifdef\ \_\_GNUC\_\_}}
+\DoxyCodeLine{00038\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_attribute\_\_\ ((dllimport))}}
+\DoxyCodeLine{00039\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00040\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_declspec(dllimport)}}
+\DoxyCodeLine{00041\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00042\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00043\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API}}
+\DoxyCodeLine{00044\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00045\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \textcolor{keyword}{namespace\ }\doxymbox{\hyperlink{namespace_direct_x}{DirectX}}}
+\DoxyCodeLine{00049\ \{}
+\DoxyCodeLine{00050\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keyword}{namespace\ }DX12}
+\DoxyCodeLine{00051\ \ \ \ \ \{}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \textcolor{keyword}{namespace\ }\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_1_1_private}{Private}}}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Base\ class,\ not\ to\ be\ used\ directly:\ clients\ should\ access\ this\ via\ the\ derived\ PrimitiveBatch<T>.}}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a851d3d4079b0adbcc110b75d28fb02d1}{PrimitiveBatchBase}}}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{protected}:}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a851d3d4079b0adbcc110b75d28fb02d1}{PrimitiveBatchBase}}(\_In\_\ ID3D12Device*\ device,\ \textcolor{keywordtype}{size\_t}\ maxIndices,\ \textcolor{keywordtype}{size\_t}\ maxVertices,\ \textcolor{keywordtype}{size\_t}\ vertexSize);}
+\DoxyCodeLine{00059\ }
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_ae24a68e5292e6c5c978a6a07c4d1034d}{PrimitiveBatchBase}}(\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a851d3d4079b0adbcc110b75d28fb02d1}{PrimitiveBatchBase}}\&\&)\ noexcept;}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a851d3d4079b0adbcc110b75d28fb02d1}{PrimitiveBatchBase}}\&\ operator=\ (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a851d3d4079b0adbcc110b75d28fb02d1}{PrimitiveBatchBase}}\&\&)\ noexcept;}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a851d3d4079b0adbcc110b75d28fb02d1}{PrimitiveBatchBase}}(\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a851d3d4079b0adbcc110b75d28fb02d1}{PrimitiveBatchBase}}\ const\&)\ =\ delete;}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a851d3d4079b0adbcc110b75d28fb02d1}{PrimitiveBatchBase}}\&\ operator=\ (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a851d3d4079b0adbcc110b75d28fb02d1}{PrimitiveBatchBase}}\ const\&)\ =\ delete;}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ virtual\ \string~\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a851d3d4079b0adbcc110b75d28fb02d1}{PrimitiveBatchBase}}();}
+\DoxyCodeLine{00067\ }
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \ \ \ \ public:}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Begin/End\ a\ batch\ of\ primitive\ drawing\ operations.}}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_ad1486b176a333690426c3ca19b704155}{Begin}}(\_In\_\ ID3D12GraphicsCommandList*\ cmdList);}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_ab28943c6ca8f70d92a714d038815ee3c}{End}}();}
+\DoxyCodeLine{00072\ }
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \ \ \ \ protected:}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Internal,\ untyped\ drawing\ method.}}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a2b8650c09a612e84559936a430342abe}{Draw}}(}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ D3D\_PRIMITIVE\_TOPOLOGY\ topology,}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ isIndexed,\ \_In\_opt\_count\_(indexCount)\ uint16\_t\ const*\ indices,\ \textcolor{keywordtype}{size\_t}\ indexCount,}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ vertexCount,}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_Outptr\_\ \textcolor{keywordtype}{void}**\ pMappedVertices);}
+\DoxyCodeLine{00080\ }
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ private:}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Private\ implementation.}}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ class\ Impl;}
+\DoxyCodeLine{00084\ }
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespacestd}{std}}::unique\_ptr<Impl>\ pImpl;}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Template\ makes\ the\ API\ typesafe,\ eg.\ PrimitiveBatch<VertexPositionColor>.}}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ template<typename\ TVertex>}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ class\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_primitive_batch_abdf4de0ad0187dbe1ce9340d4c0725f2}{PrimitiveBatch}}\ :\ public\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_1_1_private}{Private}}::\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a851d3d4079b0adbcc110b75d28fb02d1}{PrimitiveBatchBase}}}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ \textcolor{keywordtype}{size\_t}\ DefaultBatchSize\ =\ 4096;}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{explicit}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_primitive_batch_abdf4de0ad0187dbe1ce9340d4c0725f2}{PrimitiveBatch}}(}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ maxIndices\ =\ DefaultBatchSize\ *\ 3,}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ maxVertices\ =\ DefaultBatchSize)}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ :\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a851d3d4079b0adbcc110b75d28fb02d1}{PrimitiveBatchBase}}(device,\ maxIndices,\ maxVertices,\ sizeof(TVertex))}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ \{\}}
+\DoxyCodeLine{00102\ }
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_primitive_batch_ac5733f2095d433eea07707ca96fc9335}{PrimitiveBatch}}(\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_primitive_batch_abdf4de0ad0187dbe1ce9340d4c0725f2}{PrimitiveBatch}}\&\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_primitive_batch_abdf4de0ad0187dbe1ce9340d4c0725f2}{PrimitiveBatch}}\&\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_ac0c9a0e9af32830aa0a519a7a5f578df}{operator=\ }}(\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_primitive_batch_abdf4de0ad0187dbe1ce9340d4c0725f2}{PrimitiveBatch}}\&\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00105\ }
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_primitive_batch_aa6e11201757d4b85b4bbe865d1a079b5}{PrimitiveBatch}}(\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_primitive_batch_abdf4de0ad0187dbe1ce9340d4c0725f2}{PrimitiveBatch}}\ \textcolor{keyword}{const}\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_primitive_batch_abdf4de0ad0187dbe1ce9340d4c0725f2}{PrimitiveBatch}}\&\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_ac0c9a0e9af32830aa0a519a7a5f578df}{operator=\ }}(\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_primitive_batch_abdf4de0ad0187dbe1ce9340d4c0725f2}{PrimitiveBatch}}\ \textcolor{keyword}{const}\&)\ =\ \textcolor{keyword}{delete};}
+\DoxyCodeLine{00108\ }
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Similar\ to\ the\ D3D9\ API\ DrawPrimitiveUP.}}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_primitive_batch_ae2ae25d5b5e1e659dd7b86243ab041fa}{Draw}}(}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ D3D\_PRIMITIVE\_TOPOLOGY\ topology,}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_reads\_(vertexCount)\ TVertex\ \textcolor{keyword}{const}*\ vertices,\ \textcolor{keywordtype}{size\_t}\ vertexCount)}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}*\ mappedVertices;}
+\DoxyCodeLine{00115\ }
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a2b8650c09a612e84559936a430342abe}{PrimitiveBatchBase::Draw}}(topology,\ \textcolor{keyword}{false},\ \textcolor{keyword}{nullptr},\ 0,\ vertexCount,\ \&mappedVertices);}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ memcpy(mappedVertices,\ vertices,\ vertexCount\ *\ \textcolor{keyword}{sizeof}(TVertex));}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00120\ }
+\DoxyCodeLine{00121\ }
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Similar\ to\ the\ D3D9\ API\ DrawIndexedPrimitiveUP.}}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_primitive_batch_ade20eb94332ddbb315b26db5cd76429d}{DrawIndexed}}(}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ D3D\_PRIMITIVE\_TOPOLOGY\ topology,}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_reads\_(indexCount)\ uint16\_t\ \textcolor{keyword}{const}*\ indices,\ \textcolor{keywordtype}{size\_t}\ indexCount,}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_reads\_(vertexCount)\ TVertex\ \textcolor{keyword}{const}*\ vertices,\ \textcolor{keywordtype}{size\_t}\ vertexCount)}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}*\ mappedVertices;}
+\DoxyCodeLine{00129\ }
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a2b8650c09a612e84559936a430342abe}{PrimitiveBatchBase::Draw}}(topology,\ \textcolor{keyword}{true},\ indices,\ indexCount,\ vertexCount,\ \&mappedVertices);}
+\DoxyCodeLine{00131\ }
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ memcpy(mappedVertices,\ vertices,\ vertexCount\ *\ \textcolor{keyword}{sizeof}(TVertex));}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00135\ }
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_primitive_batch_ae99748d4de3bd0df1c350c26cd0c26af}{DrawLine}}(}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TVertex\ \textcolor{keyword}{const}\&\ v1,}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TVertex\ \textcolor{keyword}{const}\&\ v2)}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TVertex*\ mappedVertices;}
+\DoxyCodeLine{00141\ }
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a2b8650c09a612e84559936a430342abe}{PrimitiveBatchBase::Draw}}(D3D\_PRIMITIVE\_TOPOLOGY\_LINELIST,\ \textcolor{keyword}{false},\ \textcolor{keyword}{nullptr},\ 0,\ 2,\ \textcolor{keyword}{reinterpret\_cast<}\textcolor{keywordtype}{void}**\textcolor{keyword}{>}(\&mappedVertices));}
+\DoxyCodeLine{00143\ }
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mappedVertices[0]\ =\ v1;}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mappedVertices[1]\ =\ v2;}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00147\ }
+\DoxyCodeLine{00148\ }
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_primitive_batch_a2325220e2008ccbc238f3b3ae3463280}{DrawTriangle}}(}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TVertex\ \textcolor{keyword}{const}\&\ v1,}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TVertex\ \textcolor{keyword}{const}\&\ v2,}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TVertex\ \textcolor{keyword}{const}\&\ v3)}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TVertex*\ mappedVertices;}
+\DoxyCodeLine{00155\ }
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a2b8650c09a612e84559936a430342abe}{PrimitiveBatchBase::Draw}}(D3D\_PRIMITIVE\_TOPOLOGY\_TRIANGLELIST,\ \textcolor{keyword}{false},\ \textcolor{keyword}{nullptr},\ 0,\ 3,\ \textcolor{keyword}{reinterpret\_cast<}\textcolor{keywordtype}{void}**\textcolor{keyword}{>}(\&mappedVertices));}
+\DoxyCodeLine{00157\ }
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mappedVertices[0]\ =\ v1;}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mappedVertices[1]\ =\ v2;}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mappedVertices[2]\ =\ v3;}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00162\ }
+\DoxyCodeLine{00163\ }
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_primitive_batch_afa83786a4f1641a1c0046d8f2afd0597}{DrawQuad}}(}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TVertex\ \textcolor{keyword}{const}\&\ v1,}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TVertex\ \textcolor{keyword}{const}\&\ v2,}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TVertex\ \textcolor{keyword}{const}\&\ v3,}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TVertex\ \textcolor{keyword}{const}\&\ v4)}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ uint16\_t\ quadIndices[]\ =\ \{\ 0,\ 1,\ 2,\ 0,\ 2,\ 3\ \};}
+\DoxyCodeLine{00171\ }
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TVertex*\ mappedVertices;}
+\DoxyCodeLine{00173\ }
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_private_1_1_primitive_batch_base_a2b8650c09a612e84559936a430342abe}{PrimitiveBatchBase::Draw}}(D3D\_PRIMITIVE\_TOPOLOGY\_TRIANGLELIST,\ \textcolor{keyword}{true},\ quadIndices,\ 6,\ 4,\ \textcolor{keyword}{reinterpret\_cast<}\textcolor{keywordtype}{void}**\textcolor{keyword}{>}(\&mappedVertices));}
+\DoxyCodeLine{00175\ }
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mappedVertices[0]\ =\ v1;}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mappedVertices[1]\ =\ v2;}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mappedVertices[2]\ =\ v3;}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mappedVertices[3]\ =\ v4;}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00182\ \ \ \ \ \}}
+\DoxyCodeLine{00183\ \}}
+
+\end{DoxyCode}

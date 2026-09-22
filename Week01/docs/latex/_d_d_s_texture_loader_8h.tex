@@ -1,0 +1,79 @@
+\doxysection{packages/\+directxtk12\+\_\+desktop\+\_\+2019.2025.10.28.1/\+include/\+\+DDSTexture\+Loader.h File Reference}
+\hypertarget{_d_d_s_texture_loader_8h}{}\label{_d_d_s_texture_loader_8h}\index{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/DDSTextureLoader.h@{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/DDSTextureLoader.h}}
+{\ttfamily \+\#include $<$d3d12.\+h$>$}\newline
+{\ttfamily \+\#include $<$cstddef$>$}\newline
+{\ttfamily \+\#include $<$cstdint$>$}\newline
+{\ttfamily \+\#include $<$memory$>$}\newline
+{\ttfamily \+\#include $<$vector$>$}\newline
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \doxymbox{\hyperlink{namespace_direct_x}{DirectX}}
+\item 
+namespace \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12}{Direct\+X::\+\+DX12}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\+\#define \doxymbox{\hyperlink{_d_d_s_texture_loader_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}}
+\item 
+\+\#define \doxymbox{\hyperlink{_d_d_s_texture_loader_8h_a36723582a4cf6288de2f2d06cb5ec1cc}{DDS\+\_\+\+ALPHA\+\_\+\+MODE\+\_\+\+DEFINED}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \doxymbox{\hyperlink{namespace_direct_x_ad9bfc0ef068aff1dbb3382ba00fd6c45}{Direct\+X::\+\+DDS\+\_\+\+ALPHA\+\_\+\+MODE}} :\+ uint32\+\_\+t \{ \newline
+\doxymbox{\hyperlink{namespace_direct_x_ad9bfc0ef068aff1dbb3382ba00fd6c45a9cfa0bbf0542b2d5da9da93e629f50ce}{Direct\+X::\+\+DDS\+\_\+\+ALPHA\+\_\+\+MODE\+\_\+\+UNKNOWN}} = 0
+, \doxymbox{\hyperlink{namespace_direct_x_ad9bfc0ef068aff1dbb3382ba00fd6c45a3c462f8d7aff2a2590d933fb1dfd6136}{Direct\+X::\+\+DDS\+\_\+\+ALPHA\+\_\+\+MODE\+\_\+\+STRAIGHT}} = 1
+, \doxymbox{\hyperlink{namespace_direct_x_ad9bfc0ef068aff1dbb3382ba00fd6c45acdd00e8572344a8e6d3c4254607d7be8}{Direct\+X::\+\+DDS\+\_\+\+ALPHA\+\_\+\+MODE\+\_\+\+PREMULTIPLIED}} = 2
+, \doxymbox{\hyperlink{namespace_direct_x_ad9bfc0ef068aff1dbb3382ba00fd6c45a8de87a525290e381f32102aa6a5be7c3}{Direct\+X::\+\+DDS\+\_\+\+ALPHA\+\_\+\+MODE\+\_\+\+OPAQUE}} = 3
+, \newline
+\doxymbox{\hyperlink{namespace_direct_x_ad9bfc0ef068aff1dbb3382ba00fd6c45ab78d94eee31a6d8a3b97427e0dddb55e}{Direct\+X::\+\+DDS\+\_\+\+ALPHA\+\_\+\+MODE\+\_\+\+CUSTOM}} = 4
+ \}
+\item 
+enum \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a2e7b122eb8b009b5699ac89d0a212d3a}{Direct\+X::\+\+DX12::\+\+DDS\+\_\+\+LOADER\+\_\+\+FLAGS}} :\+ uint32\+\_\+t \{ \newline
+\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a2e7b122eb8b009b5699ac89d0a212d3aa515b9b48a3193a2a14c9ababb76a665e}{Direct\+X::\+\+DX12::\+\+DDS\+\_\+\+LOADER\+\_\+\+DEFAULT}} = 0
+, \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a2e7b122eb8b009b5699ac89d0a212d3aa702aa3384be2f4fbf5b1c2c6627d3e80}{Direct\+X::\+\+DX12::\+\+DDS\+\_\+\+LOADER\+\_\+\+FORCE\+\_\+\+SRGB}} = 0x1
+, \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a2e7b122eb8b009b5699ac89d0a212d3aad5b3966212c0d9b3e92e467c373cf7d0}{Direct\+X::\+\+DX12::\+\+DDS\+\_\+\+LOADER\+\_\+\+IGNORE\+\_\+\+SRGB}} = 0x2
+, \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a2e7b122eb8b009b5699ac89d0a212d3aa418a5c18ae26ae23a80e8d07be478f28}{Direct\+X::\+\+DX12::\+\+DDS\+\_\+\+LOADER\+\_\+\+MIP\+\_\+\+AUTOGEN}} = 0x8
+, \newline
+\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a2e7b122eb8b009b5699ac89d0a212d3aa46f69136b65e56b0b20cfe015c59e192}{Direct\+X::\+\+DX12::\+\+DDS\+\_\+\+LOADER\+\_\+\+MIP\+\_\+\+RESERVE}} = 0x10
+, \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a2e7b122eb8b009b5699ac89d0a212d3aaa43323deb524be26e7503c6a49ac655b}{Direct\+X::\+\+DX12::\+\+DDS\+\_\+\+LOADER\+\_\+\+IGNORE\+\_\+\+MIPS}} = 0x20
+ \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} HRESULT \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{namespace_direct_x_a6c347094f323025a51dd17ae309e647e}{Direct\+X::\+\+Load\+DDSTexture\+From\+Memory}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \+\_\+\+In\+\_\+reads\+\_\+bytes\+\_\+(dds\+Data\+Size) const uint8\+\_\+t \texorpdfstring{$\ast$}{*}dds\+Data, size\+\_\+t dds\+Data\+Size, \+\_\+\+Outptr\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}texture, std::\+vector$<$ D3\+D12\+\_\+\+SUBRESOURCE\+\_\+\+DATA $>$ \&subresources, size\+\_\+t maxsize=0, \+\_\+\+Out\+\_\+opt\+\_\+ \doxymbox{\hyperlink{namespace_direct_x_ad9bfc0ef068aff1dbb3382ba00fd6c45}{DDS\+\_\+\+ALPHA\+\_\+\+MODE}} \texorpdfstring{$\ast$}{*}alpha\+Mode=nullptr, \+\_\+\+Out\+\_\+opt\+\_\+ bool \texorpdfstring{$\ast$}{*}is\+Cube\+Map=nullptr)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} HRESULT \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{namespace_direct_x_a6ced55db1dae4f6f599e65dabe0e4b4b}{Direct\+X::\+\+Load\+DDSTexture\+From\+File}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \+\_\+\+In\+\_\+z\+\_\+ const wchar\+\_\+t \texorpdfstring{$\ast$}{*}sz\+File\+Name, \+\_\+\+Outptr\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}texture, std::\+unique\+\_\+ptr$<$ uint8\+\_\+t\+[$\,$]\+$>$ \&dds\+Data, std::\+vector$<$ D3\+D12\+\_\+\+SUBRESOURCE\+\_\+\+DATA $>$ \&subresources, size\+\_\+t maxsize=0, \+\_\+\+Out\+\_\+opt\+\_\+ \doxymbox{\hyperlink{namespace_direct_x_ad9bfc0ef068aff1dbb3382ba00fd6c45}{DDS\+\_\+\+ALPHA\+\_\+\+MODE}} \texorpdfstring{$\ast$}{*}alpha\+Mode=nullptr, \+\_\+\+Out\+\_\+opt\+\_\+ bool \texorpdfstring{$\ast$}{*}is\+Cube\+Map=nullptr)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} HRESULT \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{namespace_direct_x_a07448d50fcfd73fb62356f5f6fc37ad3}{Direct\+X::\+\+Create\+DDSTexture\+From\+Memory}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{Resource\+Upload\+Batch}} \&resource\+Upload, \+\_\+\+In\+\_\+reads\+\_\+bytes\+\_\+(dds\+Data\+Size) const uint8\+\_\+t \texorpdfstring{$\ast$}{*}dds\+Data, size\+\_\+t dds\+Data\+Size, \+\_\+\+Outptr\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}texture, bool generate\+Mips\+If\+Missing=false, size\+\_\+t maxsize=0, \+\_\+\+Out\+\_\+opt\+\_\+ \doxymbox{\hyperlink{namespace_direct_x_ad9bfc0ef068aff1dbb3382ba00fd6c45}{DDS\+\_\+\+ALPHA\+\_\+\+MODE}} \texorpdfstring{$\ast$}{*}alpha\+Mode=nullptr, \+\_\+\+Out\+\_\+opt\+\_\+ bool \texorpdfstring{$\ast$}{*}is\+Cube\+Map=nullptr)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} HRESULT \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{namespace_direct_x_a18dfe87e565f829598dba1a56ffb8fe7}{Direct\+X::\+\+Create\+DDSTexture\+From\+File}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{Resource\+Upload\+Batch}} \&resource\+Upload, \+\_\+\+In\+\_\+z\+\_\+ const wchar\+\_\+t \texorpdfstring{$\ast$}{*}sz\+File\+Name, \+\_\+\+Outptr\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}texture, bool generate\+Mips\+If\+Missing=false, size\+\_\+t maxsize=0, \+\_\+\+Out\+\_\+opt\+\_\+ \doxymbox{\hyperlink{namespace_direct_x_ad9bfc0ef068aff1dbb3382ba00fd6c45}{DDS\+\_\+\+ALPHA\+\_\+\+MODE}} \texorpdfstring{$\ast$}{*}alpha\+Mode=nullptr, \+\_\+\+Out\+\_\+opt\+\_\+ bool \texorpdfstring{$\ast$}{*}is\+Cube\+Map=nullptr)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} HRESULT \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{namespace_direct_x_ab0a07077ba5656485f6395ca5c6569ba}{Direct\+X::\+\+Load\+DDSTexture\+From\+Memory\+Ex}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \+\_\+\+In\+\_\+reads\+\_\+bytes\+\_\+(dds\+Data\+Size) const uint8\+\_\+t \texorpdfstring{$\ast$}{*}dds\+Data, size\+\_\+t dds\+Data\+Size, size\+\_\+t maxsize, D3\+D12\+\_\+\+RESOURCE\+\_\+\+FLAGS res\+Flags, \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a2e7b122eb8b009b5699ac89d0a212d3a}{DDS\+\_\+\+LOADER\+\_\+\+FLAGS}} load\+Flags, \+\_\+\+Outptr\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}texture, std::\+vector$<$ D3\+D12\+\_\+\+SUBRESOURCE\+\_\+\+DATA $>$ \&subresources, \+\_\+\+Out\+\_\+opt\+\_\+ \doxymbox{\hyperlink{namespace_direct_x_ad9bfc0ef068aff1dbb3382ba00fd6c45}{DDS\+\_\+\+ALPHA\+\_\+\+MODE}} \texorpdfstring{$\ast$}{*}alpha\+Mode=nullptr, \+\_\+\+Out\+\_\+opt\+\_\+ bool \texorpdfstring{$\ast$}{*}is\+Cube\+Map=nullptr)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} HRESULT \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{namespace_direct_x_a0bdd92737ed8292962e23c948a27d74a}{Direct\+X::\+\+Load\+DDSTexture\+From\+File\+Ex}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \+\_\+\+In\+\_\+z\+\_\+ const wchar\+\_\+t \texorpdfstring{$\ast$}{*}sz\+File\+Name, size\+\_\+t maxsize, D3\+D12\+\_\+\+RESOURCE\+\_\+\+FLAGS res\+Flags, \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a2e7b122eb8b009b5699ac89d0a212d3a}{DDS\+\_\+\+LOADER\+\_\+\+FLAGS}} load\+Flags, \+\_\+\+Outptr\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}texture, std::\+unique\+\_\+ptr$<$ uint8\+\_\+t\+[$\,$]\+$>$ \&dds\+Data, std::\+vector$<$ D3\+D12\+\_\+\+SUBRESOURCE\+\_\+\+DATA $>$ \&subresources, \+\_\+\+Out\+\_\+opt\+\_\+ \doxymbox{\hyperlink{namespace_direct_x_ad9bfc0ef068aff1dbb3382ba00fd6c45}{DDS\+\_\+\+ALPHA\+\_\+\+MODE}} \texorpdfstring{$\ast$}{*}alpha\+Mode=nullptr, \+\_\+\+Out\+\_\+opt\+\_\+ bool \texorpdfstring{$\ast$}{*}is\+Cube\+Map=nullptr)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} HRESULT \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{namespace_direct_x_a026d7ee5abd38305f16a4780b08ee4a8}{Direct\+X::\+\+Create\+DDSTexture\+From\+Memory\+Ex}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{Resource\+Upload\+Batch}} \&resource\+Upload, \+\_\+\+In\+\_\+reads\+\_\+bytes\+\_\+(dds\+Data\+Size) const uint8\+\_\+t \texorpdfstring{$\ast$}{*}dds\+Data, size\+\_\+t dds\+Data\+Size, size\+\_\+t maxsize, D3\+D12\+\_\+\+RESOURCE\+\_\+\+FLAGS res\+Flags, \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a2e7b122eb8b009b5699ac89d0a212d3a}{DDS\+\_\+\+LOADER\+\_\+\+FLAGS}} load\+Flags, \+\_\+\+Outptr\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}texture, \+\_\+\+Out\+\_\+opt\+\_\+ \doxymbox{\hyperlink{namespace_direct_x_ad9bfc0ef068aff1dbb3382ba00fd6c45}{DDS\+\_\+\+ALPHA\+\_\+\+MODE}} \texorpdfstring{$\ast$}{*}alpha\+Mode=nullptr, \+\_\+\+Out\+\_\+opt\+\_\+ bool \texorpdfstring{$\ast$}{*}is\+Cube\+Map=nullptr)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} HRESULT \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{namespace_direct_x_a2ff31d582dde4615815d3bfd159f1672}{Direct\+X::\+\+Create\+DDSTexture\+From\+File\+Ex}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{Resource\+Upload\+Batch}} \&resource\+Upload, \+\_\+\+In\+\_\+z\+\_\+ const wchar\+\_\+t \texorpdfstring{$\ast$}{*}sz\+File\+Name, size\+\_\+t maxsize, D3\+D12\+\_\+\+RESOURCE\+\_\+\+FLAGS res\+Flags, \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a2e7b122eb8b009b5699ac89d0a212d3a}{DDS\+\_\+\+LOADER\+\_\+\+FLAGS}} load\+Flags, \+\_\+\+Outptr\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}texture, \+\_\+\+Out\+\_\+opt\+\_\+ \doxymbox{\hyperlink{namespace_direct_x_ad9bfc0ef068aff1dbb3382ba00fd6c45}{DDS\+\_\+\+ALPHA\+\_\+\+MODE}} \texorpdfstring{$\ast$}{*}alpha\+Mode=nullptr, \+\_\+\+Out\+\_\+opt\+\_\+ bool \texorpdfstring{$\ast$}{*}is\+Cube\+Map=nullptr)
+\end{DoxyCompactItemize}
+
+
+\label{doc-define-members}
+\Hypertarget{_d_d_s_texture_loader_8h_doc-define-members}
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{_d_d_s_texture_loader_8h_a36723582a4cf6288de2f2d06cb5ec1cc}\index{DDSTextureLoader.h@{DDSTextureLoader.h}!DDS\_ALPHA\_MODE\_DEFINED@{DDS\_ALPHA\_MODE\_DEFINED}}
+\index{DDS\_ALPHA\_MODE\_DEFINED@{DDS\_ALPHA\_MODE\_DEFINED}!DDSTextureLoader.h@{DDSTextureLoader.h}}
+\doxysubsubsection{\texorpdfstring{DDS\_ALPHA\_MODE\_DEFINED}{DDS\_ALPHA\_MODE\_DEFINED}}
+{\footnotesize\ttfamily \label{_d_d_s_texture_loader_8h_a36723582a4cf6288de2f2d06cb5ec1cc} 
+\+\#define DDS\+\_\+\+ALPHA\+\_\+\+MODE\+\_\+\+DEFINED}
+
+\Hypertarget{_d_d_s_texture_loader_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}\index{DDSTextureLoader.h@{DDSTextureLoader.h}!DIRECTX\_TOOLKIT\_API@{DIRECTX\_TOOLKIT\_API}}
+\index{DIRECTX\_TOOLKIT\_API@{DIRECTX\_TOOLKIT\_API}!DDSTextureLoader.h@{DDSTextureLoader.h}}
+\doxysubsubsection{\texorpdfstring{DIRECTX\_TOOLKIT\_API}{DIRECTX\_TOOLKIT\_API}}
+{\footnotesize\ttfamily \label{_d_d_s_texture_loader_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74} 
+\+\#define DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}
+

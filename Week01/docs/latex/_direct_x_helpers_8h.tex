@@ -1,0 +1,89 @@
+\doxysection{packages/\+directxtk12\+\_\+desktop\+\_\+2019.2025.10.28.1/\+include/\+\+Direct\+XHelpers.h File Reference}
+\hypertarget{_direct_x_helpers_8h}{}\label{_direct_x_helpers_8h}\index{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/DirectXHelpers.h@{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/DirectXHelpers.h}}
+{\ttfamily \+\#include $<$d3d12.\+h$>$}\newline
+{\ttfamily \+\#include $<$cassert$>$}\newline
+{\ttfamily \+\#include $<$cstddef$>$}\newline
+{\ttfamily \+\#include $<$initializer\+\_\+list$>$}\newline
+{\ttfamily \+\#include $<$utility$>$}\newline
+{\ttfamily \+\#include $<$vector$>$}\newline
+{\ttfamily \+\#include $<$wrl/\+client.\+h$>$}\newline
+{\ttfamily \+\#include $<$Direct\+XMath.\+h$>$}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \doxymbox{\hyperlink{class_direct_x_1_1_scoped_barrier}{Direct\+X::\+\+Scoped\+Barrier}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \doxymbox{\hyperlink{namespace_direct_x}{DirectX}}
+\item 
+namespace \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12}{Direct\+X::\+\+DX12}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\+\#define \doxymbox{\hyperlink{_direct_x_helpers_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}}
+\item 
+\+\#define \doxymbox{\hyperlink{_direct_x_helpers_8h_ad9046b3b41fef28b160f030dfaa2e872}{IID\+\_\+\+GRAPHICS\+\_\+\+PPV\+\_\+\+ARGS}}(x)
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{namespace_direct_x_afdd2bc1f37c97afc83d5f877650b66cf}{Direct\+X::\+\+Create\+Shader\+Resource\+View}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \+\_\+\+In\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}tex, D3\+D12\+\_\+\+CPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE srv\+Descriptor, bool is\+Cube\+Map=false)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{namespace_direct_x_ad3f4237f497e4ea79f30eedc71c06564}{Direct\+X::\+\+Create\+Unordered\+Access\+View}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \+\_\+\+In\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}tex, D3\+D12\+\_\+\+CPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE uav\+Descriptor, uint32\+\_\+t mip\+Level=0)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{namespace_direct_x_a70fa0d4abab01a14e738c30bc77facaa}{Direct\+X::\+\+Create\+Render\+Target\+View}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \+\_\+\+In\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}tex, D3\+D12\+\_\+\+CPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE rtv\+Descriptor, uint32\+\_\+t mip\+Level=0)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{namespace_direct_x_ab7bf92ae10c45a360e3eab8fd3a77635}{Direct\+X::\+\+Create\+Buffer\+Shader\+Resource\+View}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \+\_\+\+In\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}buffer, D3\+D12\+\_\+\+CPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE srv\+Descriptor, uint32\+\_\+t stride=0)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{namespace_direct_x_a7532fa9fa8d777fa7855d338fa91828f}{Direct\+X::\+\+Create\+Buffer\+Unordered\+Access\+View}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \+\_\+\+In\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}buffer, D3\+D12\+\_\+\+CPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE uav\+Descriptor, uint32\+\_\+t stride, D3\+D12\+\_\+\+BUFFER\+\_\+\+UAV\+\_\+\+FLAGS flag=D3\+D12\+\_\+\+BUFFER\+\_\+\+UAV\+\_\+\+FLAG\+\_\+\+NONE, uint32\+\_\+t counter\+Offset=0, \+\_\+\+In\+\_\+opt\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}counter\+Resource=nullptr)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} HRESULT \doxymbox{\hyperlink{namespace_direct_x_aa06c6f2d3bc8b5ab53cf817d4f533f4e}{Direct\+X::\+\+Create\+Root\+Signature}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \+\_\+\+In\+\_\+ const D3\+D12\+\_\+\+ROOT\+\_\+\+SIGNATURE\+\_\+\+DESC \texorpdfstring{$\ast$}{*}root\+Signature\+Desc, \+\_\+\+Out\+\_\+ ID3\+D12\+Root\+Signature \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}root\+Signature) noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} XMUINT2 \doxymbox{\hyperlink{namespace_direct_x_abae2b146b30c55622ac82b008ad4b800}{Direct\+X::\+\+Get\+Texture\+Size}} (\+\_\+\+In\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}tex) noexcept
+\item 
+{\footnotesize template$<$UINT TName\+Length$>$ }\\void \doxymbox{\hyperlink{namespace_direct_x_aaf59581c448b3b0dbc93da7c7827625b}{Direct\+X::\+\+Set\+Debug\+Object\+Name}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device\+Child \texorpdfstring{$\ast$}{*}, \+\_\+\+In\+\_\+z\+\_\+ const char(\&)\+[TName\+Length]\+) noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} void \doxymbox{\hyperlink{namespace_direct_x_af92c8b72aa4c7e7b9fbdb5c9db37ddc9}{Direct\+X::\+\+Transition\+Resource}} (\+\_\+\+In\+\_\+ ID3\+D12\+Graphics\+Command\+List \texorpdfstring{$\ast$}{*}command\+List, \+\_\+\+In\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}resource, D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATES state\+Before, D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATES state\+After) noexcept
+\item 
+{\footnotesize template$<$typename T$>$ }\\constexpr bool \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_ae424be92aa718222f81dfda0ff7af9b4}{Direct\+X::\+\+DX12::\+\+Is\+Power\+Of2}} (T x) noexcept
+\item 
+{\footnotesize template$<$typename T$>$ }\\T \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a0bfc33449a0fbb6855b89ac9f9dec6c6}{Direct\+X::\+\+DX12::\+\+Align\+Down}} (T size, size\+\_\+t alignment) noexcept
+\item 
+{\footnotesize template$<$typename T$>$ }\\T \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_ae7486a73de313bec4d5b46f851ad94d3}{Direct\+X::\+\+DX12::\+\+Align\+Up}} (T size, size\+\_\+t alignment) noexcept
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+constexpr D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATES \doxymbox{\hyperlink{namespace_direct_x_ae4d94b48ac2759b7081a4331d2824c85}{Direct\+X::\+c\+\_\+initial\+Copy\+Target\+State}} = D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATE\+\_\+\+COMMON
+\item 
+constexpr D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATES \doxymbox{\hyperlink{namespace_direct_x_a9064ab5e03901fc909333e410e7c41bf}{Direct\+X::\+c\+\_\+initial\+Read\+Target\+State}} = D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATE\+\_\+\+COMMON
+\item 
+constexpr D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATES \doxymbox{\hyperlink{namespace_direct_x_a88acb4b55d88de27f80ccd2e948b9574}{Direct\+X::\+c\+\_\+initial\+UAVTarget\+State}} = D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATE\+\_\+\+COMMON
+\item 
+constexpr D3\+D12\+\_\+\+CPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE \doxymbox{\hyperlink{namespace_direct_x_a7284c4321ed9c865b2eb88b21f8c56f7}{Direct\+X::\+\+D3\+D12\+\_\+\+CPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE\+\_\+\+ZERO}} = \{\}
+\end{DoxyCompactItemize}
+
+
+\label{doc-define-members}
+\Hypertarget{_direct_x_helpers_8h_doc-define-members}
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{_direct_x_helpers_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}\index{DirectXHelpers.h@{DirectXHelpers.h}!DIRECTX\_TOOLKIT\_API@{DIRECTX\_TOOLKIT\_API}}
+\index{DIRECTX\_TOOLKIT\_API@{DIRECTX\_TOOLKIT\_API}!DirectXHelpers.h@{DirectXHelpers.h}}
+\doxysubsubsection{\texorpdfstring{DIRECTX\_TOOLKIT\_API}{DIRECTX\_TOOLKIT\_API}}
+{\footnotesize\ttfamily \label{_direct_x_helpers_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74} 
+\+\#define DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}
+
+\Hypertarget{_direct_x_helpers_8h_ad9046b3b41fef28b160f030dfaa2e872}\index{DirectXHelpers.h@{DirectXHelpers.h}!IID\_GRAPHICS\_PPV\_ARGS@{IID\_GRAPHICS\_PPV\_ARGS}}
+\index{IID\_GRAPHICS\_PPV\_ARGS@{IID\_GRAPHICS\_PPV\_ARGS}!DirectXHelpers.h@{DirectXHelpers.h}}
+\doxysubsubsection{\texorpdfstring{IID\_GRAPHICS\_PPV\_ARGS}{IID\_GRAPHICS\_PPV\_ARGS}}
+{\footnotesize\ttfamily \label{_direct_x_helpers_8h_ad9046b3b41fef28b160f030dfaa2e872} 
+\+\#define IID\+\_\+\+GRAPHICS\+\_\+\+PPV\+\_\+\+ARGS(\begin{DoxyParamCaption}\item[{}]{x}{}\end{DoxyParamCaption})}
+
+{\bfseries Value:\+}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{IID\_PPV\_ARGS(x)}
+
+\end{DoxyCode}

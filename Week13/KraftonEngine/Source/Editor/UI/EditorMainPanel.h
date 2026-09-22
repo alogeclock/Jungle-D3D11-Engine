@@ -1,0 +1,83 @@
+﻿#pragma once
+
+#include "Editor/UI/EditorConsoleWidget.h"
+#include "Editor/UI/EditorControlWidget.h"
+#include "Editor/Settings/EditorSettings.h"
+#include "Editor/UI/EditorPropertyWidget.h"
+#include "Editor/UI/EditorSceneWidget.h"
+#include "Editor/UI/EditorStatWidget.h"
+#include "Editor/UI/EditorShadowMapDebugWidget.h"
+#include "Editor/UI/EditorVehicleDebugWidget.h"
+#include "Editor/UI/EditorProjectSettingsWidget.h"
+#include "Editor/UI/EditorWorldSettingsWidget.h"
+#include "Editor/UI/ContentBrowser/ContentBrowser.h"
+#include "Editor/UI/Asset/AssetEditorManager.h"
+#include "Math/Vector.h"
+
+class AActor;
+class FRenderer;
+class UEditorEngine;
+class FWindowsWindow;
+class IEditorPreviewViewportClient;
+
+class FEditorMainPanel
+{
+public:
+	void Create(FWindowsWindow* InWindow, FRenderer& InRenderer, UEditorEngine* InEditorEngine);
+	void Release();
+
+	void TickAssetEditors(float DeltaTime);
+	void Render(float DeltaTime);
+	void Update();
+	void SaveToSettings() const;
+	void HideEditorWindows();
+	void ShowEditorWindows();
+	void SetShowEditorOnlyComponents(bool bEnable) { PropertyWidget.SetShowEditorOnlyComponents(bEnable); }
+	bool IsShowingEditorOnlyComponents() const { return PropertyWidget.IsShowingEditorOnlyComponents(); }
+	void HideEditorWindowsForPIE();
+	void RestoreEditorWindowsAfterPIE();
+	void RefreshContentBrowser() { ContentBrowserWidget.Refresh(); }
+	void SetContentBrowserIconSize(float Size) { ContentBrowserWidget.SetIconSize(Size); }
+	float GetContentBrowserIconSize() const { return ContentBrowserWidget.GetIconSize(); }
+
+	void OpenAssetEditorForObject(UObject* Object);
+	void CloseAssetEditorsForObject(UObject* Object) { AssetEditorManager.CloseEditorsForObject(Object); }
+	void CollectAssetEditorPreviewViewportClients(TArray<IEditorPreviewViewportClient*>& OutClients) const { AssetEditorManager.CollectPreviewViewportClients(OutClients); }
+	bool IsMouseOverAssetEditorPreviewViewport() const { return AssetEditorManager.IsMouseOverAnyEditorViewport(); }
+
+private:
+	void RenderMainMenuBar();
+	void RenderMainDockSpace(float ReservedBottomHeight);
+	void RenderShortcutOverlay();
+	void RenderConsoleDrawer(float DeltaTime);
+	void RenderFooterOverlay(float DeltaTime);
+	void HandleGlobalShortcuts();
+	void ToggleConsoleDrawer(bool bFocusInput);
+
+	FWindowsWindow* Window = nullptr;
+	UEditorEngine* EditorEngine = nullptr;
+	FEditorConsoleWidget ConsoleWidget;
+	FEditorControlWidget ControlWidget;
+	FEditorPropertyWidget PropertyWidget;
+	FEditorSceneWidget SceneWidget;
+	FEditorStatWidget StatWidget;
+	FEditorContentBrowserWidget ContentBrowserWidget;
+	EditorShadowMapDebugWidget ShadowMapDebugWidget;
+	EditorVehicleDebugWidget VehicleDebugWidget;
+	EditorProjectSettingsWidget ProjectSettingsWidget;
+	EditorWorldSettingsWidget WorldSettingsWidget;
+	FAssetEditorManager AssetEditorManager;
+
+	bool bShowWidgetList = false;
+	bool bShowShortcutOverlay = false;
+	bool bHideEditorWindows = false;
+	bool bHasSavedUIVisibility = false;
+	bool bSavedShowWidgetList = false;
+	bool bConsoleDrawerVisible = false;
+	bool bBringConsoleDrawerToFrontNextFrame = false;
+	bool bFocusConsoleInputNextFrame = false;
+	bool bFocusConsoleButtonNextFrame = false;
+	int32 ConsoleBacktickCycleState = 0;
+	float ConsoleDrawerAnim = 0.0f;
+	FEditorSettings::FUIVisibility SavedUIVisibility{};
+};

@@ -1,0 +1,59 @@
+{
+    "scoreboard": [
+        {
+            "nickname": "THIS",
+            "score": 9310,
+            "stage": 3
+        },
+        {
+            "nickname": "JUNGLE",
+            "score": 4063,
+            "stage": 3
+        },
+        {
+            "nickname": "MAZE",
+            "score": 1650,
+            "stage": 3
+        },
+        {
+            "nickname": "IS",
+            "score": 990,
+            "stage": 3
+        },
+        {
+            "nickname": "HELL",
+            "score": 920,
+            "stage": 3
+        },
+        {
+            "nickname": "PLEASE",
+            "score": 870,
+            "stage": 2
+        },
+        {
+            "nickname": "HELP",
+            "score": 830,
+            "stage": 1
+        },
+        {
+            "nickname": "ME",
+            "score": 760,
+            "stage": 1
+        },
+        {
+            "nickname": "AAAAAA",
+            "score": 500,
+            "stage": 1
+        },
+        {
+            "nickname": "BBBBBB",
+            "score": 250,
+            "stage": 2
+        },
+        {
+            "nickname": "CCCC",
+            "score": 100,
+            "stage": 3
+        }
+    ]
+}

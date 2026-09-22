@@ -1,0 +1,14 @@
+Autodesk FBX SDK binary information
+===================================
+
+Product: Autodesk FBX SDK 2020.3.9
+Platform: Windows x64
+Toolchain package: Visual Studio 2022 desktop
+Distribution: https://aps.autodesk.com/developer/overview/fbx-sdk
+Installer: fbx202039_fbxsdk_vs2022_win.exe
+Installer SHA-256: B1DB4330D327C8983C237D8FEA605FD9447E28E9D0D6E08139D87D6A86C1C987
+Signer: Autodesk, Inc.
+
+The installed SDK's complete public header set was verified byte-for-byte
+against ThirdParty/fbx/include before its x64 import libraries and DLLs were
+copied into the Debug and Release directories.

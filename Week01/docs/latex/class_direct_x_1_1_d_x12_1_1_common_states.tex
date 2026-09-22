@@ -1,0 +1,360 @@
+\doxysection{DirectX::\+DX12::\+Common\+States Class Reference}
+\hypertarget{class_direct_x_1_1_d_x12_1_1_common_states}{}\label{class_direct_x_1_1_d_x12_1_1_common_states}\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+
+
+{\ttfamily \+\#include $<$Common\+States.\+h$>$}
+
+\doxysubsubsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+enum class \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_afcccde5876ce53be0c933b4c8fcef1f0}{Sampler\+Index}} :\+ uint32\+\_\+t \{ \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_afcccde5876ce53be0c933b4c8fcef1f0a20f4dbe2ff958c71cc79c321f154efd7}{Point\+Wrap}}
+, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_afcccde5876ce53be0c933b4c8fcef1f0a055739d3d609c52b857c7c0be46e748c}{Point\+Clamp}}
+, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_afcccde5876ce53be0c933b4c8fcef1f0a74b431ec372bcd628901b0043833e538}{Linear\+Wrap}}
+, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_afcccde5876ce53be0c933b4c8fcef1f0a1d8396d6b7b5f5087d53876f2e98ce5b}{Linear\+Clamp}}
+, \newline
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_afcccde5876ce53be0c933b4c8fcef1f0a026a427f3ee33cc06b1977481c8687a7}{Anisotropic\+Wrap}}
+, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_afcccde5876ce53be0c933b4c8fcef1f0a06bb0220384c2f871299b80350664274}{Anisotropic\+Clamp}}
+, \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_afcccde5876ce53be0c933b4c8fcef1f0ae93f994f01c537c4e2f7d8528c3eb5e9}{Count}}
+ \}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_a1d8c2bc6142cb6fa831ec76008106e1d}{Common\+States}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device)
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_ad640240c4f53b260de94b738a0914291}{Common\+States}} (Common\+States \&\&) noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_a1d8c2bc6142cb6fa831ec76008106e1d}{Common\+States}} \& \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_ac47ace7505a73f8e12bd49e74c793ea3}{operator=}} (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_a1d8c2bc6142cb6fa831ec76008106e1d}{Common\+States}} \&\&) noexcept
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_a60708404e68ee2362f105139a2a07459}{Common\+States}} (const Common\+States \&)=delete
+\item 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_a1d8c2bc6142cb6fa831ec76008106e1d}{Common\+States}} \& \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_abe3932dbafe249799a390836dd9e4018}{operator=}} (const \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_a1d8c2bc6142cb6fa831ec76008106e1d}{Common\+States}} \&)=delete
+\item 
+virtual \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_a9811c83512ab873e467761e4a064f7f1}{\texorpdfstring{$\sim$}{\string~}\+Common\+States}} ()
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_ac0dd2aa3fbd2fe396bdf52130d944efa}{Point\+Wrap}} () const
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_ac9c37c53251239babe356b5a1bc5dc01}{Point\+Clamp}} () const
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_ae8ca6c86bb65856a2169016c4b978f0f}{Linear\+Wrap}} () const
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_aa5bc7d6b10000cc48f9dbd5fc7f9fc5e}{Linear\+Clamp}} () const
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_a06331631e06757575ae2d1d482938353}{Anisotropic\+Wrap}} () const
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_a97feb9b871b9a4a58a6945124945d233}{Anisotropic\+Clamp}} () const
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} ID3\+D12\+Descriptor\+Heap \texorpdfstring{$\ast$}{*} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_a093e603c1b41dd85080b919e7d171010}{Heap}} () const noexcept
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+STATIC\+\_\+\+SAMPLER\+\_\+\+DESC \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_a3adea3a1689aafc8950811aaf232e8e9}{Static\+Point\+Wrap}} (unsigned int shader\+Register, D3\+D12\+\_\+\+SHADER\+\_\+\+VISIBILITY shader\+Visibility=D3\+D12\+\_\+\+SHADER\+\_\+\+VISIBILITY\+\_\+\+ALL, unsigned int register\+Space=0) noexcept
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+STATIC\+\_\+\+SAMPLER\+\_\+\+DESC \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_a656c5c24f062c176188ce3b7e247f178}{Static\+Point\+Clamp}} (unsigned int shader\+Register, D3\+D12\+\_\+\+SHADER\+\_\+\+VISIBILITY shader\+Visibility=D3\+D12\+\_\+\+SHADER\+\_\+\+VISIBILITY\+\_\+\+ALL, unsigned int register\+Space=0) noexcept
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+STATIC\+\_\+\+SAMPLER\+\_\+\+DESC \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_a0af078849ba94259df50b27c05e0c585}{Static\+Linear\+Wrap}} (unsigned int shader\+Register, D3\+D12\+\_\+\+SHADER\+\_\+\+VISIBILITY shader\+Visibility=D3\+D12\+\_\+\+SHADER\+\_\+\+VISIBILITY\+\_\+\+ALL, unsigned int register\+Space=0) noexcept
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+STATIC\+\_\+\+SAMPLER\+\_\+\+DESC \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_a70f7918d1c25d07955fc90961d11f6bd}{Static\+Linear\+Clamp}} (unsigned int shader\+Register, D3\+D12\+\_\+\+SHADER\+\_\+\+VISIBILITY shader\+Visibility=D3\+D12\+\_\+\+SHADER\+\_\+\+VISIBILITY\+\_\+\+ALL, unsigned int register\+Space=0) noexcept
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+STATIC\+\_\+\+SAMPLER\+\_\+\+DESC \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_ab13fad61aa811b9409eb140601596cd7}{Static\+Anisotropic\+Wrap}} (unsigned int shader\+Register, D3\+D12\+\_\+\+SHADER\+\_\+\+VISIBILITY shader\+Visibility=D3\+D12\+\_\+\+SHADER\+\_\+\+VISIBILITY\+\_\+\+ALL, unsigned int register\+Space=0) noexcept
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+STATIC\+\_\+\+SAMPLER\+\_\+\+DESC \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_a3d7013f48560feb7b6dc457dd5c0b6ee}{Static\+Anisotropic\+Clamp}} (unsigned int shader\+Register, D3\+D12\+\_\+\+SHADER\+\_\+\+VISIBILITY shader\+Visibility=D3\+D12\+\_\+\+SHADER\+\_\+\+VISIBILITY\+\_\+\+ALL, unsigned int register\+Space=0) noexcept
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Static Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+BLEND\+\_\+\+DESC \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_ace6c0ebcdf8e8c5e570fb3c548becfb2}{Opaque}}
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+BLEND\+\_\+\+DESC \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_a9d21c06bd83fe7c94bf86d1fdd9c2904}{Alpha\+Blend}}
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+BLEND\+\_\+\+DESC \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_a16030deaeb9b92f18beefb2c42d83394}{Additive}}
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+BLEND\+\_\+\+DESC \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_ada1ef2de19266ef178058128e858a22d}{Non\+Premultiplied}}
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+DEPTH\+\_\+\+STENCIL\+\_\+\+DESC \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_af332ad00a8a45664c1900fcef1ddfec4}{Depth\+None}}
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+DEPTH\+\_\+\+STENCIL\+\_\+\+DESC \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_af08533bf24193f9dd9df720b8dee5c66}{Depth\+Default}}
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+DEPTH\+\_\+\+STENCIL\+\_\+\+DESC \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_a55bc22a84c8f49468bfbd1ac87dd09b8}{Depth\+Read}}
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+DEPTH\+\_\+\+STENCIL\+\_\+\+DESC \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_a7e8c878a70844679a13b01eeba4a88c9}{Depth\+ReverseZ}}
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+DEPTH\+\_\+\+STENCIL\+\_\+\+DESC \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_a3eaa54d217a0c08d4455897d57e6f4d4}{Depth\+Read\+ReverseZ}}
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+RASTERIZER\+\_\+\+DESC \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_a1e6e8a5708b1dbd7877cdecaa9f27fae}{Cull\+None}}
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+RASTERIZER\+\_\+\+DESC \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_a83f0af425d98d2c62db5111c27762136}{Cull\+Clockwise}}
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+RASTERIZER\+\_\+\+DESC \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_ab48a6a2bf93c7202e97675dd7cc722ed}{Cull\+Counter\+Clockwise}}
+\item 
+static \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+RASTERIZER\+\_\+\+DESC \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_a491d28d8b229bde78308332103e8e5aa}{Wireframe}}
+\end{DoxyCompactItemize}
+
+
+\label{doc-enum-members}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_doc-enum-members}
+\doxysubsection{Member Enumeration Documentation}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_afcccde5876ce53be0c933b4c8fcef1f0}\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!SamplerIndex@{SamplerIndex}}
+\index{SamplerIndex@{SamplerIndex}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\doxysubsubsection{\texorpdfstring{SamplerIndex}{SamplerIndex}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_common_states_afcccde5876ce53be0c933b4c8fcef1f0} 
+enum class \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_afcccde5876ce53be0c933b4c8fcef1f0}{Direct\+X::\+\+DX12::\+\+Common\+States::\+\+Sampler\+Index}} :\+ uint32\+\_\+t\hspace{0.3cm}{\ttfamily [strong]}}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{PointWrap@{PointWrap}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!PointWrap@{PointWrap}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_afcccde5876ce53be0c933b4c8fcef1f0a20f4dbe2ff958c71cc79c321f154efd7}\label{class_direct_x_1_1_d_x12_1_1_common_states_afcccde5876ce53be0c933b4c8fcef1f0a20f4dbe2ff958c71cc79c321f154efd7} 
+Point\+Wrap&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{PointClamp@{PointClamp}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!PointClamp@{PointClamp}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_afcccde5876ce53be0c933b4c8fcef1f0a055739d3d609c52b857c7c0be46e748c}\label{class_direct_x_1_1_d_x12_1_1_common_states_afcccde5876ce53be0c933b4c8fcef1f0a055739d3d609c52b857c7c0be46e748c} 
+Point\+Clamp&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{LinearWrap@{LinearWrap}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!LinearWrap@{LinearWrap}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_afcccde5876ce53be0c933b4c8fcef1f0a74b431ec372bcd628901b0043833e538}\label{class_direct_x_1_1_d_x12_1_1_common_states_afcccde5876ce53be0c933b4c8fcef1f0a74b431ec372bcd628901b0043833e538} 
+Linear\+Wrap&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{LinearClamp@{LinearClamp}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!LinearClamp@{LinearClamp}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_afcccde5876ce53be0c933b4c8fcef1f0a1d8396d6b7b5f5087d53876f2e98ce5b}\label{class_direct_x_1_1_d_x12_1_1_common_states_afcccde5876ce53be0c933b4c8fcef1f0a1d8396d6b7b5f5087d53876f2e98ce5b} 
+Linear\+Clamp&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{AnisotropicWrap@{AnisotropicWrap}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!AnisotropicWrap@{AnisotropicWrap}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_afcccde5876ce53be0c933b4c8fcef1f0a026a427f3ee33cc06b1977481c8687a7}\label{class_direct_x_1_1_d_x12_1_1_common_states_afcccde5876ce53be0c933b4c8fcef1f0a026a427f3ee33cc06b1977481c8687a7} 
+Anisotropic\+Wrap&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{AnisotropicClamp@{AnisotropicClamp}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!AnisotropicClamp@{AnisotropicClamp}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_afcccde5876ce53be0c933b4c8fcef1f0a06bb0220384c2f871299b80350664274}\label{class_direct_x_1_1_d_x12_1_1_common_states_afcccde5876ce53be0c933b4c8fcef1f0a06bb0220384c2f871299b80350664274} 
+Anisotropic\+Clamp&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Count@{Count}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!Count@{Count}}
+}\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_afcccde5876ce53be0c933b4c8fcef1f0ae93f994f01c537c4e2f7d8528c3eb5e9}\label{class_direct_x_1_1_d_x12_1_1_common_states_afcccde5876ce53be0c933b4c8fcef1f0ae93f994f01c537c4e2f7d8528c3eb5e9} 
+Count&\\
+\hline
+
+\end{DoxyEnumFields}
+
+
+\label{doc-constructors}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_a1d8c2bc6142cb6fa831ec76008106e1d}\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!CommonStates@{CommonStates}}
+\index{CommonStates@{CommonStates}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\doxysubsubsection{\texorpdfstring{CommonStates()}{CommonStates()}\hspace{0.1cm}{\footnotesize\ttfamily [1/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_common_states_a1d8c2bc6142cb6fa831ec76008106e1d} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+DX12::\+\+Common\+States::\+\+Common\+States (\begin{DoxyParamCaption}\item[{\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}}]{device}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [explicit]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_ad640240c4f53b260de94b738a0914291}\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!CommonStates@{CommonStates}}
+\index{CommonStates@{CommonStates}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\doxysubsubsection{\texorpdfstring{CommonStates()}{CommonStates()}\hspace{0.1cm}{\footnotesize\ttfamily [2/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_common_states_ad640240c4f53b260de94b738a0914291} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+DX12::\+\+Common\+States::\+\+Common\+States (\begin{DoxyParamCaption}\item[{Common\+States \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_a60708404e68ee2362f105139a2a07459}\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!CommonStates@{CommonStates}}
+\index{CommonStates@{CommonStates}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\doxysubsubsection{\texorpdfstring{CommonStates()}{CommonStates()}\hspace{0.1cm}{\footnotesize\ttfamily [3/3]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_common_states_a60708404e68ee2362f105139a2a07459} 
+Direct\+X::\+\+DX12::\+\+Common\+States::\+\+Common\+States (\begin{DoxyParamCaption}\item[{const Common\+States \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_a9811c83512ab873e467761e4a064f7f1}\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!````~CommonStates@{\texorpdfstring{$\sim$}{\string~}CommonStates}}
+\index{````~CommonStates@{\texorpdfstring{$\sim$}{\string~}CommonStates}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\doxysubsubsection{\texorpdfstring{\texorpdfstring{$\sim$}{\string~}CommonStates()}{\string~CommonStates()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_common_states_a9811c83512ab873e467761e4a064f7f1} 
+virtual \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} Direct\+X::\+\+DX12::\+\+Common\+States::\+\texorpdfstring{$\sim$}{\string~}\+Common\+States (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [virtual]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_a97feb9b871b9a4a58a6945124945d233}\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!AnisotropicClamp@{AnisotropicClamp}}
+\index{AnisotropicClamp@{AnisotropicClamp}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\doxysubsubsection{\texorpdfstring{AnisotropicClamp()}{AnisotropicClamp()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_common_states_a97feb9b871b9a4a58a6945124945d233} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE Direct\+X::\+\+DX12::\+\+Common\+States::\+\+Anisotropic\+Clamp (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_a06331631e06757575ae2d1d482938353}\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!AnisotropicWrap@{AnisotropicWrap}}
+\index{AnisotropicWrap@{AnisotropicWrap}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\doxysubsubsection{\texorpdfstring{AnisotropicWrap()}{AnisotropicWrap()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_common_states_a06331631e06757575ae2d1d482938353} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE Direct\+X::\+\+DX12::\+\+Common\+States::\+\+Anisotropic\+Wrap (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_a093e603c1b41dd85080b919e7d171010}\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!Heap@{Heap}}
+\index{Heap@{Heap}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\doxysubsubsection{\texorpdfstring{Heap()}{Heap()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_common_states_a093e603c1b41dd85080b919e7d171010} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} ID3\+D12\+Descriptor\+Heap \texorpdfstring{$\ast$}{*} Direct\+X::\+\+DX12::\+\+Common\+States::\+\+Heap (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_aa5bc7d6b10000cc48f9dbd5fc7f9fc5e}\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!LinearClamp@{LinearClamp}}
+\index{LinearClamp@{LinearClamp}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\doxysubsubsection{\texorpdfstring{LinearClamp()}{LinearClamp()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_common_states_aa5bc7d6b10000cc48f9dbd5fc7f9fc5e} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE Direct\+X::\+\+DX12::\+\+Common\+States::\+\+Linear\+Clamp (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_ae8ca6c86bb65856a2169016c4b978f0f}\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!LinearWrap@{LinearWrap}}
+\index{LinearWrap@{LinearWrap}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\doxysubsubsection{\texorpdfstring{LinearWrap()}{LinearWrap()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_common_states_ae8ca6c86bb65856a2169016c4b978f0f} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE Direct\+X::\+\+DX12::\+\+Common\+States::\+\+Linear\+Wrap (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_ac47ace7505a73f8e12bd49e74c793ea3}\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [1/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_common_states_ac47ace7505a73f8e12bd49e74c793ea3} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_a1d8c2bc6142cb6fa831ec76008106e1d}{Common\+States}} \& Direct\+X::\+\+DX12::\+\+Common\+States::\+operator= (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_a1d8c2bc6142cb6fa831ec76008106e1d}{Common\+States}} \&\&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_abe3932dbafe249799a390836dd9e4018}\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!operator=@{operator=}}
+\index{operator=@{operator=}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\doxysubsubsection{\texorpdfstring{operator=()}{operator=()}\hspace{0.1cm}{\footnotesize\ttfamily [2/2]}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_common_states_abe3932dbafe249799a390836dd9e4018} 
+\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_a1d8c2bc6142cb6fa831ec76008106e1d}{Common\+States}} \& Direct\+X::\+\+DX12::\+\+Common\+States::\+operator= (\begin{DoxyParamCaption}\item[{const \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_common_states_a1d8c2bc6142cb6fa831ec76008106e1d}{Common\+States}} \&}]{}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [delete]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_ac9c37c53251239babe356b5a1bc5dc01}\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!PointClamp@{PointClamp}}
+\index{PointClamp@{PointClamp}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\doxysubsubsection{\texorpdfstring{PointClamp()}{PointClamp()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_common_states_ac9c37c53251239babe356b5a1bc5dc01} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE Direct\+X::\+\+DX12::\+\+Common\+States::\+\+Point\+Clamp (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_ac0dd2aa3fbd2fe396bdf52130d944efa}\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!PointWrap@{PointWrap}}
+\index{PointWrap@{PointWrap}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\doxysubsubsection{\texorpdfstring{PointWrap()}{PointWrap()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_common_states_ac0dd2aa3fbd2fe396bdf52130d944efa} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} D3\+D12\+\_\+\+GPU\+\_\+\+DESCRIPTOR\+\_\+\+HANDLE Direct\+X::\+\+DX12::\+\+Common\+States::\+\+Point\+Wrap (\begin{DoxyParamCaption}{}{}\end{DoxyParamCaption}) const}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_a3d7013f48560feb7b6dc457dd5c0b6ee}\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!StaticAnisotropicClamp@{StaticAnisotropicClamp}}
+\index{StaticAnisotropicClamp@{StaticAnisotropicClamp}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\doxysubsubsection{\texorpdfstring{StaticAnisotropicClamp()}{StaticAnisotropicClamp()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_common_states_a3d7013f48560feb7b6dc457dd5c0b6ee} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+STATIC\+\_\+\+SAMPLER\+\_\+\+DESC Direct\+X::\+\+DX12::\+\+Common\+States::\+\+Static\+Anisotropic\+Clamp (\begin{DoxyParamCaption}\item[{unsigned int}]{shader\+Register}{, }\item[{D3\+D12\+\_\+\+SHADER\+\_\+\+VISIBILITY}]{shader\+Visibility}{ = {\ttfamily D3D12\+\_\+SHADER\+\_\+VISIBILITY\+\_\+ALL}, }\item[{unsigned int}]{register\+Space}{ = {\ttfamily 0}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_ab13fad61aa811b9409eb140601596cd7}\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!StaticAnisotropicWrap@{StaticAnisotropicWrap}}
+\index{StaticAnisotropicWrap@{StaticAnisotropicWrap}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\doxysubsubsection{\texorpdfstring{StaticAnisotropicWrap()}{StaticAnisotropicWrap()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_common_states_ab13fad61aa811b9409eb140601596cd7} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+STATIC\+\_\+\+SAMPLER\+\_\+\+DESC Direct\+X::\+\+DX12::\+\+Common\+States::\+\+Static\+Anisotropic\+Wrap (\begin{DoxyParamCaption}\item[{unsigned int}]{shader\+Register}{, }\item[{D3\+D12\+\_\+\+SHADER\+\_\+\+VISIBILITY}]{shader\+Visibility}{ = {\ttfamily D3D12\+\_\+SHADER\+\_\+VISIBILITY\+\_\+ALL}, }\item[{unsigned int}]{register\+Space}{ = {\ttfamily 0}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_a70f7918d1c25d07955fc90961d11f6bd}\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!StaticLinearClamp@{StaticLinearClamp}}
+\index{StaticLinearClamp@{StaticLinearClamp}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\doxysubsubsection{\texorpdfstring{StaticLinearClamp()}{StaticLinearClamp()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_common_states_a70f7918d1c25d07955fc90961d11f6bd} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+STATIC\+\_\+\+SAMPLER\+\_\+\+DESC Direct\+X::\+\+DX12::\+\+Common\+States::\+\+Static\+Linear\+Clamp (\begin{DoxyParamCaption}\item[{unsigned int}]{shader\+Register}{, }\item[{D3\+D12\+\_\+\+SHADER\+\_\+\+VISIBILITY}]{shader\+Visibility}{ = {\ttfamily D3D12\+\_\+SHADER\+\_\+VISIBILITY\+\_\+ALL}, }\item[{unsigned int}]{register\+Space}{ = {\ttfamily 0}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_a0af078849ba94259df50b27c05e0c585}\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!StaticLinearWrap@{StaticLinearWrap}}
+\index{StaticLinearWrap@{StaticLinearWrap}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\doxysubsubsection{\texorpdfstring{StaticLinearWrap()}{StaticLinearWrap()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_common_states_a0af078849ba94259df50b27c05e0c585} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+STATIC\+\_\+\+SAMPLER\+\_\+\+DESC Direct\+X::\+\+DX12::\+\+Common\+States::\+\+Static\+Linear\+Wrap (\begin{DoxyParamCaption}\item[{unsigned int}]{shader\+Register}{, }\item[{D3\+D12\+\_\+\+SHADER\+\_\+\+VISIBILITY}]{shader\+Visibility}{ = {\ttfamily D3D12\+\_\+SHADER\+\_\+VISIBILITY\+\_\+ALL}, }\item[{unsigned int}]{register\+Space}{ = {\ttfamily 0}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_a656c5c24f062c176188ce3b7e247f178}\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!StaticPointClamp@{StaticPointClamp}}
+\index{StaticPointClamp@{StaticPointClamp}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\doxysubsubsection{\texorpdfstring{StaticPointClamp()}{StaticPointClamp()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_common_states_a656c5c24f062c176188ce3b7e247f178} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+STATIC\+\_\+\+SAMPLER\+\_\+\+DESC Direct\+X::\+\+DX12::\+\+Common\+States::\+\+Static\+Point\+Clamp (\begin{DoxyParamCaption}\item[{unsigned int}]{shader\+Register}{, }\item[{D3\+D12\+\_\+\+SHADER\+\_\+\+VISIBILITY}]{shader\+Visibility}{ = {\ttfamily D3D12\+\_\+SHADER\+\_\+VISIBILITY\+\_\+ALL}, }\item[{unsigned int}]{register\+Space}{ = {\ttfamily 0}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_a3adea3a1689aafc8950811aaf232e8e9}\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!StaticPointWrap@{StaticPointWrap}}
+\index{StaticPointWrap@{StaticPointWrap}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\doxysubsubsection{\texorpdfstring{StaticPointWrap()}{StaticPointWrap()}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_common_states_a3adea3a1689aafc8950811aaf232e8e9} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+STATIC\+\_\+\+SAMPLER\+\_\+\+DESC Direct\+X::\+\+DX12::\+\+Common\+States::\+\+Static\+Point\+Wrap (\begin{DoxyParamCaption}\item[{unsigned int}]{shader\+Register}{, }\item[{D3\+D12\+\_\+\+SHADER\+\_\+\+VISIBILITY}]{shader\+Visibility}{ = {\ttfamily D3D12\+\_\+SHADER\+\_\+VISIBILITY\+\_\+ALL}, }\item[{unsigned int}]{register\+Space}{ = {\ttfamily 0}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}, {\ttfamily [noexcept]}}
+
+
+
+\label{doc-variable-members}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_doc-variable-members}
+\doxysubsection{Member Data Documentation}
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_a16030deaeb9b92f18beefb2c42d83394}\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!Additive@{Additive}}
+\index{Additive@{Additive}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\doxysubsubsection{\texorpdfstring{Additive}{Additive}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_common_states_a16030deaeb9b92f18beefb2c42d83394} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+BLEND\+\_\+\+DESC Direct\+X::\+\+DX12::\+\+Common\+States::\+\+Additive\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_a9d21c06bd83fe7c94bf86d1fdd9c2904}\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!AlphaBlend@{AlphaBlend}}
+\index{AlphaBlend@{AlphaBlend}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\doxysubsubsection{\texorpdfstring{AlphaBlend}{AlphaBlend}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_common_states_a9d21c06bd83fe7c94bf86d1fdd9c2904} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+BLEND\+\_\+\+DESC Direct\+X::\+\+DX12::\+\+Common\+States::\+\+Alpha\+Blend\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_a83f0af425d98d2c62db5111c27762136}\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!CullClockwise@{CullClockwise}}
+\index{CullClockwise@{CullClockwise}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\doxysubsubsection{\texorpdfstring{CullClockwise}{CullClockwise}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_common_states_a83f0af425d98d2c62db5111c27762136} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+RASTERIZER\+\_\+\+DESC Direct\+X::\+\+DX12::\+\+Common\+States::\+\+Cull\+Clockwise\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_ab48a6a2bf93c7202e97675dd7cc722ed}\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!CullCounterClockwise@{CullCounterClockwise}}
+\index{CullCounterClockwise@{CullCounterClockwise}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\doxysubsubsection{\texorpdfstring{CullCounterClockwise}{CullCounterClockwise}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_common_states_ab48a6a2bf93c7202e97675dd7cc722ed} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+RASTERIZER\+\_\+\+DESC Direct\+X::\+\+DX12::\+\+Common\+States::\+\+Cull\+Counter\+Clockwise\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_a1e6e8a5708b1dbd7877cdecaa9f27fae}\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!CullNone@{CullNone}}
+\index{CullNone@{CullNone}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\doxysubsubsection{\texorpdfstring{CullNone}{CullNone}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_common_states_a1e6e8a5708b1dbd7877cdecaa9f27fae} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+RASTERIZER\+\_\+\+DESC Direct\+X::\+\+DX12::\+\+Common\+States::\+\+Cull\+None\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_af08533bf24193f9dd9df720b8dee5c66}\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!DepthDefault@{DepthDefault}}
+\index{DepthDefault@{DepthDefault}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\doxysubsubsection{\texorpdfstring{DepthDefault}{DepthDefault}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_common_states_af08533bf24193f9dd9df720b8dee5c66} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+DEPTH\+\_\+\+STENCIL\+\_\+\+DESC Direct\+X::\+\+DX12::\+\+Common\+States::\+\+Depth\+Default\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_af332ad00a8a45664c1900fcef1ddfec4}\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!DepthNone@{DepthNone}}
+\index{DepthNone@{DepthNone}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\doxysubsubsection{\texorpdfstring{DepthNone}{DepthNone}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_common_states_af332ad00a8a45664c1900fcef1ddfec4} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+DEPTH\+\_\+\+STENCIL\+\_\+\+DESC Direct\+X::\+\+DX12::\+\+Common\+States::\+\+Depth\+None\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_a55bc22a84c8f49468bfbd1ac87dd09b8}\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!DepthRead@{DepthRead}}
+\index{DepthRead@{DepthRead}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\doxysubsubsection{\texorpdfstring{DepthRead}{DepthRead}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_common_states_a55bc22a84c8f49468bfbd1ac87dd09b8} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+DEPTH\+\_\+\+STENCIL\+\_\+\+DESC Direct\+X::\+\+DX12::\+\+Common\+States::\+\+Depth\+Read\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_a3eaa54d217a0c08d4455897d57e6f4d4}\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!DepthReadReverseZ@{DepthReadReverseZ}}
+\index{DepthReadReverseZ@{DepthReadReverseZ}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\doxysubsubsection{\texorpdfstring{DepthReadReverseZ}{DepthReadReverseZ}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_common_states_a3eaa54d217a0c08d4455897d57e6f4d4} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+DEPTH\+\_\+\+STENCIL\+\_\+\+DESC Direct\+X::\+\+DX12::\+\+Common\+States::\+\+Depth\+Read\+ReverseZ\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_a7e8c878a70844679a13b01eeba4a88c9}\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!DepthReverseZ@{DepthReverseZ}}
+\index{DepthReverseZ@{DepthReverseZ}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\doxysubsubsection{\texorpdfstring{DepthReverseZ}{DepthReverseZ}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_common_states_a7e8c878a70844679a13b01eeba4a88c9} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+DEPTH\+\_\+\+STENCIL\+\_\+\+DESC Direct\+X::\+\+DX12::\+\+Common\+States::\+\+Depth\+ReverseZ\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_ada1ef2de19266ef178058128e858a22d}\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!NonPremultiplied@{NonPremultiplied}}
+\index{NonPremultiplied@{NonPremultiplied}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\doxysubsubsection{\texorpdfstring{NonPremultiplied}{NonPremultiplied}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_common_states_ada1ef2de19266ef178058128e858a22d} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+BLEND\+\_\+\+DESC Direct\+X::\+\+DX12::\+\+Common\+States::\+\+Non\+Premultiplied\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_ace6c0ebcdf8e8c5e570fb3c548becfb2}\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!Opaque@{Opaque}}
+\index{Opaque@{Opaque}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\doxysubsubsection{\texorpdfstring{Opaque}{Opaque}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_common_states_ace6c0ebcdf8e8c5e570fb3c548becfb2} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+BLEND\+\_\+\+DESC Direct\+X::\+\+DX12::\+\+Common\+States::\+\+Opaque\hspace{0.3cm}{\ttfamily [static]}}
+
+\Hypertarget{class_direct_x_1_1_d_x12_1_1_common_states_a491d28d8b229bde78308332103e8e5aa}\index{DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}!Wireframe@{Wireframe}}
+\index{Wireframe@{Wireframe}!DirectX::DX12::CommonStates@{DirectX::DX12::CommonStates}}
+\doxysubsubsection{\texorpdfstring{Wireframe}{Wireframe}}
+{\footnotesize\ttfamily \label{class_direct_x_1_1_d_x12_1_1_common_states_a491d28d8b229bde78308332103e8e5aa} 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} const D3\+D12\+\_\+\+RASTERIZER\+\_\+\+DESC Direct\+X::\+\+DX12::\+\+Common\+States::\+\+Wireframe\hspace{0.3cm}{\ttfamily [static]}}
+
+
+
+The documentation for this class was generated from the following file:\+\begin{DoxyCompactItemize}
+\item 
+packages/\+directxtk12\+\_\+desktop\+\_\+2019.\+2025.\+10.\+28.\+1/\+include/\+\doxymbox{\hyperlink{_common_states_8h}{Common\+States.\+h}}\end{DoxyCompactItemize}

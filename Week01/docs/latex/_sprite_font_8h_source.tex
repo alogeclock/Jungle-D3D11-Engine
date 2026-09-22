@@ -1,0 +1,240 @@
+\doxysection{Sprite\+Font.\+h}
+\hypertarget{_sprite_font_8h_source}{}\label{_sprite_font_8h_source}\index{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/SpriteFont.h@{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/SpriteFont.h}}
+\doxymbox{\hyperlink{_sprite_font_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00002\ \textcolor{comment}{//\ File:\ SpriteFont.h}}
+\DoxyCodeLine{00003\ \textcolor{comment}{//}}
+\DoxyCodeLine{00004\ \textcolor{comment}{//\ Copyright\ (c)\ Microsoft\ Corporation.}}
+\DoxyCodeLine{00005\ \textcolor{comment}{//\ Licensed\ under\ the\ MIT\ License.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{//}}
+\DoxyCodeLine{00007\ \textcolor{comment}{//\ http://go.microsoft.com/fwlink/?LinkID=615561}}
+\DoxyCodeLine{00008\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_sprite_batch_8h}{SpriteBatch.h}}"{}}}
+\DoxyCodeLine{00013\ }
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#include\ <cstddef>}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00017\ }
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#ifndef\ DIRECTX\_TOOLKIT\_API}}
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#ifdef\ DIRECTX\_TOOLKIT\_EXPORT}}
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#ifdef\ \_\_GNUC\_\_}}
+\DoxyCodeLine{00021\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_attribute\_\_\ ((dllexport))}}
+\DoxyCodeLine{00022\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_declspec(dllexport)}}
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#elif\ defined(DIRECTX\_TOOLKIT\_IMPORT)}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#ifdef\ \_\_GNUC\_\_}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_attribute\_\_\ ((dllimport))}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_declspec(dllimport)}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00035\ }
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{keyword}{namespace\ }\doxymbox{\hyperlink{namespace_direct_x}{DirectX}}}
+\DoxyCodeLine{00038\ \{}
+\DoxyCodeLine{00039\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keyword}{namespace\ }\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12}{DX12}}}
+\DoxyCodeLine{00040\ \ \ \ \ \{}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a1217d6e6831c96a5ee273d504c64a6f1}{SpriteFont}}}
+\DoxyCodeLine{00042\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_sprite_font_1_1_glyph}{Glyph}};}
+\DoxyCodeLine{00045\ }
+\DoxyCodeLine{00046\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a1217d6e6831c96a5ee273d504c64a6f1}{SpriteFont}}(}
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{ResourceUploadBatch}}\&\ upload,}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_z\_\ \textcolor{keywordtype}{wchar\_t}\ \textcolor{keyword}{const}*\ fileName,}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_CPU\_DESCRIPTOR\_HANDLE\ cpuDescriptorDest,\ D3D12\_GPU\_DESCRIPTOR\_HANDLE\ gpuDescriptor,}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ forceSRGB\ =\ \textcolor{keyword}{false});}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a4ebfd5270ac2d8e360477003e3efe55b}{SpriteFont}}(}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{ResourceUploadBatch}}\&\ upload,}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_reads\_bytes\_(dataSize)\ uint8\_t\ \textcolor{keyword}{const}*\ dataBlob,\ \textcolor{keywordtype}{size\_t}\ dataSize,}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_CPU\_DESCRIPTOR\_HANDLE\ cpuDescriptorDest,\ D3D12\_GPU\_DESCRIPTOR\_HANDLE\ gpuDescriptor,}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ forceSRGB\ =\ \textcolor{keyword}{false});}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a04c5a3dbee574a71c4291977bc36d62d}{SpriteFont}}(}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_GPU\_DESCRIPTOR\_HANDLE\ texture,\ XMUINT2\ textureSize,}
+\DoxyCodeLine{00060\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_reads\_(glyphCount)\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_sprite_font_1_1_glyph}{Glyph}}\ \textcolor{keyword}{const}*\ glyphs,\ \textcolor{keywordtype}{size\_t}\ glyphCount,}
+\DoxyCodeLine{00061\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ lineSpacing);}
+\DoxyCodeLine{00062\ }
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_af57ae079156aaa47101b7fd92c3997f4}{SpriteFont}}(\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a1217d6e6831c96a5ee273d504c64a6f1}{SpriteFont}}\&\&)\ noexcept;}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a1217d6e6831c96a5ee273d504c64a6f1}{SpriteFont}}\&\ operator=\ (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a1217d6e6831c96a5ee273d504c64a6f1}{SpriteFont}}\&\&)\ noexcept;}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a1217d6e6831c96a5ee273d504c64a6f1}{SpriteFont}}(\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a1217d6e6831c96a5ee273d504c64a6f1}{SpriteFont}}\ const\&)\ =\ delete;}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a1217d6e6831c96a5ee273d504c64a6f1}{SpriteFont}}\&\ operator=\ (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a1217d6e6831c96a5ee273d504c64a6f1}{SpriteFont}}\ const\&)\ =\ delete;}
+\DoxyCodeLine{00068\ }
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ virtual\ \string~\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a1217d6e6831c96a5ee273d504c64a6f1}{SpriteFont}}();}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Wide-\/character\ /\ UTF-\/16LE}}
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ XM\_CALLCONV\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a03bf2826f7dcf1aaa864af5c920e2dcd}{DrawString}}(}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch}{SpriteBatch}}*\ spriteBatch,}
+\DoxyCodeLine{00074\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_z\_\ \textcolor{keywordtype}{wchar\_t}\ const*\ text,}
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT2\ const\&\ position,}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMVECTOR\ color\ =\ Colors::White,\ \textcolor{keywordtype}{float}\ rotation\ =\ 0,\ XMFLOAT2\ const\&\ origin\ =\ Float2Zero,\ \textcolor{keywordtype}{float}\ scale\ =\ 1,}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9}{SpriteEffects}}\ effects\ =\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9a8e35b1bcd9cd0de90271d5d7a5439204}{SpriteEffects\_None}},\ \textcolor{keywordtype}{float}\ layerDepth\ =\ 0)\ const;}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ XM\_CALLCONV\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a03bf2826f7dcf1aaa864af5c920e2dcd}{DrawString}}(}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch}{SpriteBatch}}*\ spriteBatch,}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_z\_\ \textcolor{keywordtype}{wchar\_t}\ const*\ text,}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT2\ const\&\ position,}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMVECTOR\ color,\ \textcolor{keywordtype}{float}\ rotation,\ XMFLOAT2\ const\&\ origin,\ XMFLOAT2\ const\&\ scale,}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9}{SpriteEffects}}\ effects\ =\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9a8e35b1bcd9cd0de90271d5d7a5439204}{SpriteEffects\_None}},\ \textcolor{keywordtype}{float}\ layerDepth\ =\ 0)\ const;}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ XM\_CALLCONV\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a03bf2826f7dcf1aaa864af5c920e2dcd}{DrawString}}(}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch}{SpriteBatch}}*\ spriteBatch,}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_z\_\ \textcolor{keywordtype}{wchar\_t}\ const*\ text,}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMVECTOR\ position,}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMVECTOR\ color\ =\ Colors::White,\ \textcolor{keywordtype}{float}\ rotation\ =\ 0,\ FXMVECTOR\ origin\ =\ g\_XMZero,\ \textcolor{keywordtype}{float}\ scale\ =\ 1,}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9}{SpriteEffects}}\ effects\ =\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9a8e35b1bcd9cd0de90271d5d7a5439204}{SpriteEffects\_None}},\ \textcolor{keywordtype}{float}\ layerDepth\ =\ 0)\ const;}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ XM\_CALLCONV\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a03bf2826f7dcf1aaa864af5c920e2dcd}{DrawString}}(}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch}{SpriteBatch}}*\ spriteBatch,}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_z\_\ \textcolor{keywordtype}{wchar\_t}\ const*\ text,}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMVECTOR\ position,}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMVECTOR\ color,\ \textcolor{keywordtype}{float}\ rotation,\ FXMVECTOR\ origin,\ GXMVECTOR\ scale,}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9}{SpriteEffects}}\ effects\ =\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9a8e35b1bcd9cd0de90271d5d7a5439204}{SpriteEffects\_None}},\ \textcolor{keywordtype}{float}\ layerDepth\ =\ 0)\ const;}
+\DoxyCodeLine{00096\ }
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ XMVECTOR\ XM\_CALLCONV\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a85f759024e26e86d63480d29e73d09ec}{MeasureString}}(}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_z\_\ \textcolor{keywordtype}{wchar\_t}\ const*\ text,}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ ignoreWhitespace\ =\ true)\ const;}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ RECT\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a140b06ef8d4cb56dc76917966fd1fa48}{MeasureDrawBounds}}(}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_z\_\ \textcolor{keywordtype}{wchar\_t}\ const*\ text,}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT2\ const\&\ position,}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ ignoreWhitespace\ =\ true)\ const;}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ RECT\ XM\_CALLCONV\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a140b06ef8d4cb56dc76917966fd1fa48}{MeasureDrawBounds}}(}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_z\_\ \textcolor{keywordtype}{wchar\_t}\ const*\ text,}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMVECTOR\ position,}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ ignoreWhitespace\ =\ true)\ const;}
+\DoxyCodeLine{00109\ }
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ UTF-\/8}}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ XM\_CALLCONV\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a03bf2826f7dcf1aaa864af5c920e2dcd}{DrawString}}(}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch}{SpriteBatch}}*\ spriteBatch,}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_z\_\ \textcolor{keywordtype}{char}\ const*\ text,}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT2\ const\&\ position,}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMVECTOR\ color\ =\ Colors::White,\ \textcolor{keywordtype}{float}\ rotation\ =\ 0,\ XMFLOAT2\ const\&\ origin\ =\ Float2Zero,\ \textcolor{keywordtype}{float}\ scale\ =\ 1,}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9}{SpriteEffects}}\ effects\ =\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9a8e35b1bcd9cd0de90271d5d7a5439204}{SpriteEffects\_None}},\ \textcolor{keywordtype}{float}\ layerDepth\ =\ 0)\ const;}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ XM\_CALLCONV\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a03bf2826f7dcf1aaa864af5c920e2dcd}{DrawString}}(}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch}{SpriteBatch}}*\ spriteBatch,}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_z\_\ \textcolor{keywordtype}{char}\ const*\ text,}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT2\ const\&\ position,}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMVECTOR\ color,\ \textcolor{keywordtype}{float}\ rotation,\ XMFLOAT2\ const\&\ origin,\ XMFLOAT2\ const\&\ scale,}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9}{SpriteEffects}}\ effects\ =\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9a8e35b1bcd9cd0de90271d5d7a5439204}{SpriteEffects\_None}},\ \textcolor{keywordtype}{float}\ layerDepth\ =\ 0)\ const;}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ XM\_CALLCONV\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a03bf2826f7dcf1aaa864af5c920e2dcd}{DrawString}}(}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch}{SpriteBatch}}*\ spriteBatch,}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_z\_\ \textcolor{keywordtype}{char}\ const*\ text,}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMVECTOR\ position,}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMVECTOR\ color\ =\ Colors::White,\ \textcolor{keywordtype}{float}\ rotation\ =\ 0,\ FXMVECTOR\ origin\ =\ g\_XMZero,\ \textcolor{keywordtype}{float}\ scale\ =\ 1,}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9}{SpriteEffects}}\ effects\ =\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9a8e35b1bcd9cd0de90271d5d7a5439204}{SpriteEffects\_None}},\ \textcolor{keywordtype}{float}\ layerDepth\ =\ 0)\ const;}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ XM\_CALLCONV\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a03bf2826f7dcf1aaa864af5c920e2dcd}{DrawString}}(}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch}{SpriteBatch}}*\ spriteBatch,}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_z\_\ \textcolor{keywordtype}{char}\ const*\ text,}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMVECTOR\ position,\ FXMVECTOR\ color,\ \textcolor{keywordtype}{float}\ rotation,\ FXMVECTOR\ origin,\ GXMVECTOR\ scale,}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9}{SpriteEffects}}\ effects\ =\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9a8e35b1bcd9cd0de90271d5d7a5439204}{SpriteEffects\_None}},\ \textcolor{keywordtype}{float}\ layerDepth\ =\ 0)\ const;}
+\DoxyCodeLine{00134\ }
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ XMVECTOR\ XM\_CALLCONV\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a85f759024e26e86d63480d29e73d09ec}{MeasureString}}(}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_z\_\ \textcolor{keywordtype}{char}\ const*\ text,}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ ignoreWhitespace\ =\ true)\ const;}
+\DoxyCodeLine{00138\ }
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ RECT\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a140b06ef8d4cb56dc76917966fd1fa48}{MeasureDrawBounds}}(}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_z\_\ \textcolor{keywordtype}{char}\ const*\ text,}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT2\ const\&\ position,}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ ignoreWhitespace\ =\ true)\ const;}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ RECT\ XM\_CALLCONV\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a140b06ef8d4cb56dc76917966fd1fa48}{MeasureDrawBounds}}(}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_z\_\ \textcolor{keywordtype}{char}\ const*\ text,}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMVECTOR\ position,}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ ignoreWhitespace\ =\ true)\ const;}
+\DoxyCodeLine{00147\ }
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Spacing\ properties}}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{float}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_af0b20397b80cda0743a1661ee9059ef2}{GetLineSpacing}}()\ const\ noexcept;}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a751532fcaec18f3207aeaa644fde87a2}{SetLineSpacing}}(\textcolor{keywordtype}{float}\ spacing);}
+\DoxyCodeLine{00151\ }
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Font\ properties}}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{wchar\_t}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a36a8f6773f83882855ba78fe0ac352ba}{GetDefaultCharacter}}()\ const\ noexcept;}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a927f16ccb3348e28f4c7f5a2c3337fda}{SetDefaultCharacter}}(\textcolor{keywordtype}{wchar\_t}\ character);}
+\DoxyCodeLine{00155\ }
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{bool}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a44fa4cef9021bbb08a2de7f62aa0211a}{ContainsCharacter}}(\textcolor{keywordtype}{wchar\_t}\ character)\ const;}
+\DoxyCodeLine{00157\ }
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Custom\ layout/rendering}}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_sprite_font_1_1_glyph}{Glyph}}\ const*\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a6779f0f460a3973d420b73ebf32e48ce}{FindGlyph}}(\textcolor{keywordtype}{wchar\_t}\ character)\ const;}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ D3D12\_GPU\_DESCRIPTOR\_HANDLE\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_ac9b861b3377d8d171e76165c25b89b28}{GetSpriteSheet}}()\ const\ noexcept;}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ XMUINT2\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a56f41acfae88c669dda55a659cc389d8}{GetSpriteSheetSize}}()\ const\ noexcept;}
+\DoxyCodeLine{00162\ }
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Describes\ a\ single\ character\ glyph.}}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \ \ \ \ struct\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_sprite_font_1_1_glyph}{Glyph}}}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_sprite_font_1_1_glyph_a4973b5c6b87a7bbcfaf5defe7634972a}{Character}};}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ RECT\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_sprite_font_1_1_glyph_a7e82abbf748c84c48e817a60971f591c}{Subrect}};}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_sprite_font_1_1_glyph_a5cafd5d866bd8c16c5711bdef77aa1cb}{XOffset}};}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_sprite_font_1_1_glyph_a935eb45a66de280d8f7ba374e59e4e83}{YOffset}};}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{float}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_sprite_font_1_1_glyph_a9ed9e955df1ef9fa062bea6e4abefe7d}{XAdvance}};}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00172\ }
+\DoxyCodeLine{00173\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#if\ defined(\_MSC\_VER)\ \&\&\ !defined(\_NATIVE\_WCHAR\_T\_DEFINED)}}
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a1217d6e6831c96a5ee273d504c64a6f1}{SpriteFont}}(}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ID3D12Device*\ device,\ \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{ResourceUploadBatch}}\&\ upload,}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_z\_\ \_\_wchar\_t\ \textcolor{keyword}{const}*\ fileName,}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_CPU\_DESCRIPTOR\_HANDLE\ cpuDescriptorDest,\ D3D12\_GPU\_DESCRIPTOR\_HANDLE\ gpuDescriptor,}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ forceSRGB\ =\ \textcolor{keyword}{false});}
+\DoxyCodeLine{00179\ }
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ XM\_CALLCONV\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a03bf2826f7dcf1aaa864af5c920e2dcd}{DrawString}}(}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch}{SpriteBatch}}*\ spriteBatch,}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_z\_\ \_\_wchar\_t\ \textcolor{keyword}{const}*\ text,}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT2\ \textcolor{keyword}{const}\&\ position,}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMVECTOR\ color\ =\ Colors::White,\ \textcolor{keywordtype}{float}\ rotation\ =\ 0,\ XMFLOAT2\ \textcolor{keyword}{const}\&\ origin\ =\ Float2Zero,\ \textcolor{keywordtype}{float}\ scale\ =\ 1,}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9}{SpriteEffects}}\ effects\ =\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9a8e35b1bcd9cd0de90271d5d7a5439204}{SpriteEffects\_None}},\ \textcolor{keywordtype}{float}\ layerDepth\ =\ 0)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ XM\_CALLCONV\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a03bf2826f7dcf1aaa864af5c920e2dcd}{DrawString}}(}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch}{SpriteBatch}}*\ spriteBatch,}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_z\_\ \_\_wchar\_t\ \textcolor{keyword}{const}*\ text,}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT2\ \textcolor{keyword}{const}\&\ position,}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMVECTOR\ color,\ \textcolor{keywordtype}{float}\ rotation,\ XMFLOAT2\ \textcolor{keyword}{const}\&\ origin,\ XMFLOAT2\ \textcolor{keyword}{const}\&\ scale,}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9}{SpriteEffects}}\ effects\ =\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9a8e35b1bcd9cd0de90271d5d7a5439204}{SpriteEffects\_None}},\ \textcolor{keywordtype}{float}\ layerDepth\ =\ 0)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ XM\_CALLCONV\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a03bf2826f7dcf1aaa864af5c920e2dcd}{DrawString}}(}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch}{SpriteBatch}}*\ spriteBatch,}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_z\_\ \_\_wchar\_t\ \textcolor{keyword}{const}*\ text,}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMVECTOR\ position,}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMVECTOR\ color\ =\ Colors::White,\ \textcolor{keywordtype}{float}\ rotation\ =\ 0,\ FXMVECTOR\ origin\ =\ g\_XMZero,\ \textcolor{keywordtype}{float}\ scale\ =\ 1,}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9}{SpriteEffects}}\ effects\ =\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9a8e35b1bcd9cd0de90271d5d7a5439204}{SpriteEffects\_None}},\ \textcolor{keywordtype}{float}\ layerDepth\ =\ 0)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ XM\_CALLCONV\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a03bf2826f7dcf1aaa864af5c920e2dcd}{DrawString}}(}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_batch}{SpriteBatch}}*\ spriteBatch,}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_z\_\ \_\_wchar\_t\ \textcolor{keyword}{const}*\ text,}
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMVECTOR\ position,}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMVECTOR\ color,\ \textcolor{keywordtype}{float}\ rotation,\ FXMVECTOR\ origin,\ GXMVECTOR\ scale,}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9}{SpriteEffects}}\ effects\ =\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_a177afda9f03125389e6e1506ae087fb9a8e35b1bcd9cd0de90271d5d7a5439204}{SpriteEffects\_None}},\ \textcolor{keywordtype}{float}\ layerDepth\ =\ 0)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00204\ }
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ XMVECTOR\ XM\_CALLCONV\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a85f759024e26e86d63480d29e73d09ec}{MeasureString}}(}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_z\_\ \_\_wchar\_t\ \textcolor{keyword}{const}*\ text,}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ ignoreWhitespace\ =\ \textcolor{keyword}{true})\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00208\ }
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ RECT\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a140b06ef8d4cb56dc76917966fd1fa48}{MeasureDrawBounds}}(}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_z\_\ \_\_wchar\_t\ \textcolor{keyword}{const}*\ text,}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMFLOAT2\ \textcolor{keyword}{const}\&\ position,}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ ignoreWhitespace\ =\ \textcolor{keyword}{true})\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ RECT\ XM\_CALLCONV\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a140b06ef8d4cb56dc76917966fd1fa48}{MeasureDrawBounds}}(}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_z\_\ \_\_wchar\_t\ \textcolor{keyword}{const}*\ text,}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMVECTOR\ position,}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ ignoreWhitespace\ =\ \textcolor{keyword}{true})\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00217\ }
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a927f16ccb3348e28f4c7f5a2c3337fda}{SetDefaultCharacter}}(\_\_wchar\_t\ character);}
+\DoxyCodeLine{00219\ }
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{bool}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a44fa4cef9021bbb08a2de7f62aa0211a}{ContainsCharacter}}(\_\_wchar\_t\ character)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00221\ }
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_sprite_font_1_1_glyph}{Glyph}}\ \textcolor{keyword}{const}*\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_sprite_font_a6779f0f460a3973d420b73ebf32e48ce}{FindGlyph}}(\_\_wchar\_t\ character)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00223\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#endif\ }\textcolor{comment}{//\ !\_NATIVE\_WCHAR\_T\_DEFINED}}
+\DoxyCodeLine{00224\ }
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Private\ implementation.}}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{class\ }Impl;}
+\DoxyCodeLine{00228\ }
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<Impl>\ pImpl;}
+\DoxyCodeLine{00230\ }
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ XMFLOAT2\ Float2Zero;}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00233\ \ \ \ \ \}}
+\DoxyCodeLine{00234\ \}}
+
+\end{DoxyCode}

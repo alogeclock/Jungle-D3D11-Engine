@@ -1,0 +1,776 @@
+\doxysection{Model.\+h}
+\hypertarget{_model_8h_source}{}\label{_model_8h_source}\index{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/Model.h@{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/Model.h}}
+\doxymbox{\hyperlink{_model_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00002\ \textcolor{comment}{//\ File:\ Model.h}}
+\DoxyCodeLine{00003\ \textcolor{comment}{//}}
+\DoxyCodeLine{00004\ \textcolor{comment}{//\ Copyright\ (c)\ Microsoft\ Corporation.}}
+\DoxyCodeLine{00005\ \textcolor{comment}{//\ Licensed\ under\ the\ MIT\ License.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{//}}
+\DoxyCodeLine{00007\ \textcolor{comment}{//\ http://go.microsoft.com/fwlink/?LinkID=615561}}
+\DoxyCodeLine{00008\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#ifdef\ \_GAMING\_XBOX\_SCARLETT}}
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ <d3d12\_xs.h>}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#elif\ (defined(\_XBOX\_ONE)\ \&\&\ defined(\_TITLE))\ ||\ defined(\_GAMING\_XBOX)}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <d3d12\_x.h>}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#elif\ defined(USING\_DIRECTX\_HEADERS)}}
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#include\ <directx/d3d12.h>}}
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#include\ <directx/dxgiformat.h>}}
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#include\ <dxguids/dxguids.h>}}
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00021\ \textcolor{preprocessor}{\#include\ <d3d12.h>}}
+\DoxyCodeLine{00022\ \textcolor{preprocessor}{\#include\ <dxgiformat.h>}}
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#include\ <cassert>}}
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#include\ <cstddef>}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ <functional>}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#include\ <iterator>}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#include\ <new>}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#include\ <stdexcept>}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#include\ <type\_traits>}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#include\ <utility>}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#include\ <vector>}}
+\DoxyCodeLine{00037\ }
+\DoxyCodeLine{00038\ \textcolor{preprocessor}{\#include\ <malloc.h>}}
+\DoxyCodeLine{00039\ }
+\DoxyCodeLine{00040\ \textcolor{preprocessor}{\#include\ <wrl/client.h>}}
+\DoxyCodeLine{00041\ }
+\DoxyCodeLine{00042\ \textcolor{preprocessor}{\#include\ <DirectXMath.h>}}
+\DoxyCodeLine{00043\ \textcolor{preprocessor}{\#include\ <DirectXCollision.h>}}
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_graphics_memory_8h}{GraphicsMemory.h}}"{}}}
+\DoxyCodeLine{00046\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_effects_8h}{Effects.h}}"{}}}
+\DoxyCodeLine{00047\ }
+\DoxyCodeLine{00048\ \textcolor{preprocessor}{\#ifndef\ DIRECTX\_TOOLKIT\_API}}
+\DoxyCodeLine{00049\ \textcolor{preprocessor}{\#ifdef\ DIRECTX\_TOOLKIT\_EXPORT}}
+\DoxyCodeLine{00050\ \textcolor{preprocessor}{\#ifdef\ \_\_GNUC\_\_}}
+\DoxyCodeLine{00051\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_attribute\_\_\ ((dllexport))}}
+\DoxyCodeLine{00052\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00053\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_declspec(dllexport)}}
+\DoxyCodeLine{00054\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00055\ \textcolor{preprocessor}{\#elif\ defined(DIRECTX\_TOOLKIT\_IMPORT)}}
+\DoxyCodeLine{00056\ \textcolor{preprocessor}{\#ifdef\ \_\_GNUC\_\_}}
+\DoxyCodeLine{00057\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_attribute\_\_\ ((dllimport))}}
+\DoxyCodeLine{00058\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00059\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_declspec(dllimport)}}
+\DoxyCodeLine{00060\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00061\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00062\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API}}
+\DoxyCodeLine{00063\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00064\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00065\ }
+\DoxyCodeLine{00066\ \textcolor{preprocessor}{\#if\ defined(DIRECTX\_TOOLKIT\_IMPORT)\ \&\&\ defined(\_MSC\_VER)}}
+\DoxyCodeLine{00067\ \textcolor{preprocessor}{\#pragma\ warning(push)}}
+\DoxyCodeLine{00068\ \textcolor{preprocessor}{\#pragma\ warning(disable\ :\ 4251)}}
+\DoxyCodeLine{00069\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00070\ }
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \textcolor{keyword}{namespace\ }\doxymbox{\hyperlink{namespace_direct_x}{DirectX}}}
+\DoxyCodeLine{00073\ \{}
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{keyword}{inline}\ \textcolor{keyword}{namespace\ }\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12}{DX12}}}
+\DoxyCodeLine{00075\ \ \ \ \ \{}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect}{IEffect}};}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect_factory}{IEffectFactory}};}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh}{ModelMesh}};}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Model\ loading\ options}}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \textcolor{keyword}{enum}\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90}{ModelLoaderFlags}}\ :\ uint32\_t}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90a0298446b678a0f18a947a8681d75cb14}{ModelLoader\_Default}}\ =\ 0x0,}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90a33a205e90b9e85708a46cf054178f4cc}{ModelLoader\_MaterialColorsSRGB}}\ =\ 0x1,}
+\DoxyCodeLine{00086\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90a8ca3199715e4203a5ad97bd19d794e2f}{ModelLoader\_AllowLargeModels}}\ =\ 0x2,}
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90a1544a4b3694e6859141f7c5e71b3dae5}{ModelLoader\_IncludeBones}}\ =\ 0x4,}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90ae66dc6073cac9b88a87c3e0cf9a3a8e4}{ModelLoader\_DisableSkinning}}\ =\ 0x8,}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00090\ }
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Frame\ hierarchy\ for\ rigid\ body\ and\ skeletal\ animation}}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_a6227d1cf1484aee77be975eb30b76e08}{ModelBone}}}
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00095\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_a6227d1cf1484aee77be975eb30b76e08}{ModelBone}}()\ noexcept\ :}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_aec7e3f37aff96ce099e37424c51a7f68}{parentIndex}}(\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_add057eca02b433d484baa81325b52763}{c\_Invalid}}),}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_a1c7ceedc40256c96fa9fca81782376fd}{childIndex}}(\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_add057eca02b433d484baa81325b52763}{c\_Invalid}}),}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_a9959eac5d6182a2d1bbd93bc364c5bc1}{siblingIndex}}(\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_add057eca02b433d484baa81325b52763}{c\_Invalid}})}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ \{\}}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_a08dfaaf18d3d9b9bd03267727190896f}{ModelBone}}(uint32\_t\ parent,\ uint32\_t\ child,\ uint32\_t\ sibling)\ noexcept\ :}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_aec7e3f37aff96ce099e37424c51a7f68}{parentIndex}}(parent),}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_a1c7ceedc40256c96fa9fca81782376fd}{childIndex}}(child),}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_a9959eac5d6182a2d1bbd93bc364c5bc1}{siblingIndex}}(sibling)}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ \{\}}
+\DoxyCodeLine{00106\ }
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_aec7e3f37aff96ce099e37424c51a7f68}{parentIndex}};}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_a1c7ceedc40256c96fa9fca81782376fd}{childIndex}};}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_a9959eac5d6182a2d1bbd93bc364c5bc1}{siblingIndex}};}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ std::wstring\ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_a6501b5eb393d2e6fb3cc8c72d9bc29fe}{name}};}
+\DoxyCodeLine{00111\ }
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{using\ }\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_aabbdb89e34f76ba933f3d480c44343d5}{Collection}}\ =\ std::vector<ModelBone>;}
+\DoxyCodeLine{00113\ }
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{constexpr}\ uint32\_t\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_add057eca02b433d484baa81325b52763}{c\_Invalid}}\ =\ uint32\_t(-\/1);}
+\DoxyCodeLine{00115\ }
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_1_1aligned__deleter}{aligned\_deleter}}\ \{\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_1_1aligned__deleter_adada32495494b987d54c0088a1326039}{operator()}}(\textcolor{keywordtype}{void}*\ p)\ \textcolor{keyword}{noexcept}\ \{\ \_aligned\_free(p);\ \}\ \};}
+\DoxyCodeLine{00117\ }
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{using\ }\doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_a1b8882c00ce703eaf39ee590e8b122e0}{TransformArray}}\ =\ std::unique\_ptr<XMMATRIX[],\ aligned\_deleter>;}
+\DoxyCodeLine{00119\ }
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_a1b8882c00ce703eaf39ee590e8b122e0}{TransformArray}}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_a483c7479ba0a19621980e90b2bed49b4}{MakeArray}}(\textcolor{keywordtype}{size\_t}\ count)}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}*\ temp\ =\ \_aligned\_malloc(\textcolor{keyword}{sizeof}(XMMATRIX)\ *\ count,\ 16);}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!temp)}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::bad\_alloc();}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_a1b8882c00ce703eaf39ee590e8b122e0}{TransformArray}}(\textcolor{keyword}{static\_cast<}XMMATRIX*\textcolor{keyword}{>}(temp));}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00127\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00128\ }
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Each\ mesh\ part\ is\ a\ submesh\ with\ a\ single\ effect}}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3406701030603fe51cb8281763e1848d}{ModelMeshPart}}}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3406701030603fe51cb8281763e1848d}{ModelMeshPart}}(uint32\_t\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a1697a24505d81401ceff947a45bc1344}{partIndex}})\ \textcolor{keyword}{noexcept};}
+\DoxyCodeLine{00135\ }
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a18fc608d097a8663a1181abe1849fb00}{ModelMeshPart}}(\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3406701030603fe51cb8281763e1848d}{ModelMeshPart}}\&\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3406701030603fe51cb8281763e1848d}{ModelMeshPart}}\&\ operator=\ (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3406701030603fe51cb8281763e1848d}{ModelMeshPart}}\&\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00138\ }
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a88f6c78ed30f29487859fa51d8c77bb0}{ModelMeshPart}}(\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3406701030603fe51cb8281763e1848d}{ModelMeshPart}}\ \textcolor{keyword}{const}\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3406701030603fe51cb8281763e1848d}{ModelMeshPart}}\&\ operator=\ (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3406701030603fe51cb8281763e1848d}{ModelMeshPart}}\ \textcolor{keyword}{const}\&)\ =\ \textcolor{keywordflow}{default};}
+\DoxyCodeLine{00141\ }
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{virtual}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_aa973acaaa510621e7eb1318c31528908}{\string~ModelMeshPart}}();}
+\DoxyCodeLine{00143\ }
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{using\ }\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3626cedf1eb9b98e31460a61eb8a07ea}{Collection}}\ =\ std::vector<std::unique\_ptr<ModelMeshPart>>;}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{using\ }\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a0c1c222f63708dcc42163a2ecf9347e4}{DrawCallback}}\ =\ std::function<void(\_In\_\ ID3D12GraphicsCommandList*\ commandList,\ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3406701030603fe51cb8281763e1848d}{ModelMeshPart}}\&\ part)>;}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{using\ }\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_acaa99c62bfb509ea82372a6816d74005}{InputLayoutCollection}}\ =\ std::vector<D3D12\_INPUT\_ELEMENT\_DESC>;}
+\DoxyCodeLine{00147\ }
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a1697a24505d81401ceff947a45bc1344}{partIndex}};\ \ \ \ \ \ \textcolor{comment}{//\ Unique\ index\ assigned\ per-\/part\ in\ a\ model.}}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_af40e10ad476c251a0ea91ba57d417a66}{materialIndex}};\ \ \textcolor{comment}{//\ Index\ of\ the\ material\ spec\ to\ use}}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a6d3a5254b88cec36fa072f429926312f}{indexCount}};}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a9a17210da15953e629a8de565a0c20b1}{startIndex}};}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ \ \ int32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_abe1cb05c21bc9bf5447646e93386cc3b}{vertexOffset}};}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a382fd0cfa07a3a39649a050207da4924}{vertexStride}};}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a46d3e68d3887636adc87c1cd02255096}{vertexCount}};}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a8e3bc7375064c57ea4f6f99a6051e0e2}{indexBufferSize}};}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a6cda1121ae0d2a4bd45484acbda745a1}{vertexBufferSize}};}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ D3D\_PRIMITIVE\_TOPOLOGY\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a93f85761c3ade05211e0f066300be6aa}{primitiveType}};}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \ \ \ \ DXGI\_FORMAT\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3b138f49637a69ba5d07b379662ec7b4}{indexFormat}};}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_shared_graphics_resource}{SharedGraphicsResource}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a74dbc92e2b14f4187af4257c54b3fda1}{indexBuffer}};}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_shared_graphics_resource}{SharedGraphicsResource}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a942a34fb93240fa20276b6a1be92ecb3}{vertexBuffer}};}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ Microsoft::WRL::ComPtr<ID3D12Resource>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_acf8ec9493bd403821be034f891fb72c9}{staticIndexBuffer}};}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \ \ Microsoft::WRL::ComPtr<ID3D12Resource>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a1bbe70e48964dd620208d05d703be792}{staticVertexBuffer}};}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \ \ \ \ std::shared\_ptr<InputLayoutCollection>\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3d82a64edfad33b64547973624fa23fd}{vbDecl}};}
+\DoxyCodeLine{00164\ }
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Draw\ mesh\ part}}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a4c9dc3384513ba75d7a8586d6a94f1f3}{Draw}}(\_In\_\ ID3D12GraphicsCommandList*\ commandList)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00167\ }
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a47cba961889aebbd471e14a0217cba63}{DrawInstanced}}(\_In\_\ ID3D12GraphicsCommandList*\ commandList,\ uint32\_t\ instanceCount,\ uint32\_t\ startInstance\ =\ 0)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00169\ }
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//}}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Utilities\ for\ drawing\ multiple\ mesh\ parts}}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//}}
+\DoxyCodeLine{00173\ }
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Draw\ the\ mesh}}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_ad3a0af127b57bf359c5ac4dca08f5caf}{DrawMeshParts}}(\_In\_\ ID3D12GraphicsCommandList*\ commandList,\ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3626cedf1eb9b98e31460a61eb8a07ea}{Collection}}\&\ meshParts);}
+\DoxyCodeLine{00176\ }
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Draw\ the\ mesh\ with\ an\ effect}}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_ad6469b5004b21cc8a8869353965cd575}{DrawMeshParts}}(\_In\_\ ID3D12GraphicsCommandList*\ commandList,\ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3626cedf1eb9b98e31460a61eb8a07ea}{Collection}}\&\ meshParts,\ \_In\_\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect}{IEffect}}*\ effect);}
+\DoxyCodeLine{00179\ }
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Draw\ the\ mesh\ with\ a\ callback\ for\ each\ mesh\ part}}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a2827c9ed24ac846bb2e0d1b053e28b05}{DrawMeshParts}}(\_In\_\ ID3D12GraphicsCommandList*\ commandList,\ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3626cedf1eb9b98e31460a61eb8a07ea}{Collection}}\&\ meshParts,\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a0c1c222f63708dcc42163a2ecf9347e4}{DrawCallback}}\ callback);}
+\DoxyCodeLine{00182\ }
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Draw\ the\ mesh\ with\ a\ range\ of\ effects\ that\ mesh\ parts\ will\ index\ into.}}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Effects\ can\ be\ any\ IEffect\ pointer\ type\ (including\ smart\ pointer).\ Value\ or\ reference\ types\ will\ not\ compile.}}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ The\ iterator\ passed\ to\ this\ method\ should\ have\ random\ access\ capabilities\ for\ best\ performance.}}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ TEffectIterator,\ \textcolor{keyword}{typename}\ TEffectIteratorCategory\ =\ \textcolor{keyword}{typename}\ TEffectIterator::iterator\_category>}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a43fa657e90462aa46edd39646e9cf4cf}{DrawMeshParts}}(}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12GraphicsCommandList*\ commandList,}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3626cedf1eb9b98e31460a61eb8a07ea}{Collection}}\&\ meshParts,}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TEffectIterator\ partEffects)}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ This\ assert\ is\ here\ to\ prevent\ accidental\ use\ of\ containers\ that\ would\ cause\ undesirable\ performance\ penalties.}}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static\_assert}(}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::is\_base\_of<std::random\_access\_iterator\_tag,\ TEffectIteratorCategory>::value,}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Providing\ an\ iterator\ without\ random\ access\ capabilities\ -\/-\/\ such\ as\ from\ std::list\ -\/-\/\ is\ not\ supported."{}});}
+\DoxyCodeLine{00196\ }
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ it\ :\ meshParts)}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ part\ =\ it.get();}
+\DoxyCodeLine{00200\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ assert(part\ !=\ \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00201\ }
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Get\ the\ effect\ at\ the\ location\ specified\ by\ the\ part's\ material}}
+\DoxyCodeLine{00203\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TEffectIterator\ effect\_iterator\ =\ partEffects;}
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::advance(effect\_iterator,\ part-\/>partIndex);}
+\DoxyCodeLine{00205\ }
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Apply\ the\ effect\ and\ draw}}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (*effect\_iterator)-\/>Apply(commandList);}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ part-\/>Draw(commandList);}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00211\ }
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ TEffectIterator,\ \textcolor{keyword}{typename}\ TEffectIteratorCategory\ =\ \textcolor{keyword}{typename}\ TEffectIterator::iterator\_category>}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ XM\_CALLCONV\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_addb5e5fc0753fc6b587d233d3880b464}{DrawMeshParts}}(}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12GraphicsCommandList*\ commandList,}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3626cedf1eb9b98e31460a61eb8a07ea}{Collection}}\&\ meshParts,}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMMATRIX\ world,}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TEffectIterator\ partEffects)}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ This\ assert\ is\ here\ to\ prevent\ accidental\ use\ of\ containers\ that\ would\ cause\ undesirable\ performance\ penalties.}}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static\_assert}(}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::is\_base\_of<std::random\_access\_iterator\_tag,\ TEffectIteratorCategory>::value,}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Providing\ an\ iterator\ without\ random\ access\ capabilities\ -\/-\/\ such\ as\ from\ std::list\ -\/-\/\ is\ not\ supported."{}});}
+\DoxyCodeLine{00223\ }
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ it\ :\ meshParts)}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ part\ =\ it.get();}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ assert(part\ !=\ \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00228\ }
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Get\ the\ effect\ at\ the\ location\ specified\ by\ the\ part's\ material}}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TEffectIterator\ effect\_iterator\ =\ partEffects;}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::advance(effect\_iterator,\ part-\/>partIndex);}
+\DoxyCodeLine{00232\ }
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ imatrices\ =\ \textcolor{keyword}{dynamic\_cast<}\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect_matrices}{IEffectMatrices}}*\textcolor{keyword}{>}((*effect\_iterator).get());}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (imatrices)}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00236\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ imatrices-\/>SetWorld(world);}
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00238\ }
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Apply\ the\ effect\ and\ draw}}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (*effect\_iterator)-\/>Apply(commandList);}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ part-\/>Draw(commandList);}
+\DoxyCodeLine{00242\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00244\ }
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ TEffectIterator,\ \textcolor{keyword}{typename}\ TEffectIteratorCategory\ =\ \textcolor{keyword}{typename}\ TEffectIterator::iterator\_category>}
+\DoxyCodeLine{00246\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ XM\_CALLCONV\ DrawSkinnedMeshParts(}
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12GraphicsCommandList*\ commandList,}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh}{ModelMesh}}\&\ mesh,}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ Collection\&\ meshParts,}
+\DoxyCodeLine{00250\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ nbones,}
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_reads\_(nbones)\ \textcolor{keyword}{const}\ XMMATRIX*\ boneTransforms,}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMMATRIX\ world,}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TEffectIterator\ partEffects);}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00255\ }
+\DoxyCodeLine{00256\ }
+\DoxyCodeLine{00257\ \ \ \ \ \ \ \ \ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ A\ mesh\ consists\ of\ one\ or\ more\ model\ mesh\ parts}}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_afdf2e0867c5fc26c592f37a556ff3b12}{ModelMesh}}}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00261\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_afdf2e0867c5fc26c592f37a556ff3b12}{ModelMesh}}()\ noexcept;}
+\DoxyCodeLine{00263\ }
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_afdf2e0867c5fc26c592f37a556ff3b12}{ModelMesh}}(\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_afdf2e0867c5fc26c592f37a556ff3b12}{ModelMesh}}\&\&)\ =\ default;}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_afdf2e0867c5fc26c592f37a556ff3b12}{ModelMesh}}\&\ operator=\ (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_afdf2e0867c5fc26c592f37a556ff3b12}{ModelMesh}}\&\&)\ =\ default;}
+\DoxyCodeLine{00266\ }
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_afdf2e0867c5fc26c592f37a556ff3b12}{ModelMesh}}(\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_afdf2e0867c5fc26c592f37a556ff3b12}{ModelMesh}}\ const\&)\ =\ delete;}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_afdf2e0867c5fc26c592f37a556ff3b12}{ModelMesh}}\&\ operator=\ (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_afdf2e0867c5fc26c592f37a556ff3b12}{ModelMesh}}\ const\&)\ =\ delete;}
+\DoxyCodeLine{00269\ }
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \ \ \ \ virtual\ \string~\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_afdf2e0867c5fc26c592f37a556ff3b12}{ModelMesh}}();}
+\DoxyCodeLine{00271\ }
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \ \ \ \ BoundingSphere\ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a41c06aeda444f266b88ef63d6f1cedc1}{boundingSphere}};}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \ \ \ \ BoundingBox\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a42ec4bffbf7604be7b22c84a7af025a8}{boundingBox}};}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part}{ModelMeshPart}}::\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a1342fea3103e2a81f8a855efbf6b6c93}{Collection}}\ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a03e0ab49fb7182a56d5dffb64f101e98}{opaqueMeshParts}};}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part}{ModelMeshPart}}::\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a1342fea3103e2a81f8a855efbf6b6c93}{Collection}}\ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a6297697b8a4b5cf16f57f4214a16fee7}{alphaMeshParts}};}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \ \ \ \ uint32\_t\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a789122462472afc95cca942e860a3d8a}{boneIndex}};}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespacestd}{std}}::vector<uint32\_t>\ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a508822c269183b7c369ee7cd06ec6a65}{boneInfluences}};}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespacestd}{std}}::wstring\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a8502708147515e737084c7cf8be53111}{name}};}
+\DoxyCodeLine{00279\ }
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \ \ \ \ using\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a1342fea3103e2a81f8a855efbf6b6c93}{Collection}}\ =\ \doxymbox{\hyperlink{namespacestd}{std}}::vector<\doxymbox{\hyperlink{namespacestd}{std}}::shared\_ptr<\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_afdf2e0867c5fc26c592f37a556ff3b12}{ModelMesh}}>>;}
+\DoxyCodeLine{00281\ }
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Draw\ the\ mesh}}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a6d088fe13e325184273d504e8daa03e9}{DrawOpaque}}(\_In\_\ ID3D12GraphicsCommandList*\ commandList)\ const;}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_ad329dd0a3bc60ae5e6e12ec64e9e64f3}{DrawAlpha}}(\_In\_\ ID3D12GraphicsCommandList*\ commandList)\ const;}
+\DoxyCodeLine{00285\ }
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Draw\ the\ mesh\ with\ an\ effect}}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a6d088fe13e325184273d504e8daa03e9}{DrawOpaque}}(\_In\_\ ID3D12GraphicsCommandList*\ commandList,\ \_In\_\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect}{IEffect}}*\ effect)\ const;}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_ad329dd0a3bc60ae5e6e12ec64e9e64f3}{DrawAlpha}}(\_In\_\ ID3D12GraphicsCommandList*\ commandList,\ \_In\_\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect}{IEffect}}*\ effect)\ const;}
+\DoxyCodeLine{00289\ }
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Draw\ the\ mesh\ with\ a\ callback\ for\ each\ mesh\ part}}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a6d088fe13e325184273d504e8daa03e9}{DrawOpaque}}(\_In\_\ ID3D12GraphicsCommandList*\ commandList,\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part}{ModelMeshPart}}::DrawCallback\ callback)\ const;}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_ad329dd0a3bc60ae5e6e12ec64e9e64f3}{DrawAlpha}}(\_In\_\ ID3D12GraphicsCommandList*\ commandList,\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part}{ModelMeshPart}}::DrawCallback\ callback)\ const;}
+\DoxyCodeLine{00293\ }
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Draw\ the\ mesh\ with\ a\ range\ of\ effects\ that\ mesh\ parts\ will\ index\ into.}}
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ TEffectPtr\ can\ be\ any\ IEffect\ pointer\ type\ (including\ smart\ pointer).\ Value\ or\ reference\ types\ will\ not\ compile.}}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \ \ \ \ template<typename\ TEffectIterator,\ typename\ TEffectIteratorCategory\ =\ typename\ TEffectIterator::iterator\_category>}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a6d088fe13e325184273d504e8daa03e9}{DrawOpaque}}(\_In\_\ ID3D12GraphicsCommandList*\ commandList,\ TEffectIterator\ effects)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00298\ \textcolor{keyword}{\ \ \ \ \ \ \ \ \ \ \ \ }\{}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_ad3a0af127b57bf359c5ac4dca08f5caf}{ModelMeshPart::DrawMeshParts<TEffectIterator,\ TEffectIteratorCategory>}}(commandList,\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a03e0ab49fb7182a56d5dffb64f101e98}{opaqueMeshParts}},\ effects);}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ TEffectIterator,\ \textcolor{keyword}{typename}\ TEffectIteratorCategory\ =\ \textcolor{keyword}{typename}\ TEffectIterator::iterator\_category>}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a2e753a5f1bc4e77d267625699f4af80c}{DrawAlpha}}(\_In\_\ ID3D12GraphicsCommandList*\ commandList,\ TEffectIterator\ effects)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00303\ \textcolor{keyword}{\ \ \ \ \ \ \ \ \ \ \ \ }\{}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_ad3a0af127b57bf359c5ac4dca08f5caf}{ModelMeshPart::DrawMeshParts<TEffectIterator,\ TEffectIteratorCategory>}}(commandList,\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a6297697b8a4b5cf16f57f4214a16fee7}{alphaMeshParts}},\ effects);}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00306\ }
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Draw\ rigid-\/body\ with\ bones.}}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ TEffectIterator,\ \textcolor{keyword}{typename}\ TEffectIteratorCategory\ =\ \textcolor{keyword}{typename}\ TEffectIterator::iterator\_category>}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ XM\_CALLCONV\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_aa7149da7d955085d37c562d05444bff8}{DrawOpaque}}(}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12GraphicsCommandList*\ commandList,}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ nbones,}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_reads\_(nbones)\ \textcolor{keyword}{const}\ XMMATRIX*\ boneTransforms,}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMMATRIX\ world,}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TEffectIterator\ effects)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00315\ \textcolor{keyword}{\ \ \ \ \ \ \ \ \ \ \ \ }\{}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ assert(nbones\ >\ 0\ \&\&\ boneTransforms\ !=\ \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMMATRIX\ local;}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a789122462472afc95cca942e860a3d8a}{boneIndex}}\ !=\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_add057eca02b433d484baa81325b52763}{ModelBone::c\_Invalid}}\ \&\&\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a789122462472afc95cca942e860a3d8a}{boneIndex}}\ <\ nbones)}
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ local\ =\ XMMatrixMultiply(boneTransforms[\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a789122462472afc95cca942e860a3d8a}{boneIndex}}],\ world);}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ local\ =\ world;}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00326\ }
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_ad3a0af127b57bf359c5ac4dca08f5caf}{ModelMeshPart::DrawMeshParts<TEffectIterator,\ TEffectIteratorCategory>}}(commandList,\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a03e0ab49fb7182a56d5dffb64f101e98}{opaqueMeshParts}},\ local,\ effects);}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00329\ }
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ TEffectIterator,\ \textcolor{keyword}{typename}\ TEffectIteratorCategory\ =\ \textcolor{keyword}{typename}\ TEffectIterator::iterator\_category>}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ XM\_CALLCONV\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a91f75cf9a6109055393ec3a947217e61}{DrawAlpha}}(}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12GraphicsCommandList*\ commandList,}
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ nbones,}
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_reads\_(nbones)\ \textcolor{keyword}{const}\ XMMATRIX*\ boneTransforms,}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMMATRIX\ world,}
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TEffectIterator\ effects)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00337\ \textcolor{keyword}{\ \ \ \ \ \ \ \ \ \ \ \ }\{}
+\DoxyCodeLine{00338\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ assert(nbones\ >\ 0\ \&\&\ boneTransforms\ !=\ \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMMATRIX\ local;}
+\DoxyCodeLine{00340\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a789122462472afc95cca942e860a3d8a}{boneIndex}}\ !=\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_add057eca02b433d484baa81325b52763}{ModelBone::c\_Invalid}}\ \&\&\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a789122462472afc95cca942e860a3d8a}{boneIndex}}\ <\ nbones)}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ local\ =\ XMMatrixMultiply(boneTransforms[\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a789122462472afc95cca942e860a3d8a}{boneIndex}}],\ world);}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00344\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00346\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ local\ =\ world;}
+\DoxyCodeLine{00347\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00348\ }
+\DoxyCodeLine{00349\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_ad3a0af127b57bf359c5ac4dca08f5caf}{ModelMeshPart::DrawMeshParts<TEffectIterator,\ TEffectIteratorCategory>}}(commandList,\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a6297697b8a4b5cf16f57f4214a16fee7}{alphaMeshParts}},\ local,\ effects);}
+\DoxyCodeLine{00350\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00351\ }
+\DoxyCodeLine{00352\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Draw\ using\ skinning\ given\ bone\ transform\ array.}}
+\DoxyCodeLine{00353\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ TEffectIterator,\ \textcolor{keyword}{typename}\ TEffectIteratorCategory\ =\ \textcolor{keyword}{typename}\ TEffectIterator::iterator\_category>}
+\DoxyCodeLine{00354\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ XM\_CALLCONV\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a8d7e4324638b46f66892b6e44a5d380c}{DrawSkinnedOpaque}}(}
+\DoxyCodeLine{00355\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12GraphicsCommandList*\ commandList,}
+\DoxyCodeLine{00356\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ nbones,}
+\DoxyCodeLine{00357\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_reads\_(nbones)\ \textcolor{keyword}{const}\ XMMATRIX*\ boneTransforms,}
+\DoxyCodeLine{00358\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMMATRIX\ world,}
+\DoxyCodeLine{00359\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TEffectIterator\ effects)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00360\ \textcolor{keyword}{\ \ \ \ \ \ \ \ \ \ \ \ }\{}
+\DoxyCodeLine{00361\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a1304e55ecdc54595813d53f660b25953}{ModelMeshPart::DrawSkinnedMeshParts<TEffectIterator,\ TEffectIteratorCategory>}}(commandList,\ *\textcolor{keyword}{this},\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a03e0ab49fb7182a56d5dffb64f101e98}{opaqueMeshParts}},}
+\DoxyCodeLine{00362\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nbones,\ boneTransforms,\ world,\ effects);}
+\DoxyCodeLine{00363\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00364\ }
+\DoxyCodeLine{00365\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ TEffectIterator,\ \textcolor{keyword}{typename}\ TEffectIteratorCategory\ =\ \textcolor{keyword}{typename}\ TEffectIterator::iterator\_category>}
+\DoxyCodeLine{00366\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ XM\_CALLCONV\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a710d8e0f3d0194a72dc5744f53af464b}{DrawSkinnedAlpha}}(}
+\DoxyCodeLine{00367\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12GraphicsCommandList*\ commandList,}
+\DoxyCodeLine{00368\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ nbones,}
+\DoxyCodeLine{00369\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_reads\_(nbones)\ \textcolor{keyword}{const}\ XMMATRIX*\ boneTransforms,}
+\DoxyCodeLine{00370\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMMATRIX\ world,}
+\DoxyCodeLine{00371\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TEffectIterator\ effects)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00372\ \textcolor{keyword}{\ \ \ \ \ \ \ \ \ \ \ \ }\{}
+\DoxyCodeLine{00373\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a1304e55ecdc54595813d53f660b25953}{ModelMeshPart::DrawSkinnedMeshParts<TEffectIterator,\ TEffectIteratorCategory>}}(commandList,\ *\textcolor{keyword}{this},\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a6297697b8a4b5cf16f57f4214a16fee7}{alphaMeshParts}},}
+\DoxyCodeLine{00374\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ nbones,\ boneTransforms,\ world,\ effects);}
+\DoxyCodeLine{00375\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00376\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00377\ }
+\DoxyCodeLine{00378\ }
+\DoxyCodeLine{00379\ \ \ \ \ \ \ \ \ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00380\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ A\ model\ consists\ of\ one\ or\ more\ meshes}}
+\DoxyCodeLine{00381\ \ \ \ \ \ \ \ \ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_af45399479ae6d978825d5762badcf3d0}{Model}}}
+\DoxyCodeLine{00382\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00383\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00384\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_af45399479ae6d978825d5762badcf3d0}{Model}}()\ noexcept;}
+\DoxyCodeLine{00385\ }
+\DoxyCodeLine{00386\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_af45399479ae6d978825d5762badcf3d0}{Model}}(\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_af45399479ae6d978825d5762badcf3d0}{Model}}\&\&)\ =\ default;}
+\DoxyCodeLine{00387\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_af45399479ae6d978825d5762badcf3d0}{Model}}\&\ operator=\ (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_af45399479ae6d978825d5762badcf3d0}{Model}}\&\&)\ =\ default;}
+\DoxyCodeLine{00388\ }
+\DoxyCodeLine{00389\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_af45399479ae6d978825d5762badcf3d0}{Model}}(\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_af45399479ae6d978825d5762badcf3d0}{Model}}\ const\&\ other);}
+\DoxyCodeLine{00390\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_af45399479ae6d978825d5762badcf3d0}{Model}}\&\ operator=\ (\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_af45399479ae6d978825d5762badcf3d0}{Model}}\ const\&\ rhs);}
+\DoxyCodeLine{00391\ }
+\DoxyCodeLine{00392\ \ \ \ \ \ \ \ \ \ \ \ \ virtual\ \string~\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_af45399479ae6d978825d5762badcf3d0}{Model}}();}
+\DoxyCodeLine{00393\ }
+\DoxyCodeLine{00394\ \ \ \ \ \ \ \ \ \ \ \ \ using\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a10dfa21f8c0b7be31966cbd16d669ada}{EffectCollection}}\ =\ \doxymbox{\hyperlink{namespacestd}{std}}::vector<\doxymbox{\hyperlink{namespacestd}{std}}::shared\_ptr<\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect}{IEffect}}>>;}
+\DoxyCodeLine{00395\ \ \ \ \ \ \ \ \ \ \ \ \ using\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_ae7a6941d19f2d0f6bd7f39521655c4db}{ModelMaterialInfo}}\ =\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect_factory}{IEffectFactory}}::EffectInfo;}
+\DoxyCodeLine{00396\ \ \ \ \ \ \ \ \ \ \ \ \ using\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a1f07215b2f2552d3465c849be6b3b28f}{ModelMaterialInfoCollection}}\ =\ \doxymbox{\hyperlink{namespacestd}{std}}::vector<\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_ae7a6941d19f2d0f6bd7f39521655c4db}{ModelMaterialInfo}}>;}
+\DoxyCodeLine{00397\ \ \ \ \ \ \ \ \ \ \ \ \ using\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a45d002825d869a5b45012b60cb5de783}{TextureCollection}}\ =\ \doxymbox{\hyperlink{namespacestd}{std}}::vector<\doxymbox{\hyperlink{namespacestd}{std}}::wstring>;}
+\DoxyCodeLine{00398\ }
+\DoxyCodeLine{00399\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ The\ Model::Draw*\ functions\ use\ variadic\ templates\ and\ perfect-\/forwarding\ in\ order\ to\ support\ future}}
+\DoxyCodeLine{00400\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ overloads\ to\ the\ ModelMesh::Draw*\ family\ of\ functions.\ This\ means\ that\ a\ new\ ModelMesh\ overload\ can\ be}}
+\DoxyCodeLine{00401\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ added,\ removed\ or\ altered,\ but\ the\ Model\ routines\ will\ still\ remain\ compatible.\ The\ correct\ ModelMesh}}
+\DoxyCodeLine{00402\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ overload\ will\ be\ selected\ by\ the\ compiler\ depending\ on\ the\ arguments\ you\ provide\ to\ the\ Model\ method.}}
+\DoxyCodeLine{00403\ }
+\DoxyCodeLine{00404\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Draw\ all\ the\ meshes\ in\ the\ model.}}
+\DoxyCodeLine{00405\ \ \ \ \ \ \ \ \ \ \ \ \ template<typename...\ TForwardArgs>\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_adabd935adddd9d9b9e263a83da5841f5}{DrawOpaque}}(\_In\_\ ID3D12GraphicsCommandList*\ commandList,\ TForwardArgs\&\&...\ args)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00406\ \textcolor{keyword}{\ \ \ \ \ \ \ \ \ \ \ \ }\{}
+\DoxyCodeLine{00407\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Draw\ opaque\ parts}}
+\DoxyCodeLine{00408\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ it\ :\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_ad4633d9accb0308d24fff0d40ca3adfd}{meshes}})}
+\DoxyCodeLine{00409\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00410\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ mesh\ =\ it.get();}
+\DoxyCodeLine{00411\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ assert(mesh\ !=\ \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00412\ }
+\DoxyCodeLine{00413\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mesh-\/>DrawOpaque(commandList,\ std::forward<TForwardArgs>(args)...);}
+\DoxyCodeLine{00414\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00415\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00416\ }
+\DoxyCodeLine{00417\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}...\ TForwardArgs>\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a8135109964717d4fb369a4923995c7d4}{DrawAlpha}}(\_In\_\ ID3D12GraphicsCommandList*\ commandList,\ TForwardArgs\&\&...\ args)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00418\ \textcolor{keyword}{\ \ \ \ \ \ \ \ \ \ \ \ }\{}
+\DoxyCodeLine{00419\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Draw\ alpha\ parts}}
+\DoxyCodeLine{00420\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ it\ :\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_ad4633d9accb0308d24fff0d40ca3adfd}{meshes}})}
+\DoxyCodeLine{00421\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00422\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ mesh\ =\ it.get();}
+\DoxyCodeLine{00423\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ assert(mesh\ !=\ \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00424\ }
+\DoxyCodeLine{00425\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mesh-\/>DrawAlpha(commandList,\ std::forward<TForwardArgs>(args)...);}
+\DoxyCodeLine{00426\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00427\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00428\ }
+\DoxyCodeLine{00429\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}...\ TForwardArgs>\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_ab1e884bbe71ee5ad0a24d8eda8750630}{Draw}}(\_In\_\ ID3D12GraphicsCommandList*\ commandList,\ TForwardArgs\&\&...\ args)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00430\ \textcolor{keyword}{\ \ \ \ \ \ \ \ \ \ \ \ }\{}
+\DoxyCodeLine{00431\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_adabd935adddd9d9b9e263a83da5841f5}{DrawOpaque}}(commandList,\ args...);}
+\DoxyCodeLine{00432\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a8135109964717d4fb369a4923995c7d4}{DrawAlpha}}(commandList,\ std::forward<TForwardArgs>(args)...);}
+\DoxyCodeLine{00433\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00434\ }
+\DoxyCodeLine{00435\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Draw\ mesh\ using\ skinning\ given\ bone\ transform\ array.}}
+\DoxyCodeLine{00436\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}...\ TForwardArgs>\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_acba285bc23dabc3cbfbe018208c3086a}{DrawSkinnedOpaque}}(\_In\_\ ID3D12GraphicsCommandList*\ commandList,\ TForwardArgs\&\&...\ args)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00437\ \textcolor{keyword}{\ \ \ \ \ \ \ \ \ \ \ \ }\{}
+\DoxyCodeLine{00438\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Draw\ opaque\ parts}}
+\DoxyCodeLine{00439\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ it\ :\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_ad4633d9accb0308d24fff0d40ca3adfd}{meshes}})}
+\DoxyCodeLine{00440\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00441\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ mesh\ =\ it.get();}
+\DoxyCodeLine{00442\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ assert(mesh\ !=\ \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00443\ }
+\DoxyCodeLine{00444\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mesh-\/>DrawSkinnedOpaque(commandList,\ std::forward<TForwardArgs>(args)...);}
+\DoxyCodeLine{00445\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00446\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00447\ }
+\DoxyCodeLine{00448\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}...\ TForwardArgs>\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a523e483577b952f4ee36acd92c362b14}{DrawSkinnedAlpha}}(\_In\_\ ID3D12GraphicsCommandList*\ commandList,\ TForwardArgs\&\&...\ args)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00449\ \textcolor{keyword}{\ \ \ \ \ \ \ \ \ \ \ \ }\{}
+\DoxyCodeLine{00450\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Draw\ alpha\ parts}}
+\DoxyCodeLine{00451\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ it\ :\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_ad4633d9accb0308d24fff0d40ca3adfd}{meshes}})}
+\DoxyCodeLine{00452\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00453\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ mesh\ =\ it.get();}
+\DoxyCodeLine{00454\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ assert(mesh\ !=\ \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00455\ }
+\DoxyCodeLine{00456\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ mesh-\/>DrawSkinnedAlpha(commandList,\ std::forward<TForwardArgs>(args)...);}
+\DoxyCodeLine{00457\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00458\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00459\ }
+\DoxyCodeLine{00460\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}...\ TForwardArgs>\ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_ae894a1fa7db2fa3f0ebd74934403f4d3}{DrawSkinned}}(\_In\_\ ID3D12GraphicsCommandList*\ commandList,\ TForwardArgs\&\&...\ args)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00461\ \textcolor{keyword}{\ \ \ \ \ \ \ \ \ \ \ \ }\{}
+\DoxyCodeLine{00462\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_acba285bc23dabc3cbfbe018208c3086a}{DrawSkinnedOpaque}}(commandList,\ args...);}
+\DoxyCodeLine{00463\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a523e483577b952f4ee36acd92c362b14}{DrawSkinnedAlpha}}(commandList,\ std::forward<TForwardArgs>(args)...);}
+\DoxyCodeLine{00464\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00465\ }
+\DoxyCodeLine{00466\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Load\ texture\ resources\ into\ an\ existing\ Effect\ Texture\ Factory}}
+\DoxyCodeLine{00467\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_aea158524d9da49634c0071c3b50d5cb9}{LoadTextures}}(\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect_texture_factory}{IEffectTextureFactory}}\&\ texFactory,\ \textcolor{keywordtype}{int}\ destinationDescriptorOffset\ =\ 0)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00468\ }
+\DoxyCodeLine{00469\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Load\ texture\ resources\ into\ a\ new\ Effect\ Texture\ Factory}}
+\DoxyCodeLine{00470\ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<EffectTextureFactory>\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_aa1f9a764abb1089ff9366ee27cd17fd6}{LoadTextures}}(}
+\DoxyCodeLine{00471\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00472\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{ResourceUploadBatch}}\&\ resourceUploadBatch,}
+\DoxyCodeLine{00473\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_opt\_z\_\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{wchar\_t}*\ texturesPath\ =\ \textcolor{keyword}{nullptr},}
+\DoxyCodeLine{00474\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_DESCRIPTOR\_HEAP\_FLAGS\ flags\ =\ D3D12\_DESCRIPTOR\_HEAP\_FLAG\_SHADER\_VISIBLE)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00475\ }
+\DoxyCodeLine{00476\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Load\ VB/IB\ resources\ for\ static\ geometry}}
+\DoxyCodeLine{00477\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a9a7cc98fec7ed3d1758d41f1ce45536e}{LoadStaticBuffers}}(}
+\DoxyCodeLine{00478\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00479\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{ResourceUploadBatch}}\&\ resourceUploadBatch,}
+\DoxyCodeLine{00480\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ keepMemory\ =\ \textcolor{keyword}{false});}
+\DoxyCodeLine{00481\ }
+\DoxyCodeLine{00482\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Create\ effects\ using\ the\ default\ effect\ factory}}
+\DoxyCodeLine{00483\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a10dfa21f8c0b7be31966cbd16d669ada}{EffectCollection}}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a8d12abc88f8d2c7887043611e81d5627}{CreateEffects}}(}
+\DoxyCodeLine{00484\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description}{EffectPipelineStateDescription}}\&\ opaquePipelineState,}
+\DoxyCodeLine{00485\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description}{EffectPipelineStateDescription}}\&\ alphaPipelineState,}
+\DoxyCodeLine{00486\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12DescriptorHeap*\ textureDescriptorHeap,}
+\DoxyCodeLine{00487\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12DescriptorHeap*\ samplerDescriptorHeap,}
+\DoxyCodeLine{00488\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ textureDescriptorOffset\ =\ 0,}
+\DoxyCodeLine{00489\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ samplerDescriptorOffset\ =\ 0)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00490\ }
+\DoxyCodeLine{00491\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Create\ effects\ using\ a\ custom\ effect\ factory}}
+\DoxyCodeLine{00492\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a10dfa21f8c0b7be31966cbd16d669ada}{EffectCollection}}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a160c623ec67079e69669e54cca0f0f94}{CreateEffects}}(}
+\DoxyCodeLine{00493\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect_factory}{IEffectFactory}}\&\ fxFactory,}
+\DoxyCodeLine{00494\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description}{EffectPipelineStateDescription}}\&\ opaquePipelineState,}
+\DoxyCodeLine{00495\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description}{EffectPipelineStateDescription}}\&\ alphaPipelineState,}
+\DoxyCodeLine{00496\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ textureDescriptorOffset\ =\ 0,}
+\DoxyCodeLine{00497\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ samplerDescriptorOffset\ =\ 0)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00498\ }
+\DoxyCodeLine{00499\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Compute\ bone\ positions\ based\ on\ heirarchy\ and\ transform\ matrices}}
+\DoxyCodeLine{00500\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a1eee125ddc04c2f3e14aac3477e9f5cd}{CopyAbsoluteBoneTransformsTo}}(}
+\DoxyCodeLine{00501\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ nbones,}
+\DoxyCodeLine{00502\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_Out\_writes\_(nbones)\ XMMATRIX*\ boneTransforms)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00503\ }
+\DoxyCodeLine{00504\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a89c2c5c067da4c98db50d2060c17c49c}{CopyAbsoluteBoneTransforms}}(}
+\DoxyCodeLine{00505\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ nbones,}
+\DoxyCodeLine{00506\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_reads\_(nbones)\ \textcolor{keyword}{const}\ XMMATRIX*\ inBoneTransforms,}
+\DoxyCodeLine{00507\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_Out\_writes\_(nbones)\ XMMATRIX*\ outBoneTransforms)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00508\ }
+\DoxyCodeLine{00509\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Set\ bone\ matrices\ to\ a\ set\ of\ relative\ tansforms}}
+\DoxyCodeLine{00510\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a58b3cdd1e266ea0eb13765cfe8e0a953}{CopyBoneTransformsFrom}}(}
+\DoxyCodeLine{00511\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ nbones,}
+\DoxyCodeLine{00512\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_reads\_(nbones)\ \textcolor{keyword}{const}\ XMMATRIX*\ boneTransforms);}
+\DoxyCodeLine{00513\ }
+\DoxyCodeLine{00514\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Copies\ the\ relative\ bone\ matrices\ to\ a\ transform\ array}}
+\DoxyCodeLine{00515\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a0f334ac19df919a0ecb244a6679b699a}{CopyBoneTransformsTo}}(}
+\DoxyCodeLine{00516\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ nbones,}
+\DoxyCodeLine{00517\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_Out\_writes\_(nbones)\ XMMATRIX*\ boneTransforms)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00518\ }
+\DoxyCodeLine{00519\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Loads\ a\ model\ from\ a\ Visual\ Studio\ Starter\ Kit\ .CMO\ file}}
+\DoxyCodeLine{00520\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ std::unique\_ptr<Model>\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a5024ab6e717311e7a72d07587aefe4c1}{CreateFromCMO}}(}
+\DoxyCodeLine{00521\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_opt\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00522\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_reads\_bytes\_(dataSize)\ \textcolor{keyword}{const}\ uint8\_t*\ meshData,\ \_In\_\ \textcolor{keywordtype}{size\_t}\ dataSize,}
+\DoxyCodeLine{00523\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90}{ModelLoaderFlags}}\ flags\ =\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90a0298446b678a0f18a947a8681d75cb14}{ModelLoader\_Default}},}
+\DoxyCodeLine{00524\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_Out\_opt\_\ \textcolor{keywordtype}{size\_t}*\ animsOffset\ =\ \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00525\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ std::unique\_ptr<Model>\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a2004de6fa7623361128fbd5c954a0a0c}{CreateFromCMO}}(}
+\DoxyCodeLine{00526\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_opt\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00527\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_z\_\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{wchar\_t}*\ szFileName,}
+\DoxyCodeLine{00528\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90}{ModelLoaderFlags}}\ flags\ =\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90a0298446b678a0f18a947a8681d75cb14}{ModelLoader\_Default}},}
+\DoxyCodeLine{00529\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_Out\_opt\_\ \textcolor{keywordtype}{size\_t}*\ animsOffset\ =\ \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00530\ }
+\DoxyCodeLine{00531\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Loads\ a\ model\ from\ a\ DirectX\ SDK\ .SDKMESH\ file}}
+\DoxyCodeLine{00532\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ std::unique\_ptr<Model>\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a59bfefb6f6914d09e913968bd7e5fa8c}{CreateFromSDKMESH}}(}
+\DoxyCodeLine{00533\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_opt\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00534\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_reads\_bytes\_(dataSize)\ \textcolor{keyword}{const}\ uint8\_t*\ meshData,\ \_In\_\ \textcolor{keywordtype}{size\_t}\ dataSize,}
+\DoxyCodeLine{00535\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90}{ModelLoaderFlags}}\ flags\ =\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90a0298446b678a0f18a947a8681d75cb14}{ModelLoader\_Default}});}
+\DoxyCodeLine{00536\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ std::unique\_ptr<Model>\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a8d15902b30e6903718fe1525337d15c5}{CreateFromSDKMESH}}(}
+\DoxyCodeLine{00537\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_opt\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00538\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_z\_\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{wchar\_t}*\ szFileName,}
+\DoxyCodeLine{00539\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90}{ModelLoaderFlags}}\ flags\ =\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90a0298446b678a0f18a947a8681d75cb14}{ModelLoader\_Default}});}
+\DoxyCodeLine{00540\ }
+\DoxyCodeLine{00541\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Loads\ a\ model\ from\ a\ .VBO\ file}}
+\DoxyCodeLine{00542\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ std::unique\_ptr<Model>\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a0c72d9acb70af153ecd3e9f8d142225f}{CreateFromVBO}}(}
+\DoxyCodeLine{00543\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_opt\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00544\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_reads\_bytes\_(dataSize)\ \textcolor{keyword}{const}\ uint8\_t*\ meshData,\ \_In\_\ \textcolor{keywordtype}{size\_t}\ dataSize,}
+\DoxyCodeLine{00545\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90}{ModelLoaderFlags}}\ flags\ =\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90a0298446b678a0f18a947a8681d75cb14}{ModelLoader\_Default}});}
+\DoxyCodeLine{00546\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ std::unique\_ptr<Model>\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a48c20f7c396fdcb661184f9a41e1f948}{CreateFromVBO}}(}
+\DoxyCodeLine{00547\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_opt\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00548\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_z\_\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{wchar\_t}*\ szFileName,}
+\DoxyCodeLine{00549\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90}{ModelLoaderFlags}}\ flags\ =\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90a0298446b678a0f18a947a8681d75cb14}{ModelLoader\_Default}});}
+\DoxyCodeLine{00550\ }
+\DoxyCodeLine{00551\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#ifdef\ \_\_cpp\_lib\_byte}}
+\DoxyCodeLine{00552\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ std::unique\_ptr<Model>\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a5024ab6e717311e7a72d07587aefe4c1}{CreateFromCMO}}(}
+\DoxyCodeLine{00553\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_opt\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00554\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_reads\_bytes\_(dataSize)\ \textcolor{keyword}{const}\ std::byte*\ meshData,\ \_In\_\ \textcolor{keywordtype}{size\_t}\ dataSize,}
+\DoxyCodeLine{00555\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90}{ModelLoaderFlags}}\ flags\ =\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90a0298446b678a0f18a947a8681d75cb14}{ModelLoader\_Default}},}
+\DoxyCodeLine{00556\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_Out\_opt\_\ \textcolor{keywordtype}{size\_t}*\ animsOffset\ =\ \textcolor{keyword}{nullptr})}
+\DoxyCodeLine{00557\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00558\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a5024ab6e717311e7a72d07587aefe4c1}{CreateFromCMO}}(device,\ \textcolor{keyword}{reinterpret\_cast<}\textcolor{keyword}{const\ }uint8\_t*\textcolor{keyword}{>}(meshData),\ dataSize,\ flags,\ animsOffset);}
+\DoxyCodeLine{00559\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00560\ }
+\DoxyCodeLine{00561\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ std::unique\_ptr<Model>\ \_\_cdecl\ CreateFromSDKMESH(}
+\DoxyCodeLine{00562\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_opt\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00563\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_reads\_bytes\_(dataSize)\ \textcolor{keyword}{const}\ std::byte*\ meshData,\ \_In\_\ \textcolor{keywordtype}{size\_t}\ dataSize,}
+\DoxyCodeLine{00564\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90}{ModelLoaderFlags}}\ flags\ =\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90a0298446b678a0f18a947a8681d75cb14}{ModelLoader\_Default}})}
+\DoxyCodeLine{00565\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00566\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ CreateFromSDKMESH(device,\ \textcolor{keyword}{reinterpret\_cast<}\textcolor{keyword}{const\ }uint8\_t*\textcolor{keyword}{>}(meshData),\ dataSize,\ flags);}
+\DoxyCodeLine{00567\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00568\ }
+\DoxyCodeLine{00569\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ std::unique\_ptr<Model>\ \_\_cdecl\ CreateFromVBO(}
+\DoxyCodeLine{00570\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_opt\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00571\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_reads\_bytes\_(dataSize)\ \textcolor{keyword}{const}\ std::byte*\ meshData,\ \_In\_\ \textcolor{keywordtype}{size\_t}\ dataSize,}
+\DoxyCodeLine{00572\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90}{ModelLoaderFlags}}\ flags\ =\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90a0298446b678a0f18a947a8681d75cb14}{ModelLoader\_Default}})}
+\DoxyCodeLine{00573\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00574\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ CreateFromVBO(device,\ \textcolor{keyword}{reinterpret\_cast<}\textcolor{keyword}{const\ }uint8\_t*\textcolor{keyword}{>}(meshData),\ dataSize,\ flags);}
+\DoxyCodeLine{00575\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00576\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#endif\ }\textcolor{comment}{//\ \ \_\_cpp\_lib\_byte}}
+\DoxyCodeLine{00577\ }
+\DoxyCodeLine{00578\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Utility\ function\ for\ getting\ a\ GPU\ descriptor\ for\ a\ mesh\ part/material\ index.\ If\ there\ is\ no\ texture\ the}}
+\DoxyCodeLine{00579\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ descriptor\ will\ be\ zero.}}
+\DoxyCodeLine{00580\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_GPU\_DESCRIPTOR\_HANDLE\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_aeb2a7e4b2bc0427345de972392558dac}{GetGpuTextureHandleForMaterialIndex}}(uint32\_t\ materialIndex,\ \_In\_\ ID3D12DescriptorHeap*\ heap,\ \_In\_\ \textcolor{keywordtype}{size\_t}\ descriptorSize,\ \_In\_\ \textcolor{keywordtype}{size\_t}\ descriptorOffset)\textcolor{keyword}{\ const}}
+\DoxyCodeLine{00581\ \textcolor{keyword}{\ \ \ \ \ \ \ \ \ \ \ \ }\{}
+\DoxyCodeLine{00582\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_GPU\_DESCRIPTOR\_HANDLE\ handle\ =\ \{\};}
+\DoxyCodeLine{00583\ }
+\DoxyCodeLine{00584\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (materialIndex\ >=\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_accbcf68221490a4688b8f0b774b43761}{materials}}.size())}
+\DoxyCodeLine{00585\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ handle;}
+\DoxyCodeLine{00586\ }
+\DoxyCodeLine{00587\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{int}\ textureIndex\ =\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_accbcf68221490a4688b8f0b774b43761}{materials}}[materialIndex].diffuseTextureIndex;}
+\DoxyCodeLine{00588\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (textureIndex\ ==\ -\/1)}
+\DoxyCodeLine{00589\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ handle;}
+\DoxyCodeLine{00590\ }
+\DoxyCodeLine{00591\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ \#if\ defined(\_MSC\_VER)\ ||\ !defined(\_WIN32)}}
+\DoxyCodeLine{00592\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ handle\ =\ heap-\/>GetGPUDescriptorHandleForHeapStart();}
+\DoxyCodeLine{00593\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ \#else}}
+\DoxyCodeLine{00594\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::ignore\ =\ heap-\/>GetGPUDescriptorHandleForHeapStart(\&handle);}
+\DoxyCodeLine{00595\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \ \ \ \ \#endif}}
+\DoxyCodeLine{00596\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ handle.ptr\ +=\ \textcolor{keyword}{static\_cast<}UINT64\textcolor{keyword}{>}(descriptorSize\ *\ (UINT64(textureIndex)\ +\ UINT64(descriptorOffset)));}
+\DoxyCodeLine{00597\ }
+\DoxyCodeLine{00598\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ handle;}
+\DoxyCodeLine{00599\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00600\ }
+\DoxyCodeLine{00601\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Utility\ function\ for\ updating\ the\ matrices\ in\ a\ list\ of\ effects.\ This\ will\ SetWorld,\ SetView\ and\ SetProjection}}
+\DoxyCodeLine{00602\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ on\ any\ effect\ in\ the\ list\ that\ derives\ from\ IEffectMatrices.}}
+\DoxyCodeLine{00603\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ XM\_CALLCONV\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a0b3dfa2407c2500347cf2feb412ec117}{UpdateEffectMatrices}}(}
+\DoxyCodeLine{00604\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a10dfa21f8c0b7be31966cbd16d669ada}{EffectCollection}}\&\ effects,}
+\DoxyCodeLine{00605\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ FXMMATRIX\ world,}
+\DoxyCodeLine{00606\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CXMMATRIX\ view,}
+\DoxyCodeLine{00607\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CXMMATRIX\ proj);}
+\DoxyCodeLine{00608\ }
+\DoxyCodeLine{00609\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Utility\ function\ to\ transition\ VB/IB\ resources\ for\ static\ geometry.}}
+\DoxyCodeLine{00610\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a1f8a28cd561ad1e3585afff698bb0c92}{Transition}}(}
+\DoxyCodeLine{00611\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12GraphicsCommandList*\ commandList,}
+\DoxyCodeLine{00612\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_RESOURCE\_STATES\ stateBeforeVB,}
+\DoxyCodeLine{00613\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_RESOURCE\_STATES\ stateAfterVB,}
+\DoxyCodeLine{00614\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_RESOURCE\_STATES\ stateBeforeIB,}
+\DoxyCodeLine{00615\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_RESOURCE\_STATES\ stateAfterIB);}
+\DoxyCodeLine{00616\ }
+\DoxyCodeLine{00617\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a1342fea3103e2a81f8a855efbf6b6c93}{ModelMesh::Collection}}\ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_ad4633d9accb0308d24fff0d40ca3adfd}{meshes}};}
+\DoxyCodeLine{00618\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a1f07215b2f2552d3465c849be6b3b28f}{ModelMaterialInfoCollection}}\ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_accbcf68221490a4688b8f0b774b43761}{materials}};}
+\DoxyCodeLine{00619\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a45d002825d869a5b45012b60cb5de783}{TextureCollection}}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a207eda61ecb91704819c97bc3de93449}{textureNames}};}
+\DoxyCodeLine{00620\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_aabbdb89e34f76ba933f3d480c44343d5}{ModelBone::Collection}}\ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a3227694507e5477be7133b4a4299a3a1}{bones}};}
+\DoxyCodeLine{00621\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_a1b8882c00ce703eaf39ee590e8b122e0}{ModelBone::TransformArray}}\ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a56cfab37936cdef99920e56c95c0a351}{boneMatrices}};}
+\DoxyCodeLine{00622\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_a1b8882c00ce703eaf39ee590e8b122e0}{ModelBone::TransformArray}}\ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_ab0241b13c24fafb23c11bef2db3904bb}{invBindPoseMatrices}};}
+\DoxyCodeLine{00623\ \ \ \ \ \ \ \ \ \ \ \ \ std::wstring\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a09887669c7398289b230c7a1cd5acd3f}{name}};}
+\DoxyCodeLine{00624\ }
+\DoxyCodeLine{00625\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#if\ defined(\_MSC\_VER)\ \&\&\ !defined(\_NATIVE\_WCHAR\_T\_DEFINED)}}
+\DoxyCodeLine{00626\ }
+\DoxyCodeLine{00627\ \ \ \ \ \ \ \ \ \ \ \ \ std::unique\_ptr<EffectTextureFactory>\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_aea158524d9da49634c0071c3b50d5cb9}{LoadTextures}}(}
+\DoxyCodeLine{00628\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00629\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{ResourceUploadBatch}}\&\ resourceUploadBatch,}
+\DoxyCodeLine{00630\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_opt\_z\_\ \textcolor{keyword}{const}\ \_\_wchar\_t*\ texturesPath\ =\ \textcolor{keyword}{nullptr},}
+\DoxyCodeLine{00631\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_DESCRIPTOR\_HEAP\_FLAGS\ flags\ =\ D3D12\_DESCRIPTOR\_HEAP\_FLAG\_SHADER\_VISIBLE)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00632\ }
+\DoxyCodeLine{00633\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ std::unique\_ptr<Model>\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a5024ab6e717311e7a72d07587aefe4c1}{CreateFromCMO}}(}
+\DoxyCodeLine{00634\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_opt\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00635\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_z\_\ \textcolor{keyword}{const}\ \_\_wchar\_t*\ szFileName,}
+\DoxyCodeLine{00636\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90}{ModelLoaderFlags}}\ flags\ =\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90a0298446b678a0f18a947a8681d75cb14}{ModelLoader\_Default}},}
+\DoxyCodeLine{00637\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_Out\_opt\_\ \textcolor{keywordtype}{size\_t}*\ animsOffset\ =\ \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00638\ }
+\DoxyCodeLine{00639\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ std::unique\_ptr<Model>\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a59bfefb6f6914d09e913968bd7e5fa8c}{CreateFromSDKMESH}}(}
+\DoxyCodeLine{00640\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_opt\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00641\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_z\_\ \textcolor{keyword}{const}\ \_\_wchar\_t*\ szFileName,}
+\DoxyCodeLine{00642\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90}{ModelLoaderFlags}}\ flags\ =\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90a0298446b678a0f18a947a8681d75cb14}{ModelLoader\_Default}});}
+\DoxyCodeLine{00643\ }
+\DoxyCodeLine{00644\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static}\ std::unique\_ptr<Model>\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_a0c72d9acb70af153ecd3e9f8d142225f}{CreateFromVBO}}(}
+\DoxyCodeLine{00645\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_opt\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00646\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_z\_\ \textcolor{keyword}{const}\ \_\_wchar\_t*\ szFileName,}
+\DoxyCodeLine{00647\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90}{ModelLoaderFlags}}\ flags\ =\ \doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90a0298446b678a0f18a947a8681d75cb14}{ModelLoader\_Default}});}
+\DoxyCodeLine{00648\ }
+\DoxyCodeLine{00649\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#endif\ }\textcolor{comment}{//\ !\_NATIVE\_WCHAR\_T\_DEFINED}}
+\DoxyCodeLine{00650\ }
+\DoxyCodeLine{00651\ \ \ \ \ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00652\ \ \ \ \ \ \ \ \ \ \ \ \ std::shared\_ptr<IEffect>\ \_\_cdecl\ CreateEffectForMeshPart(}
+\DoxyCodeLine{00653\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect_factory}{IEffectFactory}}\&\ fxFactory,}
+\DoxyCodeLine{00654\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description}{EffectPipelineStateDescription}}\&\ opaquePipelineState,}
+\DoxyCodeLine{00655\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_direct_x_1_1_effect_pipeline_state_description}{EffectPipelineStateDescription}}\&\ alphaPipelineState,}
+\DoxyCodeLine{00656\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ textureDescriptorOffset,}
+\DoxyCodeLine{00657\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{int}\ samplerDescriptorOffset,}
+\DoxyCodeLine{00658\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part}{ModelMeshPart}}*\ part)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00659\ }
+\DoxyCodeLine{00660\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \_\_cdecl\ ComputeAbsolute(uint32\_t\ index,}
+\DoxyCodeLine{00661\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ CXMMATRIX\ local,\ \textcolor{keywordtype}{size\_t}\ nbones,}
+\DoxyCodeLine{00662\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_reads\_(nbones)\ \textcolor{keyword}{const}\ XMMATRIX*\ inBoneTransforms,}
+\DoxyCodeLine{00663\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \_Inout\_updates\_(nbones)\ XMMATRIX*\ outBoneTransforms,}
+\DoxyCodeLine{00664\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\&\ visited)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00665\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00666\ }
+\DoxyCodeLine{00667\ }
+\DoxyCodeLine{00668\ \ \ \ \ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ TEffectIterator,\ \textcolor{keyword}{typename}\ TEffectIteratorCategory>}
+\DoxyCodeLine{00669\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ XM\_CALLCONV\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a1304e55ecdc54595813d53f660b25953}{ModelMeshPart::DrawSkinnedMeshParts}}(}
+\DoxyCodeLine{00670\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12GraphicsCommandList*\ commandList,}
+\DoxyCodeLine{00671\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh}{ModelMesh}}\&\ mesh,}
+\DoxyCodeLine{00672\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_part_a3626cedf1eb9b98e31460a61eb8a07ea}{ModelMeshPart::Collection}}\&\ meshParts,}
+\DoxyCodeLine{00673\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ nbones,}
+\DoxyCodeLine{00674\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_reads\_(nbones)\ \textcolor{keyword}{const}\ XMMATRIX*\ boneTransforms,}
+\DoxyCodeLine{00675\ \ \ \ \ \ \ \ \ \ \ \ \ FXMMATRIX\ world,}
+\DoxyCodeLine{00676\ \ \ \ \ \ \ \ \ \ \ \ \ TEffectIterator\ partEffects)}
+\DoxyCodeLine{00677\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00678\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ This\ assert\ is\ here\ to\ prevent\ accidental\ use\ of\ containers\ that\ would\ cause\ undesirable\ performance\ penalties.}}
+\DoxyCodeLine{00679\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{static\_assert}(}
+\DoxyCodeLine{00680\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::is\_base\_of<std::random\_access\_iterator\_tag,\ TEffectIteratorCategory>::value,}
+\DoxyCodeLine{00681\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{stringliteral}{"{}Providing\ an\ iterator\ without\ random\ access\ capabilities\ -\/-\/\ such\ as\ from\ std::list\ -\/-\/\ is\ not\ supported."{}});}
+\DoxyCodeLine{00682\ }
+\DoxyCodeLine{00683\ \ \ \ \ \ \ \ \ \ \ \ \ assert(nbones\ >\ 0\ \&\&\ boneTransforms\ !=\ \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00684\ }
+\DoxyCodeLine{00685\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_a1b8882c00ce703eaf39ee590e8b122e0}{ModelBone::TransformArray}}\ temp;}
+\DoxyCodeLine{00686\ }
+\DoxyCodeLine{00687\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{const}\ \textcolor{keyword}{auto}\&\ mit\ :\ meshParts)}
+\DoxyCodeLine{00688\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00689\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ part\ =\ mit.get();}
+\DoxyCodeLine{00690\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ assert(part\ !=\ \textcolor{keyword}{nullptr});}
+\DoxyCodeLine{00691\ }
+\DoxyCodeLine{00692\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Get\ the\ effect\ at\ the\ location\ specified\ by\ the\ part's\ material}}
+\DoxyCodeLine{00693\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ TEffectIterator\ effect\_iterator\ =\ partEffects;}
+\DoxyCodeLine{00694\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ std::advance(effect\_iterator,\ part-\/>partIndex);}
+\DoxyCodeLine{00695\ }
+\DoxyCodeLine{00696\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ imatrices\ =\ \textcolor{keyword}{dynamic\_cast<}\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect_matrices}{IEffectMatrices}}*\textcolor{keyword}{>}((*effect\_iterator).get());}
+\DoxyCodeLine{00697\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (imatrices)}
+\DoxyCodeLine{00698\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00699\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ imatrices-\/>SetWorld(world);}
+\DoxyCodeLine{00700\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00701\ }
+\DoxyCodeLine{00702\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ iskinning\ =\ \textcolor{keyword}{dynamic\_cast<}\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect_skinning}{IEffectSkinning}}*\textcolor{keyword}{>}((*effect\_iterator).get());}
+\DoxyCodeLine{00703\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (iskinning)}
+\DoxyCodeLine{00704\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00705\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (mesh.\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a508822c269183b7c369ee7cd06ec6a65}{boneInfluences}}.empty())}
+\DoxyCodeLine{00706\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00707\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Direct-\/mapping\ of\ vertex\ bone\ indices\ to\ our\ master\ bone\ array}}
+\DoxyCodeLine{00708\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ iskinning-\/>SetBoneTransforms(boneTransforms,\ nbones);}
+\DoxyCodeLine{00709\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00710\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}}
+\DoxyCodeLine{00711\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00712\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!temp)}
+\DoxyCodeLine{00713\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00714\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Create\ the\ influence\ mapped\ bones\ on-\/demand.}}
+\DoxyCodeLine{00715\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ temp\ =\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_a483c7479ba0a19621980e90b2bed49b4}{ModelBone::MakeArray}}(\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect_skinning_ac8c88b38048f180d98e151df580fa69d}{IEffectSkinning::MaxBones}});}
+\DoxyCodeLine{00716\ }
+\DoxyCodeLine{00717\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ count\ =\ 0;}
+\DoxyCodeLine{00718\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keyword}{auto}\ it\ :\ mesh.\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a508822c269183b7c369ee7cd06ec6a65}{boneInfluences}})}
+\DoxyCodeLine{00719\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00720\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ++count;}
+\DoxyCodeLine{00721\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (count\ >\ \doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_i_effect_skinning_ac8c88b38048f180d98e151df580fa69d}{IEffectSkinning::MaxBones}})}
+\DoxyCodeLine{00722\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00723\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Too\ many\ bones\ for\ skinning"{}});}
+\DoxyCodeLine{00724\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00725\ }
+\DoxyCodeLine{00726\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (it\ >=\ nbones)}
+\DoxyCodeLine{00727\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00728\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{throw}\ std::runtime\_error(\textcolor{stringliteral}{"{}Invalid\ bone\ influence\ index"{}});}
+\DoxyCodeLine{00729\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00730\ }
+\DoxyCodeLine{00731\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ temp[count\ -\/\ 1]\ =\ boneTransforms[it];}
+\DoxyCodeLine{00732\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00733\ }
+\DoxyCodeLine{00734\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ assert(count\ ==\ mesh.\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a508822c269183b7c369ee7cd06ec6a65}{boneInfluences}}.size());}
+\DoxyCodeLine{00735\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00736\ }
+\DoxyCodeLine{00737\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ iskinning-\/>SetBoneTransforms(temp.get(),\ mesh.\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a508822c269183b7c369ee7cd06ec6a65}{boneInfluences}}.size());}
+\DoxyCodeLine{00738\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00739\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00740\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{else}\ \textcolor{keywordflow}{if}\ (imatrices)}
+\DoxyCodeLine{00741\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00742\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Fallback\ for\ if\ we\ encounter\ a\ non-\/skinning\ effect\ in\ the\ model}}
+\DoxyCodeLine{00743\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ XMMATRIX\ bm\ =\ (mesh.\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a789122462472afc95cca942e860a3d8a}{boneIndex}}\ !=\ \doxymbox{\hyperlink{struct_direct_x_1_1_d_x12_1_1_model_bone_add057eca02b433d484baa81325b52763}{ModelBone::c\_Invalid}}\ \&\&\ mesh.\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a789122462472afc95cca942e860a3d8a}{boneIndex}}\ <\ nbones)}
+\DoxyCodeLine{00744\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ?\ boneTransforms[mesh.\doxymbox{\hyperlink{class_direct_x_1_1_d_x12_1_1_model_mesh_a789122462472afc95cca942e860a3d8a}{boneIndex}}]\ :\ XMMatrixIdentity();}
+\DoxyCodeLine{00745\ }
+\DoxyCodeLine{00746\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ imatrices-\/>SetWorld(XMMatrixMultiply(bm,\ world));}
+\DoxyCodeLine{00747\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00748\ }
+\DoxyCodeLine{00749\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Apply\ the\ effect\ and\ draw}}
+\DoxyCodeLine{00750\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (*effect\_iterator)-\/>Apply(commandList);}
+\DoxyCodeLine{00751\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ part-\/>Draw(commandList);}
+\DoxyCodeLine{00752\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00753\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00754\ }
+\DoxyCodeLine{00755\ \textcolor{preprocessor}{\ \ \ \ \#ifdef\ \_\_clang\_\_}}
+\DoxyCodeLine{00756\ \textcolor{preprocessor}{\ \ \ \ \#pragma\ clang\ diagnostic\ push}}
+\DoxyCodeLine{00757\ \textcolor{preprocessor}{\ \ \ \ \#pragma\ clang\ diagnostic\ ignored\ "{}-\/Wdeprecated-\/dynamic-\/exception-\/spec"{}}}
+\DoxyCodeLine{00758\ \textcolor{preprocessor}{\ \ \ \ \#endif}}
+\DoxyCodeLine{00759\ }
+\DoxyCodeLine{00760\ \ \ \ \ \ \ \ \ DEFINE\_ENUM\_FLAG\_OPERATORS(\doxymbox{\hyperlink{namespace_direct_x_1_1_d_x12_acd3387ac4c1c8bbd9080ef4faac9ac90}{ModelLoaderFlags}})}
+\DoxyCodeLine{00761\ }
+\DoxyCodeLine{00762\ \ \ \ \ \ \ \ \ \textcolor{preprocessor}{\#ifdef\ \_\_clang\_\_}}
+\DoxyCodeLine{00763\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#pragma\ clang\ diagnostic\ pop}}
+\DoxyCodeLine{00764\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#endif}}
+\DoxyCodeLine{00765\ \ \ \ \ \}}
+\DoxyCodeLine{00766\ \}}
+\DoxyCodeLine{00767\ }
+\DoxyCodeLine{00768\ \textcolor{preprocessor}{\#if\ defined(DIRECTX\_TOOLKIT\_IMPORT)\ \&\&\ defined(\_MSC\_VER)}}
+\DoxyCodeLine{00769\ \textcolor{preprocessor}{\#pragma\ warning(pop)}}
+\DoxyCodeLine{00770\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

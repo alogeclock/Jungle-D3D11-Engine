@@ -1,0 +1,17 @@
+{
+  "BlendState" : "",
+  "DepthStencilState" : "",
+  "Origin" : "FbxImport",
+  "Parameters" : {
+    "HasNormalMap" : 0.000000,
+    "SectionColor" : [0.582800, 0.582800, 0.582800, 1.000000],
+    "_pad" : [0.000000, 0.000000, 0.000000]
+  },
+  "PathFileName" : "Asset/Materials/Auto/Fbx/Dragon_Baked_Actions_fbx_6_1_ASCII/Game_dragon_002__Untitled_001-8050165072490503092.mat",
+  "RasterizerState" : "",
+  "RenderPass" : "Opaque",
+  "ShaderPath" : "Shaders/Geometry/UberLit.hlsl",
+  "Textures" : {
+    "DiffuseTexture" : "Asset/Content/Model/Dragon/AppData/Local/Temp/Rar$DIa0.078/New_texture/Nor.jpg"
+  }
+}

@@ -1,0 +1,559 @@
+\doxysection{Keyboard.\+h}
+\hypertarget{_keyboard_8h_source}{}\label{_keyboard_8h_source}\index{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/Keyboard.h@{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/Keyboard.h}}
+\doxymbox{\hyperlink{_keyboard_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00002\ \textcolor{comment}{//\ File:\ Keyboard.h}}
+\DoxyCodeLine{00003\ \textcolor{comment}{//}}
+\DoxyCodeLine{00004\ \textcolor{comment}{//\ Copyright\ (c)\ Microsoft\ Corporation.}}
+\DoxyCodeLine{00005\ \textcolor{comment}{//\ Licensed\ under\ the\ MIT\ License.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{//}}
+\DoxyCodeLine{00007\ \textcolor{comment}{//\ http://go.microsoft.com/fwlink/?LinkId=248929}}
+\DoxyCodeLine{00008\ \textcolor{comment}{//\ http://go.microsoft.com/fwlink/?LinkID=615561}}
+\DoxyCodeLine{00009\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00012\ }
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#if\ !defined(USING\_XINPUT)\ \&\&\ !defined(USING\_GAMEINPUT)\ \&\&\ !defined(USING\_COREWINDOW)}}
+\DoxyCodeLine{00014\ }
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#ifdef\ \_GAMING\_DESKTOP}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#include\ <grdk.h>}}
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00018\ }
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#if\ (defined(WINAPI\_FAMILY)\ \&\&\ (WINAPI\_FAMILY\ ==\ WINAPI\_FAMILY\_GAMES))\ ||\ (defined(\_GAMING\_DESKTOP)\ \&\&\ (\_GRDK\_EDITION\ >=\ 220600))}}
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#define\ USING\_GAMEINPUT}}
+\DoxyCodeLine{00021\ \textcolor{preprocessor}{\#elif\ (defined(WINAPI\_FAMILY)\ \&\&\ (WINAPI\_FAMILY\ ==\ WINAPI\_FAMILY\_APP))\ ||\ (defined(\_XBOX\_ONE)\ \&\&\ defined(\_TITLE))}}
+\DoxyCodeLine{00022\ \textcolor{preprocessor}{\#define\ USING\_COREWINDOW}}
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00024\ }
+\DoxyCodeLine{00025\ \textcolor{preprocessor}{\#endif\ }\textcolor{comment}{//\ !USING\_XINPUT\ \&\&\ !USING\_GAMEINPUT\ \&\&\ !USING\_WINDOWS\_GAMING\_INPUT}}
+\DoxyCodeLine{00026\ }
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#ifdef\ USING\_GAMEINPUT}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#include\ <GameInput.h>}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#if\ defined(\_MSC\_VER)\ \&\&\ (defined(\_GAMING\_XBOX)\ ||\ defined(GAMEINPUT\_API\_VERSION))}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#pragma\ comment(lib,"{}gameinput.lib"{})}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\#ifdef\ USING\_COREWINDOW}}
+\DoxyCodeLine{00038\ \textcolor{keyword}{namespace\ }ABI\ \{\ \textcolor{keyword}{namespace\ }Windows\ \{\ \textcolor{keyword}{namespace\ }UI\ \{\ \textcolor{keyword}{namespace\ }Core\ \{\ \textcolor{keyword}{struct\ }ICoreWindow;\ \}\ \}\ \}\ \}}
+\DoxyCodeLine{00039\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00040\ }
+\DoxyCodeLine{00041\ \textcolor{preprocessor}{\#ifndef\ DIRECTX\_TOOLKIT\_API}}
+\DoxyCodeLine{00042\ \textcolor{preprocessor}{\#ifdef\ DIRECTX\_TOOLKIT\_EXPORT}}
+\DoxyCodeLine{00043\ \textcolor{preprocessor}{\#ifdef\ \_\_GNUC\_\_}}
+\DoxyCodeLine{00044\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_attribute\_\_\ ((dllexport))}}
+\DoxyCodeLine{00045\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00046\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_declspec(dllexport)}}
+\DoxyCodeLine{00047\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00048\ \textcolor{preprocessor}{\#elif\ defined(DIRECTX\_TOOLKIT\_IMPORT)}}
+\DoxyCodeLine{00049\ \textcolor{preprocessor}{\#ifdef\ \_\_GNUC\_\_}}
+\DoxyCodeLine{00050\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_attribute\_\_\ ((dllimport))}}
+\DoxyCodeLine{00051\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00052\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_declspec(dllimport)}}
+\DoxyCodeLine{00053\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00054\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00055\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API}}
+\DoxyCodeLine{00056\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00057\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \textcolor{preprocessor}{\#ifdef\ \_\_clang\_\_}}
+\DoxyCodeLine{00060\ \textcolor{preprocessor}{\#pragma\ clang\ diagnostic\ push}}
+\DoxyCodeLine{00061\ \textcolor{preprocessor}{\#pragma\ clang\ diagnostic\ ignored\ "{}-\/Wunknown-\/pragmas"{}}}
+\DoxyCodeLine{00062\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00063\ }
+\DoxyCodeLine{00064\ }
+\DoxyCodeLine{00065\ \textcolor{keyword}{namespace\ }\doxymbox{\hyperlink{namespace_direct_x}{DirectX}}}
+\DoxyCodeLine{00066\ \{}
+\DoxyCodeLine{00067\ \ \ \ \ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_afdfe991c7edb08e3efe9e2be66ef06a7}{Keyboard}}}
+\DoxyCodeLine{00068\ \ \ \ \ \{}
+\DoxyCodeLine{00069\ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00070\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_afdfe991c7edb08e3efe9e2be66ef06a7}{Keyboard}}()\ noexcept(false);}
+\DoxyCodeLine{00071\ }
+\DoxyCodeLine{00072\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_afdfe991c7edb08e3efe9e2be66ef06a7}{Keyboard}}(\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_afdfe991c7edb08e3efe9e2be66ef06a7}{Keyboard}}\&\&)\ noexcept;}
+\DoxyCodeLine{00073\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_afdfe991c7edb08e3efe9e2be66ef06a7}{Keyboard}}\&\ operator=\ (\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_afdfe991c7edb08e3efe9e2be66ef06a7}{Keyboard}}\&\&)\ noexcept;}
+\DoxyCodeLine{00074\ }
+\DoxyCodeLine{00075\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_afdfe991c7edb08e3efe9e2be66ef06a7}{Keyboard}}(\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_afdfe991c7edb08e3efe9e2be66ef06a7}{Keyboard}}\ const\&)\ =\ delete;}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_afdfe991c7edb08e3efe9e2be66ef06a7}{Keyboard}}\&\ operator=(\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_afdfe991c7edb08e3efe9e2be66ef06a7}{Keyboard}}\ const\&)\ =\ delete;}
+\DoxyCodeLine{00077\ }
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ virtual\ \string~\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_afdfe991c7edb08e3efe9e2be66ef06a7}{Keyboard}}();}
+\DoxyCodeLine{00079\ }
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ enum\ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7b}{Keys}}\ :\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{char}}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00082\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba36de47c4bdff940d74d9e6bda9290b2e}{None}}\ =\ 0,}
+\DoxyCodeLine{00083\ }
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bafb841d462535c59905be9be233575aff}{Back}}\ =\ 0x8,}
+\DoxyCodeLine{00085\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba8140c574ac3a622e9fdeefa2612b7ec7}{Tab}}\ =\ 0x9,}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00087\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba8ada165d7fedc46eaff392d2058982ff}{Enter}}\ =\ 0xd,}
+\DoxyCodeLine{00088\ }
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba7d57d236fbce72a3c74f118036e2dda0}{Pause}}\ =\ 0x13,}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba5a59e982936b44c885b707b17a91a9a5}{CapsLock}}\ =\ 0x14,}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba51af16035f72424236304b22c8d5382b}{Kana}}\ =\ 0x15,}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bafd5824335dada338e9e8879a82819312}{ImeOn}}\ =\ 0x16,}
+\DoxyCodeLine{00093\ }
+\DoxyCodeLine{00094\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baeecaee879216d6a04f3a5f11ec1a1e67}{Kanji}}\ =\ 0x19,}
+\DoxyCodeLine{00095\ }
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba0a63a0d9982a8f72c51609a2dffc9a40}{ImeOff}}\ =\ 0x1a,}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba3ba690fe8505e129267930cd900fb63d}{Escape}}\ =\ 0x1b,}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba6467214f1284bdd7e3d761a988f757e8}{ImeConvert}}\ =\ 0x1c,}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba331d68bff67ec2b507ab8798fb25d420}{ImeNoConvert}}\ =\ 0x1d,}
+\DoxyCodeLine{00100\ }
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba5748401507d1db08296574468f4fda21}{Space}}\ =\ 0x20,}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba416eaae0f9172eb3965b52054de64f56}{PageUp}}\ =\ 0x21,}
+\DoxyCodeLine{00103\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba4b95b18c75b902d234c2b542fcc8d6a0}{PageDown}}\ =\ 0x22,}
+\DoxyCodeLine{00104\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba0dab9eb3d4f21b0d04af6338dd5509e1}{End}}\ =\ 0x23,}
+\DoxyCodeLine{00105\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac3e13e36418bd16cbfb2ea937de8cf96}{Home}}\ =\ 0x24,}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baed8f7a12123af9d77963b3c62bcf531d}{Left}}\ =\ 0x25,}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bab9c600e1a28d2d533d610d4f3057286a}{Up}}\ =\ 0x26,}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baed835348bd1dc4d6ce8e8ee6ff7b1f24}{Right}}\ =\ 0x27,}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac9220187add54b45a87f3d17e56397f6}{Down}}\ =\ 0x28,}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba08de428d906b6338788135d8df2c7d62}{Select}}\ =\ 0x29,}
+\DoxyCodeLine{00111\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baf5814a5437d10f6679365016405fac30}{Print}}\ =\ 0x2a,}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba0dd743a0980fb8d095060091dbd581c2}{Execute}}\ =\ 0x2b,}
+\DoxyCodeLine{00113\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba66e4fa94d4c65cf8c945e86364813cf0}{PrintScreen}}\ =\ 0x2c,}
+\DoxyCodeLine{00114\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baa38c9e2451c674f9a7cd5444838a2d04}{Insert}}\ =\ 0x2d,}
+\DoxyCodeLine{00115\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba67fc94a0f7cce096306f3e2ff0acbb41}{Delete}}\ =\ 0x2e,}
+\DoxyCodeLine{00116\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac9df718f00f23d250363904a3322a26d}{Help}}\ =\ 0x2f,}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba3244917ff2edcd72310d1c22699a0050}{D0}}\ =\ 0x30,}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baabed8fa999a7d6c486614891234ee3d0}{D1}}\ =\ 0x31,}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baa2dd5ae9f46ea4eee0ccc4b39756e95f}{D2}}\ =\ 0x32,}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba4e9a6c6f8d81e14a40b3d296cb3f531c}{D3}}\ =\ 0x33,}
+\DoxyCodeLine{00121\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba409ad308f433a0006f8b5187300cc4b6}{D4}}\ =\ 0x34,}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7babfb314936e36e738c7af05378b7d1d1a}{D5}}\ =\ 0x35,}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac163a6677843bd9981d7f1a737f6fdc3}{D6}}\ =\ 0x36,}
+\DoxyCodeLine{00124\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba8578b7f1d8a159b9325555d20e39d8c4}{D7}}\ =\ 0x37,}
+\DoxyCodeLine{00125\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba8e5393044edaf53c072e9a210ed9c902}{D8}}\ =\ 0x38,}
+\DoxyCodeLine{00126\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba052abb5b95806c16d0de1dd0adae42e0}{D9}}\ =\ 0x39,}
+\DoxyCodeLine{00127\ }
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baad33e1ce549b2c3b25072494524cfd5e}{A}}\ =\ 0x41,}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba9308fe7d69420156ff5f6cf993186dfa}{B}}\ =\ 0x42,}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba1499513ba868c5031c73e68d37c36c07}{C}}\ =\ 0x43,}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba2e8c51463f3b98d5e7551f1f396d9e9c}{D}}\ =\ 0x44,}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba6025e9719249c44bb9d0f492cf96c862}{E}}\ =\ 0x45,}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba340bfeb12c6418eb05d3206769ad9a80}{F}}\ =\ 0x46,}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba2ab7c578739b89bc16c5db3731ca9663}{G}}\ =\ 0x47,}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba0f670ed2873fe9e62469ae3df5dc8149}{H}}\ =\ 0x48,}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba3226641aaee94e140f31b8adc76d5b83}{I}}\ =\ 0x49,}
+\DoxyCodeLine{00137\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba2a564b8e477e1e326b94acae064568fd}{J}}\ =\ 0x4a,}
+\DoxyCodeLine{00138\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bafffea8984fca95991d22cb1e0df39e8a}{K}}\ =\ 0x4b,}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baa4f93c3b04003040fb0d661dd43fb641}{L}}\ =\ 0x4c,}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba4b2584ec67c560d836fa3eaefaf65b60}{M}}\ =\ 0x4d,}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba7aab89b61930a873b192626ec0724b64}{N}}\ =\ 0x4e,}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba0028d3a27c5ff41937feade3824ae90d}{O}}\ =\ 0x4f,}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba94953842972baf4d450bc72a33f36e3e}{P}}\ =\ 0x50,}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba61a729e43e259b5a29bb58d43dfe802d}{Q}}\ =\ 0x51,}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bab7dfce83e89063b804fe19b75f32d2e1}{R}}\ =\ 0x52,}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baffbd3ace107232ae0a9c79d2d0a1df6d}{S}}\ =\ 0x53,}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba3199f6bc282b683e3432085f579bbd03}{T}}\ =\ 0x54,}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba41698204d6160bd454cb06fbb360d8f8}{U}}\ =\ 0x55,}
+\DoxyCodeLine{00149\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bab4390bf904f1feaa81f6e6bc94ab765d}{V}}\ =\ 0x56,}
+\DoxyCodeLine{00150\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba4579618023a68244ca5c619ad3694a06}{W}}\ =\ 0x57,}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baafc7da31c7ec6b414d7b3baa3929e1b4}{X}}\ =\ 0x58,}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba577a3825a64bdc1b10ab1db6970d5686}{Y}}\ =\ 0x59,}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba41527a5125191e6e72f097bc39f87e9d}{Z}}\ =\ 0x5a,}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba02b2acf5a29decbcaa2fd15f9037d1b5}{LeftWindows}}\ =\ 0x5b,}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba8efa02d5c709c3069c60a8404d74c136}{RightWindows}}\ =\ 0x5c,}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baff5b5f7bee150bc7787e28704fd9bbb8}{Apps}}\ =\ 0x5d,}
+\DoxyCodeLine{00157\ }
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bad2de94fbde7011992731ad43995e3dbb}{Sleep}}\ =\ 0x5f,}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba00604944b597d44b7f2cf560bbc91617}{NumPad0}}\ =\ 0x60,}
+\DoxyCodeLine{00160\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba9bff3169490ce84086a9c9dafa6a1613}{NumPad1}}\ =\ 0x61,}
+\DoxyCodeLine{00161\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba7e75c9cdd524a13025f002c23f4345c3}{NumPad2}}\ =\ 0x62,}
+\DoxyCodeLine{00162\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba7e98cba4333f56c9c4dcfdd7b62c180e}{NumPad3}}\ =\ 0x63,}
+\DoxyCodeLine{00163\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7babe688b648f8dda55c4b06456f1c574db}{NumPad4}}\ =\ 0x64,}
+\DoxyCodeLine{00164\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac269a3d22c5aab230b15891d68e4aded}{NumPad5}}\ =\ 0x65,}
+\DoxyCodeLine{00165\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba162f4018639ec2385d8df6228d5997a8}{NumPad6}}\ =\ 0x66,}
+\DoxyCodeLine{00166\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba2d6b46f805f7fe093cefd8865867c7b3}{NumPad7}}\ =\ 0x67,}
+\DoxyCodeLine{00167\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba001c043e884ce17a0fa09db658e91576}{NumPad8}}\ =\ 0x68,}
+\DoxyCodeLine{00168\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba446843c4e8259e04e6515e9020f95d56}{NumPad9}}\ =\ 0x69,}
+\DoxyCodeLine{00169\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baea735b5ae86b438aab9af892f493c02e}{Multiply}}\ =\ 0x6a,}
+\DoxyCodeLine{00170\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bab7dba455b0c5fd7d0a2e7e033becd37c}{Add}}\ =\ 0x6b,}
+\DoxyCodeLine{00171\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba547903bf97536a4924e9799a3c9b8ff2}{Separator}}\ =\ 0x6c,}
+\DoxyCodeLine{00172\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba1846395a84b1cd0623a026c478fdf489}{Subtract}}\ =\ 0x6d,}
+\DoxyCodeLine{00173\ }
+\DoxyCodeLine{00174\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba478a97b7936698072dc84c226e0dc4a5}{Decimal}}\ =\ 0x6e,}
+\DoxyCodeLine{00175\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bafa6c1fbf8cb27318e0327b0ad9052edf}{Divide}}\ =\ 0x6f,}
+\DoxyCodeLine{00176\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac8390e761ff5e179568d71ca71b44c1a}{F1}}\ =\ 0x70,}
+\DoxyCodeLine{00177\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba50a5c815e9720dc9ae59b04c0b3a31af}{F2}}\ =\ 0x71,}
+\DoxyCodeLine{00178\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac049ab3c2454a3973cf6441a4608f597}{F3}}\ =\ 0x72,}
+\DoxyCodeLine{00179\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba319d143679ddf69e6f24b318944f7420}{F4}}\ =\ 0x73,}
+\DoxyCodeLine{00180\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bae62ecf96ebcd188adf3870ec3a96e252}{F5}}\ =\ 0x74,}
+\DoxyCodeLine{00181\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba8581b38f46c2a5873a95e079939a6516}{F6}}\ =\ 0x75,}
+\DoxyCodeLine{00182\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba75540963ded3c6ae102e2041cb2523c6}{F7}}\ =\ 0x76,}
+\DoxyCodeLine{00183\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba0b683f259af00ad12f8daf05464fe047}{F8}}\ =\ 0x77,}
+\DoxyCodeLine{00184\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7babd50afbe655022fc3bc8c1a90b54b07f}{F9}}\ =\ 0x78,}
+\DoxyCodeLine{00185\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba097e86a8b8328599bc39288ed4885a20}{F10}}\ =\ 0x79,}
+\DoxyCodeLine{00186\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baeea6b916de9520191b50e2ff9f263a33}{F11}}\ =\ 0x7a,}
+\DoxyCodeLine{00187\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bad4199b5c5e3f888ecfdb2ae4dff2b677}{F12}}\ =\ 0x7b,}
+\DoxyCodeLine{00188\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba276817c9c6087a01edf8738461dfb0f0}{F13}}\ =\ 0x7c,}
+\DoxyCodeLine{00189\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baaf5661650c0f1eb8c1b26b85490c52c6}{F14}}\ =\ 0x7d,}
+\DoxyCodeLine{00190\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7badad3ece67cdec41fef8c7a316bb414d6}{F15}}\ =\ 0x7e,}
+\DoxyCodeLine{00191\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba9b977cb75631dc70d99d5462e1caeb5e}{F16}}\ =\ 0x7f,}
+\DoxyCodeLine{00192\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba1deb4612474ae1b8832323ceec642d03}{F17}}\ =\ 0x80,}
+\DoxyCodeLine{00193\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba36106aad401b1d2f03098c5ff73cd022}{F18}}\ =\ 0x81,}
+\DoxyCodeLine{00194\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba69ee5ae808f4ef2b65beb2e2d45a4138}{F19}}\ =\ 0x82,}
+\DoxyCodeLine{00195\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba15edaa41a5c26939a13470d1f32f8569}{F20}}\ =\ 0x83,}
+\DoxyCodeLine{00196\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba2a706eec808b1c604f06478aa2944e59}{F21}}\ =\ 0x84,}
+\DoxyCodeLine{00197\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba9f2a2ce98119ca9ce6af6e610d49c2e2}{F22}}\ =\ 0x85,}
+\DoxyCodeLine{00198\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baeecfa08dc7c5db482c4eb0eb7e3a3e82}{F23}}\ =\ 0x86,}
+\DoxyCodeLine{00199\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bad5a43c0e9e9faceefd85963ac29b4449}{F24}}\ =\ 0x87,}
+\DoxyCodeLine{00200\ }
+\DoxyCodeLine{00201\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac387fac0e9c9baf75dccbce36d840e05}{NumLock}}\ =\ 0x90,}
+\DoxyCodeLine{00202\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba6be2de25031d9c95ceeaae38f4461e65}{Scroll}}\ =\ 0x91,}
+\DoxyCodeLine{00203\ }
+\DoxyCodeLine{00204\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba29b8f9e25650a42218f5d9b22eb4427b}{LeftShift}}\ =\ 0xa0,}
+\DoxyCodeLine{00205\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba7c3fb0447a52a9f947f509ab250dde0f}{RightShift}}\ =\ 0xa1,}
+\DoxyCodeLine{00206\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba3ab8bf1c9878e4e58efe47cd3baefc61}{LeftControl}}\ =\ 0xa2,}
+\DoxyCodeLine{00207\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba287cc539d9d788712dee083510347c32}{RightControl}}\ =\ 0xa3,}
+\DoxyCodeLine{00208\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba065a54cb626496c3aa86b617b1bc2514}{LeftAlt}}\ =\ 0xa4,}
+\DoxyCodeLine{00209\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baaf61ee21d899aa6bcc86d381b83ef43b}{RightAlt}}\ =\ 0xa5,}
+\DoxyCodeLine{00210\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bae938e0ad7e4d625ab0493a3f83f1382d}{BrowserBack}}\ =\ 0xa6,}
+\DoxyCodeLine{00211\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba1c1e07806ea260c11013a9ba567cbc88}{BrowserForward}}\ =\ 0xa7,}
+\DoxyCodeLine{00212\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bacecec848d28e860b82491280fa645731}{BrowserRefresh}}\ =\ 0xa8,}
+\DoxyCodeLine{00213\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba93518d8fba1bd7a947a4436fbe9f66fb}{BrowserStop}}\ =\ 0xa9,}
+\DoxyCodeLine{00214\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac304690f3582caefbcc523e11ee5024d}{BrowserSearch}}\ =\ 0xaa,}
+\DoxyCodeLine{00215\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba4bb0fa89b701099d1c5c6a8d1c71b157}{BrowserFavorites}}\ =\ 0xab,}
+\DoxyCodeLine{00216\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bad27d65f9c54ef3ddc3740cc3e82f20d2}{BrowserHome}}\ =\ 0xac,}
+\DoxyCodeLine{00217\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba2e1066eda7005f1dbf4f98a0729b903d}{VolumeMute}}\ =\ 0xad,}
+\DoxyCodeLine{00218\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bad5aae913001269ad66c76c86588277e3}{VolumeDown}}\ =\ 0xae,}
+\DoxyCodeLine{00219\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba537650a69e33f08c9c3caf58e59d105d}{VolumeUp}}\ =\ 0xaf,}
+\DoxyCodeLine{00220\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bacb938181a2849de13aa036511740931d}{MediaNextTrack}}\ =\ 0xb0,}
+\DoxyCodeLine{00221\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba0e94469f85bff8fe6c166d3db35e31c3}{MediaPreviousTrack}}\ =\ 0xb1,}
+\DoxyCodeLine{00222\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba046864dbb0d4aec2fd37bbd32761b3ce}{MediaStop}}\ =\ 0xb2,}
+\DoxyCodeLine{00223\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baff22ad840d58021fe4ae7c5927605d9c}{MediaPlayPause}}\ =\ 0xb3,}
+\DoxyCodeLine{00224\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bae0e753be8ce0aecebded4102a254a5ab}{LaunchMail}}\ =\ 0xb4,}
+\DoxyCodeLine{00225\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba1252b2dcb5887ec23fd98289f3de236e}{SelectMedia}}\ =\ 0xb5,}
+\DoxyCodeLine{00226\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba286478c5225805be584d97d610b014d0}{LaunchApplication1}}\ =\ 0xb6,}
+\DoxyCodeLine{00227\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba7ad13e708a1c75341a6e7b58ab4ce865}{LaunchApplication2}}\ =\ 0xb7,}
+\DoxyCodeLine{00228\ }
+\DoxyCodeLine{00229\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba6d951815b1df2258f9578e32e17a2a8a}{OemSemicolon}}\ =\ 0xba,}
+\DoxyCodeLine{00230\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba7b39a29cac5376195a1cb79c139f5f00}{OemPlus}}\ =\ 0xbb,}
+\DoxyCodeLine{00231\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baca8b6109faa27d6c40209be45acc45da}{OemComma}}\ =\ 0xbc,}
+\DoxyCodeLine{00232\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba1d0cebe730d82cfac2b214c08024314d}{OemMinus}}\ =\ 0xbd,}
+\DoxyCodeLine{00233\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba5f4d579095e7f7a2f8173cb5663643c8}{OemPeriod}}\ =\ 0xbe,}
+\DoxyCodeLine{00234\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac8fb11a9a220195590ef46d4667bd027}{OemQuestion}}\ =\ 0xbf,}
+\DoxyCodeLine{00235\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bade8a82fea5a1c2baaad1bfcbfed65fce}{OemTilde}}\ =\ 0xc0,}
+\DoxyCodeLine{00236\ }
+\DoxyCodeLine{00237\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba3d3f867938357a280bf0625963f47602}{OemOpenBrackets}}\ =\ 0xdb,}
+\DoxyCodeLine{00238\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba0f02ad03c83a7f0de2cd2f54048c0682}{OemPipe}}\ =\ 0xdc,}
+\DoxyCodeLine{00239\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba2c57b422bd80d61d32675dc57c42e9dc}{OemCloseBrackets}}\ =\ 0xdd,}
+\DoxyCodeLine{00240\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7bac6da74a7c896e1fee84423fdfc8072d5}{OemQuotes}}\ =\ 0xde,}
+\DoxyCodeLine{00241\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baaf4decad4c04e8e75de7cda23e4d050b}{Oem8}}\ =\ 0xdf,}
+\DoxyCodeLine{00242\ }
+\DoxyCodeLine{00243\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba42c2f5285c4ffaf57e6e8dc516ef517b}{OemBackslash}}\ =\ 0xe2,}
+\DoxyCodeLine{00244\ }
+\DoxyCodeLine{00245\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba9b5810d75f6cbe02676eb2e26e0a6dff}{ProcessKey}}\ =\ 0xe5,}
+\DoxyCodeLine{00246\ }
+\DoxyCodeLine{00247\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba94e186200bd71397379ca7c5b641a037}{OemCopy}}\ =\ 0xf2,}
+\DoxyCodeLine{00248\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baab89e9cef74a637878e8d3c06c205b3e}{OemAuto}}\ =\ 0xf3,}
+\DoxyCodeLine{00249\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba8ae030d179b7d5c618ba6a9f1e6a462f}{OemEnlW}}\ =\ 0xf4,}
+\DoxyCodeLine{00250\ }
+\DoxyCodeLine{00251\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baa9235d9904b58d4d8d3199f7a555a47d}{Attn}}\ =\ 0xf6,}
+\DoxyCodeLine{00252\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba9603d931233200d3f7161ed344fca8fa}{Crsel}}\ =\ 0xf7,}
+\DoxyCodeLine{00253\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba576111b711bcef27acfbf8b3362dd755}{Exsel}}\ =\ 0xf8,}
+\DoxyCodeLine{00254\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7baeba15189d29f673069ae28670ae627fb}{EraseEof}}\ =\ 0xf9,}
+\DoxyCodeLine{00255\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba71265de423a4dba2b2eee75c8f19a534}{Play}}\ =\ 0xfa,}
+\DoxyCodeLine{00256\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba9cf54bd1fad2b515049cf67418c74768}{Zoom}}\ =\ 0xfb,}
+\DoxyCodeLine{00257\ }
+\DoxyCodeLine{00258\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba6db649c33d1e0cfc468c98b04ad6a505}{Pa1}}\ =\ 0xfd,}
+\DoxyCodeLine{00259\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7ba1c4bb24c51a839ea41aa52d0a1d5349e}{OemClear}}\ =\ 0xfe,}
+\DoxyCodeLine{00260\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00261\ }
+\DoxyCodeLine{00262\ \ \ \ \ \ \ \ \ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state}{State}}}
+\DoxyCodeLine{00263\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00264\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a42dc98c610725fbb4cbf85242caef91d}{Reserved0}}\ :\ 8;}
+\DoxyCodeLine{00265\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_ae04d043414173d4d8bdd6f2e8d9a4a71}{Back}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_BACK,\ 0x8}}
+\DoxyCodeLine{00266\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a1d7a05eb4bcadfa7c6cf296720be5470}{Tab}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_TAB,\ 0x9}}
+\DoxyCodeLine{00267\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_ad177a7dec8a7405cd781e7fcec7b6a39}{Reserved1}}\ :\ 3;}
+\DoxyCodeLine{00268\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a4951113d78747b3195bf3eb505d2026b}{Enter}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_RETURN,\ 0xD}}
+\DoxyCodeLine{00269\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a4104bb14a821a0816e96b328caa91578}{Reserved2}}\ :\ 2;}
+\DoxyCodeLine{00270\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a1fd0ca2930f20ea92bf9925ab2f0a107}{Reserved3}}\ :\ 3;}
+\DoxyCodeLine{00271\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_adf5b536d6257db4f8abe0aca9898f36a}{Pause}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_PAUSE,\ 0x13}}
+\DoxyCodeLine{00272\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a4ce9783b38d00dbd2af3ed16675ba977}{CapsLock}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_CAPITAL,\ 0x14}}
+\DoxyCodeLine{00273\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_aaaab1f6d662e5fa0717bf68db376f375}{Kana}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_KANA,\ 0x15}}
+\DoxyCodeLine{00274\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_ad82016239c901c42fcf7981511cd517a}{ImeOn}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_IME\_ON,\ 0x16}}
+\DoxyCodeLine{00275\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a444d789a7f1c44f8efeb4584eb8e3dc8}{Reserved4}}\ :\ 1;}
+\DoxyCodeLine{00276\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a80c2c6a9ad9f58079d66986e7db3c1c2}{Reserved5}}\ :\ 1;}
+\DoxyCodeLine{00277\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_ab4e5eb67ce4abe5e4c626288c31ddd55}{Kanji}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_KANJI,\ 0x19}}
+\DoxyCodeLine{00278\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_aae5b788a264118a78112bb4a89b7103f}{ImeOff}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_IME\_OFF,\ 0X1A}}
+\DoxyCodeLine{00279\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a970129744c3659445a146e7eaea55295}{Escape}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_ESCAPE,\ 0x1B}}
+\DoxyCodeLine{00280\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_ac073a39989d253041a0b6e5255e7eb5d}{ImeConvert}}\ :\ 1;\ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_CONVERT,\ 0x1C}}
+\DoxyCodeLine{00281\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a790debed64c234b6aa068263209dffbf}{ImeNoConvert}}\ :\ 1;\ \ \ \ \ \ \textcolor{comment}{//\ VK\_NONCONVERT,\ 0x1D}}
+\DoxyCodeLine{00282\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a02003654373d01248d8dee5f806cf4ca}{Reserved7}}\ :\ 2;}
+\DoxyCodeLine{00283\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_af3e08dc122583d0cc98cbbca69eee560}{Space}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_SPACE,\ 0x20}}
+\DoxyCodeLine{00284\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_aaa029aadb4072fdcbba4e6e989bafaeb}{PageUp}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_PRIOR,\ 0x21}}
+\DoxyCodeLine{00285\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a76f63d55835d7170db0fab32f8f8aa91}{PageDown}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_NEXT,\ 0x22}}
+\DoxyCodeLine{00286\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a3c01d21ce86f6f4c8df75572c10213cb}{End}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_END,\ 0x23}}
+\DoxyCodeLine{00287\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a356cb5d008176cdad357d78139b8647c}{Home}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_HOME,\ 0x24}}
+\DoxyCodeLine{00288\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a8c69b3485e26eeef8ec3a6d604571d85}{Left}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_LEFT,\ 0x25}}
+\DoxyCodeLine{00289\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a79f5f1e7eb331f4e6d0efbd3747bf9d4}{Up}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_UP,\ 0x26}}
+\DoxyCodeLine{00290\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_aa7fcf55c0343005297b4ae84b73608d7}{Right}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_RIGHT,\ 0x27}}
+\DoxyCodeLine{00291\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a474911e7afcd0af8282eddbf4da2bb80}{Down}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_DOWN,\ 0x28}}
+\DoxyCodeLine{00292\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_ac665ffd0bb132c3671ceeff2f31f0768}{Select}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_SELECT,\ 0x29}}
+\DoxyCodeLine{00293\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a56d72b4e90c7b9a0202ab38e4682d5e0}{Print}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_PRINT,\ 0x2A}}
+\DoxyCodeLine{00294\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a1118156eeabe86faae4f53c708a64bfc}{Execute}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_EXECUTE,\ 0x2B}}
+\DoxyCodeLine{00295\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_acb176ee31bf4e5abdd1dbab249326f61}{PrintScreen}}\ :\ 1;\ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_SNAPSHOT,\ 0x2C}}
+\DoxyCodeLine{00296\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_aa2198adcea2f3902d7becc47760e1441}{Insert}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_INSERT,\ 0x2D}}
+\DoxyCodeLine{00297\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a5b6348bafb9b8776464cfdb72555d889}{Delete}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_DELETE,\ 0x2E}}
+\DoxyCodeLine{00298\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a1ab40156211c238dd3969d983b1ee136}{Help}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_HELP,\ 0x2F}}
+\DoxyCodeLine{00299\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a75854bd3494b2eb4b3ab779b0deed2ab}{D0}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0x30}}
+\DoxyCodeLine{00300\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a8f30bffca4223e93ac40b8e7ca13370b}{D1}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0x31}}
+\DoxyCodeLine{00301\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a680bce8f7c6237103e6236953792d0cf}{D2}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0x32}}
+\DoxyCodeLine{00302\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_ac60b1bcf7db782bd4c6aa140dfb85199}{D3}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0x33}}
+\DoxyCodeLine{00303\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a992d58ef7205a6dcf4c652e9c9240520}{D4}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0x34}}
+\DoxyCodeLine{00304\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_aaacb564ad68646d79b7fb1ff3f7f2420}{D5}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0x35}}
+\DoxyCodeLine{00305\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_afafaa18080f530e90b8f6372bac27b51}{D6}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0x36}}
+\DoxyCodeLine{00306\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a4090f71e0ed44c93d97a063b20c0b220}{D7}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0x37}}
+\DoxyCodeLine{00307\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a16ae4e1b92b9430a6c30d0e2ef954a8c}{D8}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0x38}}
+\DoxyCodeLine{00308\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a518183982739dc70b254d565131d2c55}{D9}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0x39}}
+\DoxyCodeLine{00309\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_aa703aa096271fa3cb1b8d65bae96e00a}{Reserved8}}\ :\ 6;}
+\DoxyCodeLine{00310\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_abc1f21a8a37219cf4e0a49f1b9dbe234}{Reserved9}}\ :\ 1;}
+\DoxyCodeLine{00311\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a28429b6277f4e674dd37a87759c49ee4}{A}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0x41}}
+\DoxyCodeLine{00312\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a25f4985e42edf5abd8fbc5d4f173dee0}{B}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0x42}}
+\DoxyCodeLine{00313\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a4dd9d22d608d1e61e29d5f6dec391582}{C}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0x43}}
+\DoxyCodeLine{00314\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_af97247ac4a0ba45fcf8a21b6d1eb88a8}{D}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0x44}}
+\DoxyCodeLine{00315\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a643effaf3d254645b224b2557f46d18a}{E}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0x45}}
+\DoxyCodeLine{00316\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a59af0e76e2a2960ee5615fa48ea83264}{F}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0x46}}
+\DoxyCodeLine{00317\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a33aad525f6655076a0376cad89da6049}{G}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0x47}}
+\DoxyCodeLine{00318\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a3bd38492daeb4c83a9406b10436b37f0}{H}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0x48}}
+\DoxyCodeLine{00319\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a60e27d53abe9cc74304ada6132629080}{I}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0x49}}
+\DoxyCodeLine{00320\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a91fa5572cc331cc2376b075e207f207b}{J}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0x4A}}
+\DoxyCodeLine{00321\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_aa88655903b6ef4e10bedaaab39e58dc7}{K}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0x4B}}
+\DoxyCodeLine{00322\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a2d52818b5b16f42fc4258d087ae4a173}{L}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0x4C}}
+\DoxyCodeLine{00323\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_aa29ebd7b8ee808091ead7ae3766ea56a}{M}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0x4D}}
+\DoxyCodeLine{00324\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a8d87d3fe22d41ebfac4bfdaa23882a94}{N}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0x4E}}
+\DoxyCodeLine{00325\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_adf44fe4c112dd23fa70593d6b7b2fa42}{O}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0x4F}}
+\DoxyCodeLine{00326\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_aa554f17c88a15b1257d02088f009567e}{P}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0x50}}
+\DoxyCodeLine{00327\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a4644357a7ed431f45115afa6113e9a0d}{Q}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0x51}}
+\DoxyCodeLine{00328\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a6a3bee5116de2e87be076a407d3e3c9f}{R}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0x52}}
+\DoxyCodeLine{00329\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a5b25ca7ffdb180e385cd8ed6ddf02d2b}{S}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0x53}}
+\DoxyCodeLine{00330\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a221f59938df00365f26ec78c37ee9022}{T}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0x54}}
+\DoxyCodeLine{00331\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a7b5a472604a5e89fadb935637076ce84}{U}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0x55}}
+\DoxyCodeLine{00332\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a7506ae71c00737aad19d0db4044f23bc}{V}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0x56}}
+\DoxyCodeLine{00333\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a4541124616904e888d1394982300511a}{W}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0x57}}
+\DoxyCodeLine{00334\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_af7c8d063b4ec1b709dbd0eaa63363216}{X}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0x58}}
+\DoxyCodeLine{00335\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a8dbfc242675097b3fb709cc0f0acf159}{Y}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0x59}}
+\DoxyCodeLine{00336\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_ad8d79048930dbd6506dd942963707511}{Z}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0x5A}}
+\DoxyCodeLine{00337\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_af9c41d9045d2093907177ffce0d62ae1}{LeftWindows}}\ :\ 1;\ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_LWIN,\ 0x5B}}
+\DoxyCodeLine{00338\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_ac91eb1c851bc14c0778d483b66c4ed2a}{RightWindows}}\ :\ 1;\ \ \ \ \ \ \textcolor{comment}{//\ VK\_RWIN,\ 0x5C}}
+\DoxyCodeLine{00339\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_ab2f730cf1518f6c23c6f650418b57498}{Apps}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_APPS,\ 0x5D}}
+\DoxyCodeLine{00340\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a8faec58748ee75ae4ebf5c0892fd9b81}{Reserved10}}\ :\ 1;}
+\DoxyCodeLine{00341\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a798859a899c8c226fb81615f05567497}{Sleep}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_SLEEP,\ 0x5F}}
+\DoxyCodeLine{00342\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a8622508792d7ebbb5af37efb2ca28a29}{NumPad0}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_NUMPAD0,\ 0x60}}
+\DoxyCodeLine{00343\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a046dc77627979c0da5a49f990422f036}{NumPad1}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_NUMPAD1,\ 0x61}}
+\DoxyCodeLine{00344\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a12ae058161c5b0fc0ce0052a1a36940c}{NumPad2}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_NUMPAD2,\ 0x62}}
+\DoxyCodeLine{00345\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_adddebb3f86dff4f890ae473afd4615c4}{NumPad3}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_NUMPAD3,\ 0x63}}
+\DoxyCodeLine{00346\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_ac0fb39d367327878dba482bf1a17bd1b}{NumPad4}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_NUMPAD4,\ 0x64}}
+\DoxyCodeLine{00347\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_afec768ea2ab313c85c4d34332f6ce19b}{NumPad5}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_NUMPAD5,\ 0x65}}
+\DoxyCodeLine{00348\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a386203a82bf502bd00ec2f9f4b4c96bb}{NumPad6}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_NUMPAD6,\ 0x66}}
+\DoxyCodeLine{00349\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a768f54ea466c3a20149243527b1d0889}{NumPad7}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_NUMPAD7,\ 0x67}}
+\DoxyCodeLine{00350\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a4444abc0cfd00ec541d5f0b87ec7ff0f}{NumPad8}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_NUMPAD8,\ 0x68}}
+\DoxyCodeLine{00351\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a06c0b1b2417f8f11083cae75a4b56c11}{NumPad9}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_NUMPAD9,\ 0x69}}
+\DoxyCodeLine{00352\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_ab403e89a8804e766332844f91680e8ff}{Multiply}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_MULTIPLY,\ 0x6A}}
+\DoxyCodeLine{00353\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a2d889c8662ca42bfcf0cca6a695cf8a9}{Add}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_ADD,\ 0x6B}}
+\DoxyCodeLine{00354\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_ac29325a60c81ffd52f8323e85a0f06e0}{Separator}}\ :\ 1;\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_SEPARATOR,\ 0x6C}}
+\DoxyCodeLine{00355\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a709876b68597e41d1ca917e880b0f928}{Subtract}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_SUBTRACT,\ 0x6D}}
+\DoxyCodeLine{00356\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a3a5a0af701bfdcd8e6ccd1ad0b43bd51}{Decimal}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_DECIMANL,\ 0x6E}}
+\DoxyCodeLine{00357\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a82ce13aefa10b25eae5fe4820d32f540}{Divide}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_DIVIDE,\ 0x6F}}
+\DoxyCodeLine{00358\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_acd2e3daf01d77e61cc454af5e990a6f0}{F1}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_F1,\ 0x70}}
+\DoxyCodeLine{00359\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_ae0ef3806255369637606ccffdb00e746}{F2}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_F2,\ 0x71}}
+\DoxyCodeLine{00360\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a7d1ae95b3af99bd3702a61bb68cfaabb}{F3}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_F3,\ 0x72}}
+\DoxyCodeLine{00361\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a96965697dea72777ed5612f3796a7daf}{F4}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_F4,\ 0x73}}
+\DoxyCodeLine{00362\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a106decdd8736ed18d3755cc80bea07bf}{F5}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_F5,\ 0x74}}
+\DoxyCodeLine{00363\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a6e9ad4e9a0f86d873bdf74b7b014de70}{F6}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_F6,\ 0x75}}
+\DoxyCodeLine{00364\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_ab56834fadb0f6c5fe0314efb5771e773}{F7}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_F7,\ 0x76}}
+\DoxyCodeLine{00365\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a16bf63cb4a107d63bd3b49eaf3e918e8}{F8}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_F8,\ 0x77}}
+\DoxyCodeLine{00366\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_ae6e93e112dc39dc6b090ae250d984f1d}{F9}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_F9,\ 0x78}}
+\DoxyCodeLine{00367\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_ad816d7913aac1f0b87d6f47ce72afcaa}{F10}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_F10,\ 0x79}}
+\DoxyCodeLine{00368\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a827cb1c2252ce4426570010ea316809f}{F11}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_F11,\ 0x7A}}
+\DoxyCodeLine{00369\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a8197d3074b401e9ad2d03175dbc8ccf8}{F12}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_F12,\ 0x7B}}
+\DoxyCodeLine{00370\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a7b7af862b178ed0e0708c520f6a1fa4c}{F13}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_F13,\ 0x7C}}
+\DoxyCodeLine{00371\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a666b61ef2300b308afed7d2ebdef8ee9}{F14}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_F14,\ 0x7D}}
+\DoxyCodeLine{00372\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a5f5db4579c80b83f033efa266795bf78}{F15}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_F15,\ 0x7E}}
+\DoxyCodeLine{00373\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_aac720f44014b7349f430e3c6bcf9b2a3}{F16}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_F16,\ 0x7F}}
+\DoxyCodeLine{00374\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a5e5ad74a7c21e6b228005a0c15457dc2}{F17}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_F17,\ 0x80}}
+\DoxyCodeLine{00375\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_ad73a38e1540f72d3b30e6621aab8b49b}{F18}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_F18,\ 0x81}}
+\DoxyCodeLine{00376\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_adfaa80f2a481488355564d94d735fbe0}{F19}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_F19,\ 0x82}}
+\DoxyCodeLine{00377\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_ac8c691b2eb3ea915c68d9b1cfcf120d0}{F20}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_F20,\ 0x83}}
+\DoxyCodeLine{00378\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a078eb3c37133af5d24f837136da4b902}{F21}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_F21,\ 0x84}}
+\DoxyCodeLine{00379\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a6c2aa011c984d93c6f9bc207c8590887}{F22}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_F22,\ 0x85}}
+\DoxyCodeLine{00380\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_aba947f691dad7e0a1ffc48f8d5a9406b}{F23}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_F23,\ 0x86}}
+\DoxyCodeLine{00381\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_afbeba4e5023cb22091dab252843175bb}{F24}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_F24,\ 0x87}}
+\DoxyCodeLine{00382\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a0083b771164fff45ec7ab26ee059b0a4}{Reserved11}}\ :\ 8;}
+\DoxyCodeLine{00383\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a08a45e861290341dda6f5944cd85f0e0}{NumLock}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_NUMLOCK,\ 0x90}}
+\DoxyCodeLine{00384\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_aaf91faefcdade53401424f9537ceeb0e}{Scroll}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_SCROLL,\ 0x91}}
+\DoxyCodeLine{00385\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_adcd8a598b6affed0345d68bfa737d265}{Reserved12}}\ :\ 6;}
+\DoxyCodeLine{00386\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_ab6641c9eeadf43d47c4420aa37e2d072}{Reserved13}}\ :\ 8;}
+\DoxyCodeLine{00387\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a391643d2b972e3091e484cab02638e7f}{LeftShift}}\ :\ 1;\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_LSHIFT,\ 0xA0}}
+\DoxyCodeLine{00388\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_ac4b0bc35f7ac8adc9e691a96471ece67}{RightShift}}\ :\ 1;\ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_RSHIFT,\ 0xA1}}
+\DoxyCodeLine{00389\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a3367d1af24c9f6072ff05a0d167ed2b7}{LeftControl}}\ :\ 1;\ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_LCONTROL,\ 0xA2}}
+\DoxyCodeLine{00390\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_ad0fd50c66a4d6272adb997e51f810b5c}{RightControl}}\ :\ 1;\ \ \ \ \ \ \textcolor{comment}{//\ VK\_RCONTROL,\ 0xA3}}
+\DoxyCodeLine{00391\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a4e2a4a48bb0663c04919c0f31eaa1382}{LeftAlt}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_LMENU,\ 0xA4}}
+\DoxyCodeLine{00392\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_ab9869b22a19cf94be9c0fba2c5d76dc4}{RightAlt}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_RMENU,\ 0xA5}}
+\DoxyCodeLine{00393\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_ac3d178527d3e404d01d0208a3653c4ff}{BrowserBack}}\ :\ 1;\ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_BROWSER\_BACK,\ 0xA6}}
+\DoxyCodeLine{00394\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a8271a4a9131924197974216db3ab6a2a}{BrowserForward}}\ :\ 1;\ \ \ \ \textcolor{comment}{//\ VK\_BROWSER\_FORWARD,\ 0xA7}}
+\DoxyCodeLine{00395\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a84cee2f09bec3f3c6d9d8a1fb99243dc}{BrowserRefresh}}\ :\ 1;\ \ \ \ \textcolor{comment}{//\ VK\_BROWSER\_REFRESH,\ 0xA8}}
+\DoxyCodeLine{00396\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a4f4d5e042121e1fd2a783b2ccac49e6e}{BrowserStop}}\ :\ 1;\ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_BROWSER\_STOP,\ 0xA9}}
+\DoxyCodeLine{00397\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a776cedcc66b1fee6ff994226f58e45f2}{BrowserSearch}}\ :\ 1;\ \ \ \ \ \textcolor{comment}{//\ VK\_BROWSER\_SEARCH,\ 0xAA}}
+\DoxyCodeLine{00398\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a593b785a48ac244bcc480a150a167a51}{BrowserFavorites}}\ :\ 1;\ \ \textcolor{comment}{//\ VK\_BROWSER\_FAVORITES,\ 0xAB}}
+\DoxyCodeLine{00399\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a2bb41ffc2aed1e12ce3e6beee210d2e0}{BrowserHome}}\ :\ 1;\ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_BROWSER\_HOME,\ 0xAC}}
+\DoxyCodeLine{00400\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a00ec30d28a4aa8ae91b1bed824f0a579}{VolumeMute}}\ :\ 1;\ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_VOLUME\_MUTE,\ 0xAD}}
+\DoxyCodeLine{00401\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a954200221ebeabfde3e7a4efab2ee2de}{VolumeDown}}\ :\ 1;\ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_VOLUME\_DOWN,\ 0xAE}}
+\DoxyCodeLine{00402\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_ac85eaeee405f5d700b827a52c242fdca}{VolumeUp}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_VOLUME\_UP,\ 0xAF}}
+\DoxyCodeLine{00403\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_aafdf2ad069f98fe882fa7319db0c4529}{MediaNextTrack}}\ :\ 1;\ \ \ \ \textcolor{comment}{//\ VK\_MEDIA\_NEXT\_TRACK,\ 0xB0}}
+\DoxyCodeLine{00404\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a2346fe7ed7c600aa1c1d2e252f312472}{MediaPreviousTrack}}\ :\ 1;\textcolor{comment}{//\ VK\_MEDIA\_PREV\_TRACK,\ 0xB1}}
+\DoxyCodeLine{00405\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a2775948f4d2fe752830b888b3a7dc277}{MediaStop}}\ :\ 1;\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_MEDIA\_STOP,\ 0xB2}}
+\DoxyCodeLine{00406\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a68783ae44bdccefd389dc56aba1f942e}{MediaPlayPause}}\ :\ 1;\ \ \ \ \textcolor{comment}{//\ VK\_MEDIA\_PLAY\_PAUSE,\ 0xB3}}
+\DoxyCodeLine{00407\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_ab0d14dd75ffb4077192dab529db5d9fd}{LaunchMail}}\ :\ 1;\ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_LAUNCH\_MAIL,\ 0xB4}}
+\DoxyCodeLine{00408\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a55cce3a7880dddcf90eb8b74cd874dfe}{SelectMedia}}\ :\ 1;\ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_LAUNCH\_MEDIA\_SELECT,\ 0xB5}}
+\DoxyCodeLine{00409\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a6ac99b8bae2eeca868cf6106f46e32e3}{LaunchApplication1}}\ :\ 1;\textcolor{comment}{//\ VK\_LAUNCH\_APP1,\ 0xB6}}
+\DoxyCodeLine{00410\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_aa2ba3492cf7e006cbbb8a15d5c54932c}{LaunchApplication2}}\ :\ 1;\textcolor{comment}{//\ VK\_LAUNCH\_APP2,\ 0xB7}}
+\DoxyCodeLine{00411\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a67022831ed53479546d1515974070eef}{Reserved14}}\ :\ 2;}
+\DoxyCodeLine{00412\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a2ce23174d35fd8d72e6c85049861c61f}{OemSemicolon}}\ :\ 1;\ \ \ \ \ \ \textcolor{comment}{//\ VK\_OEM\_1,\ 0xBA}}
+\DoxyCodeLine{00413\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a61184a6b832ea4fb8a742b7f8cedd9cb}{OemPlus}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_OEM\_PLUS,\ 0xBB}}
+\DoxyCodeLine{00414\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a1a1a6d9f245afef46ae6bc7b1fe1d797}{OemComma}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_OEM\_COMMA,\ 0xBC}}
+\DoxyCodeLine{00415\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_aa1f6e8fa27ea1d440cc77f0ee65b3880}{OemMinus}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_OEM\_MINUS,\ 0xBD}}
+\DoxyCodeLine{00416\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_adf9e2e227f6c7bd0f92586597c7b6425}{OemPeriod}}\ :\ 1;\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_OEM\_PERIOD,\ 0xBE}}
+\DoxyCodeLine{00417\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a700408bc422edf8ad6248e1873aff199}{OemQuestion}}\ :\ 1;\ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_OEM\_2,\ 0xBF}}
+\DoxyCodeLine{00418\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_af75a3e17e03760ba5bfe6fbd62314992}{OemTilde}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_OEM\_3,\ 0xC0}}
+\DoxyCodeLine{00419\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a442d2622139d497ba1ee828466613d2e}{Reserved15}}\ :\ 7;}
+\DoxyCodeLine{00420\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a2c35f147d0272dee9177507257d012aa}{Reserved16}}\ :\ 8;}
+\DoxyCodeLine{00421\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_aba2e27f621275459c38ffd3b4208d046}{Reserved17}}\ :\ 8;}
+\DoxyCodeLine{00422\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a9f9e42c083b899d14ba54af41a94f676}{Reserved18}}\ :\ 3;}
+\DoxyCodeLine{00423\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_aa7a787cfe6f56fcbd1d9f941acaaf8dd}{OemOpenBrackets}}\ :\ 1;\ \ \ \textcolor{comment}{//\ VK\_OEM\_4,\ 0xDB}}
+\DoxyCodeLine{00424\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a5ab87bd27a140e01eb3b7e4ebce447dd}{OemPipe}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_OEM\_5,\ 0xDC}}
+\DoxyCodeLine{00425\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a1c9c8124af369f53d751eaf281feda33}{OemCloseBrackets}}\ :\ 1;\ \ \textcolor{comment}{//\ VK\_OEM\_6,\ 0xDD}}
+\DoxyCodeLine{00426\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_aa728228caa88b736b2856eef688a2d2e}{OemQuotes}}\ :\ 1;\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_OEM\_7,\ 0xDE}}
+\DoxyCodeLine{00427\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_acc5a93a7a646661fdbe75175d5a296a9}{Oem8}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_OEM\_8,\ 0xDF}}
+\DoxyCodeLine{00428\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_af189e34e445099b1a1061f2904b3da4d}{Reserved19}}\ :\ 2;}
+\DoxyCodeLine{00429\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a20a3e988c7bcced768f388ad9f28597b}{OemBackslash}}\ :\ 1;\ \ \ \ \ \ \textcolor{comment}{//\ VK\_OEM\_102,\ 0xE2}}
+\DoxyCodeLine{00430\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a40c33e2757dcc184d65f2d9a2a1c066c}{Reserved20}}\ :\ 2;}
+\DoxyCodeLine{00431\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_ae3c224c2d036bdda97e80035f694a7f5}{ProcessKey}}\ :\ 1;\ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_PROCESSKEY,\ 0xE5}}
+\DoxyCodeLine{00432\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a7980e82491ad70a8fa312f6b2ae94be7}{Reserved21}}\ :\ 2;}
+\DoxyCodeLine{00433\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a573bb943e224d41a324240e2db5ab2a0}{Reserved22}}\ :\ 8;}
+\DoxyCodeLine{00434\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_aff3d0a57c7251e9ded4de73c3b7538ff}{Reserved23}}\ :\ 2;}
+\DoxyCodeLine{00435\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a4fef8d6e89445442113f830bc7ccd331}{OemCopy}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0XF2}}
+\DoxyCodeLine{00436\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_aaa1389b1c30a902c540f93a2cfc8c706}{OemAuto}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0xF3}}
+\DoxyCodeLine{00437\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a5a3a82a05a5766c926686989021760dd}{OemEnlW}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ 0xF4}}
+\DoxyCodeLine{00438\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a4d54cec32d30a69fdf7b4ba94435565a}{Reserved24}}\ :\ 1;}
+\DoxyCodeLine{00439\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_ad456ea69d66908dbb81a10d24c1d7009}{Attn}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_ATTN,\ 0xF6}}
+\DoxyCodeLine{00440\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_ae26ee868a5817eebfe43dd02de62ca77}{Crsel}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_CRSEL,\ 0xF7}}
+\DoxyCodeLine{00441\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_ab08439192e13d92404302334f711f820}{Exsel}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_EXSEL,\ 0xF8}}
+\DoxyCodeLine{00442\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_aa57c2ae40b0255d655ec6cf5c0ef4327}{EraseEof}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_EREOF,\ 0xF9}}
+\DoxyCodeLine{00443\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a0988480ca7e91cbd83973cdc77949fa4}{Play}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_PLAY,\ 0xFA}}
+\DoxyCodeLine{00444\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_ab1890d263bc76df367fa7f8a7290b3f4}{Zoom}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_ZOOM,\ 0xFB}}
+\DoxyCodeLine{00445\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a1729127c0347e40499386ec16e3ce795}{Reserved25}}\ :\ 1;}
+\DoxyCodeLine{00446\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_ac612a45855e8325d9b6f9cbf9b86c15b}{Pa1}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_PA1,\ 0xFD}}
+\DoxyCodeLine{00447\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a4d80c676a5dd783a2b6fa7c1f667c057}{OemClear}}\ :\ 1;\ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ VK\_OEM\_CLEAR,\ 0xFE}}
+\DoxyCodeLine{00448\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a14f50cb9303c8497e3ae7cc09cf7e1a8}{Reserved26}}\ :\ 1;}
+\DoxyCodeLine{00449\ }
+\DoxyCodeLine{00450\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#ifdef\ \_\_clang\_\_}}
+\DoxyCodeLine{00451\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#pragma\ clang\ diagnostic\ push}}
+\DoxyCodeLine{00452\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#pragma\ clang\ diagnostic\ ignored\ "{}-\/Wunknown-\/warning-\/option"{}}}
+\DoxyCodeLine{00453\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#pragma\ clang\ diagnostic\ ignored\ "{}-\/Wunsafe-\/buffer-\/usage"{}}}
+\DoxyCodeLine{00454\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#endif}}
+\DoxyCodeLine{00455\ }
+\DoxyCodeLine{00456\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \_\_cdecl\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_a8e0005dbe3322f936caf799ac653d644}{IsKeyDown}}(\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7b}{Keys}}\ key)\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00457\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00458\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (key\ <=\ 0xfe)}
+\DoxyCodeLine{00459\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00460\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ ptr\ =\ \textcolor{keyword}{reinterpret\_cast<}\textcolor{keyword}{const\ }uint32\_t*\textcolor{keyword}{>}(\textcolor{keyword}{this});}
+\DoxyCodeLine{00461\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ bf\ =\ 1u\ <<\ (key\ \&\ 0x1f);}
+\DoxyCodeLine{00462\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (ptr[(key\ >>\ 5)]\ \&\ bf)\ !=\ 0;}
+\DoxyCodeLine{00463\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00464\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00465\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00466\ }
+\DoxyCodeLine{00467\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \_\_cdecl\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state_ab6a7d7ed8c5e6814d00b1f9ed9110ef6}{IsKeyUp}}(\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7b}{Keys}}\ key)\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00468\ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00469\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (key\ <=\ 0xfe)}
+\DoxyCodeLine{00470\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00471\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{auto}\ ptr\ =\ \textcolor{keyword}{reinterpret\_cast<}\textcolor{keyword}{const\ }uint32\_t*\textcolor{keyword}{>}(\textcolor{keyword}{this});}
+\DoxyCodeLine{00472\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \textcolor{keywordtype}{unsigned}\ \textcolor{keywordtype}{int}\ bf\ =\ 1u\ <<\ (key\ \&\ 0x1f);}
+\DoxyCodeLine{00473\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ (ptr[(key\ >>\ 5)]\ \&\ bf)\ ==\ 0;}
+\DoxyCodeLine{00474\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00475\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \textcolor{keyword}{false};}
+\DoxyCodeLine{00476\ \ \ \ \ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00477\ }
+\DoxyCodeLine{00478\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#ifdef\ \_\_clang\_\_}}
+\DoxyCodeLine{00479\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#pragma\ clang\ diagnostic\ pop}}
+\DoxyCodeLine{00480\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#endif}}
+\DoxyCodeLine{00481\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00482\ }
+\DoxyCodeLine{00483\ \ \ \ \ \ \ \ \ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_1_1_keyboard_state_tracker_a7553a3f0e1aa23b009d5033e1a30540d}{KeyboardStateTracker}}}
+\DoxyCodeLine{00484\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00485\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00486\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state}{State}}\ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_1_1_keyboard_state_tracker_abcdded9a7405f9604d157fd9f8bdbfaa}{released}};}
+\DoxyCodeLine{00487\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state}{State}}\ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_1_1_keyboard_state_tracker_a9309a850993495b95322208bebf74cbc}{pressed}};}
+\DoxyCodeLine{00488\ }
+\DoxyCodeLine{00489\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#ifdef\ \_PREFAST\_}}
+\DoxyCodeLine{00490\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#pragma\ prefast(push)}}
+\DoxyCodeLine{00491\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#pragma\ prefast(disable\ :\ 26495,\ "{}Reset()\ performs\ the\ initialization"{})}}
+\DoxyCodeLine{00492\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#endif}}
+\DoxyCodeLine{00493\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_1_1_keyboard_state_tracker_a7553a3f0e1aa23b009d5033e1a30540d}{KeyboardStateTracker}}()\ noexcept\ \{\ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_1_1_keyboard_state_tracker_a92f284f423bfa4234b5714eb3aca80cb}{Reset}}();\ \}}
+\DoxyCodeLine{00494\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#ifdef\ \_PREFAST\_}}
+\DoxyCodeLine{00495\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#pragma\ prefast(pop)}}
+\DoxyCodeLine{00496\ \textcolor{preprocessor}{\ \ \ \ \ \ \ \ \#endif}}
+\DoxyCodeLine{00497\ }
+\DoxyCodeLine{00498\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_1_1_keyboard_state_tracker_a6c1a8d280d98ab3484e38f29b05bf776}{Update}}(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state}{State}}\&\ state)\ \textcolor{keyword}{noexcept};}
+\DoxyCodeLine{00499\ }
+\DoxyCodeLine{00500\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_1_1_keyboard_state_tracker_a92f284f423bfa4234b5714eb3aca80cb}{Reset}}()\ noexcept;}
+\DoxyCodeLine{00501\ }
+\DoxyCodeLine{00502\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_1_1_keyboard_state_tracker_a97ecd2905236c834b89f08b40820f426}{IsKeyPressed}}(\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7b}{Keys}}\ key)\ const\ noexcept\ \{\ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_1_1_keyboard_state_tracker_a9309a850993495b95322208bebf74cbc}{pressed}}.IsKeyDown(key);\ \}}
+\DoxyCodeLine{00503\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_1_1_keyboard_state_tracker_a6d9e8a0eff3484f77b5cc138a5de2534}{IsKeyReleased}}(\doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a21dd19235a46fda68f9590e9640b5b7b}{Keys}}\ key)\ \textcolor{keyword}{const}\ \textcolor{keyword}{noexcept}\ \{\ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_1_1_keyboard_state_tracker_abcdded9a7405f9604d157fd9f8bdbfaa}{released}}.IsKeyDown(key);\ \}}
+\DoxyCodeLine{00504\ }
+\DoxyCodeLine{00505\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state}{State}}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_1_1_keyboard_state_tracker_a785c4a46072cd7ba33e356f867c0c653}{GetLastState}}()\ const\ noexcept\ \{\ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_1_1_keyboard_state_tracker_ac80ecf1d21cfa74dcf2de0fe90e65139}{lastState}};\ \}}
+\DoxyCodeLine{00506\ }
+\DoxyCodeLine{00507\ \ \ \ \ \ \ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00508\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state}{State}}\ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_1_1_keyboard_state_tracker_ac80ecf1d21cfa74dcf2de0fe90e65139}{lastState}};}
+\DoxyCodeLine{00509\ \ \ \ \ \ \ \ \ \};}
+\DoxyCodeLine{00510\ }
+\DoxyCodeLine{00511\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Retrieve\ the\ current\ state\ of\ the\ keyboard}}
+\DoxyCodeLine{00512\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \doxymbox{\hyperlink{struct_direct_x_1_1_keyboard_1_1_state}{State}}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_aeb5f44d46943aa6cb5ae59378fea86f8}{GetState}}()\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00513\ }
+\DoxyCodeLine{00514\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Reset\ the\ keyboard\ state}}
+\DoxyCodeLine{00515\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_ad361e6a187b66304873799d729ae9985}{Reset}}()\ noexcept;}
+\DoxyCodeLine{00516\ }
+\DoxyCodeLine{00517\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Feature\ detection}}
+\DoxyCodeLine{00518\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{bool}\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_a09bda28f2af7b83e08a7b818431084fd}{IsConnected}}()\ const;}
+\DoxyCodeLine{00519\ }
+\DoxyCodeLine{00520\ \ \ \ \ \textcolor{preprocessor}{\#ifdef\ USING\_COREWINDOW}}
+\DoxyCodeLine{00521\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ SetWindow(ABI::Windows::UI::Core::ICoreWindow*\ window);}
+\DoxyCodeLine{00522\ \textcolor{preprocessor}{\ \ \ \ \#ifdef\ \_\_cplusplus\_winrt}}
+\DoxyCodeLine{00523\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ SetWindow(Windows::UI::Core::CoreWindow\string^\ window)}
+\DoxyCodeLine{00524\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00525\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ See\ https://msdn.microsoft.com/en-\/us/library/hh755802.aspx}}
+\DoxyCodeLine{00526\ \ \ \ \ \ \ \ \ \ \ \ \ SetWindow(\textcolor{keyword}{reinterpret\_cast<}ABI::Windows::UI::Core::ICoreWindow*\textcolor{keyword}{>}(window));}
+\DoxyCodeLine{00527\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00528\ \textcolor{preprocessor}{\ \ \ \ \#endif}}
+\DoxyCodeLine{00529\ \textcolor{preprocessor}{\ \ \ \ \#ifdef\ CPPWINRT\_VERSION}}
+\DoxyCodeLine{00530\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keyword}{inline}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ SetWindow(winrt::Windows::UI::Core::CoreWindow\ window)}
+\DoxyCodeLine{00531\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00532\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ See\ https://docs.microsoft.com/en-\/us/windows/uwp/cpp-\/and-\/winrt-\/apis/interop-\/winrt-\/abi}}
+\DoxyCodeLine{00533\ \ \ \ \ \ \ \ \ \ \ \ \ SetWindow(\textcolor{keyword}{reinterpret\_cast<}ABI::Windows::UI::Core::ICoreWindow*\textcolor{keyword}{>}(winrt::get\_abi(window)));}
+\DoxyCodeLine{00534\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00535\ \textcolor{preprocessor}{\ \ \ \ \#endif}}
+\DoxyCodeLine{00536\ \textcolor{preprocessor}{\ \ \ \ \#elif\ defined(WM\_USER)}}
+\DoxyCodeLine{00537\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keyword}{static}\ \textcolor{keywordtype}{void}\ \_\_cdecl\ ProcessMessage(UINT\ message,\ WPARAM\ wParam,\ LPARAM\ lParam)\ \textcolor{keyword}{noexcept};}
+\DoxyCodeLine{00538\ \textcolor{preprocessor}{\ \ \ \ \#endif}}
+\DoxyCodeLine{00539\ }
+\DoxyCodeLine{00540\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Singleton}}
+\DoxyCodeLine{00541\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}\ \textcolor{keyword}{static}\ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_afdfe991c7edb08e3efe9e2be66ef06a7}{Keyboard}}\&\ \_\_cdecl\ \doxymbox{\hyperlink{class_direct_x_1_1_keyboard_ab2d46681204b8a7e9488d37d227cee74}{Get}}();}
+\DoxyCodeLine{00542\ }
+\DoxyCodeLine{00543\ \ \ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00544\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Private\ implementation.}}
+\DoxyCodeLine{00545\ \ \ \ \ \ \ \ \ \textcolor{keyword}{class\ }Impl;}
+\DoxyCodeLine{00546\ }
+\DoxyCodeLine{00547\ \ \ \ \ \ \ \ \ std::unique\_ptr<Impl>\ pImpl;}
+\DoxyCodeLine{00548\ \ \ \ \ \};}
+\DoxyCodeLine{00549\ \}}
+\DoxyCodeLine{00550\ }
+\DoxyCodeLine{00551\ \textcolor{preprocessor}{\#ifdef\ \_\_clang\_\_}}
+\DoxyCodeLine{00552\ \textcolor{preprocessor}{\#pragma\ clang\ diagnostic\ pop}}
+\DoxyCodeLine{00553\ \textcolor{preprocessor}{\#endif}}
+
+\end{DoxyCode}

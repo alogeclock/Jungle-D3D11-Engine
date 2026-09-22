@@ -1,0 +1,23 @@
+RmlUi binary build information
+==============================
+
+RmlUi source: https://github.com/mikke89/RmlUi
+RmlUi commit: a0f50611531cff8fe2af4b55f193ed2cfd6b8499
+FreeType source: https://gitlab.freedesktop.org/freetype/freetype
+FreeType version: VER-2-13-3 (42608f77f20749dd6ddc9e0536788eaad70ea4b5)
+
+Platform: Windows x64
+Toolchain: Visual Studio 2022, MSVC 19.44.35228, Windows SDK 10.0.26100.0
+RmlUi linkage: Shared library
+FreeType linkage: Static library
+
+RmlUi options:
+  BUILD_SHARED_LIBS=ON
+  RMLUI_SAMPLES=OFF
+  BUILD_TESTING=OFF
+  RMLUI_LUA_BINDINGS=OFF
+  RMLUI_SVG_PLUGIN=OFF
+  RMLUI_LOTTIE_PLUGIN=OFF
+
+The selected RmlUi commit is the latest official commit whose complete public
+header set is byte-for-byte identical to ThirdParty/RmlUi/Include/RmlUi.

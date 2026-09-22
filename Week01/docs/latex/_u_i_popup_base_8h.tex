@@ -1,0 +1,108 @@
+\doxysection{UI/\+popup/\+\+UIPopup\+Base.h File Reference}
+\hypertarget{_u_i_popup_base_8h}{}\label{_u_i_popup_base_8h}\index{UI/popup/UIPopupBase.h@{UI/popup/UIPopupBase.h}}
+{\ttfamily \+\#include "{}UIPopup\+Action.\+h"{}}\newline
+{\ttfamily \+\#include "{}imgui/\+imgui.\+h"{}}\newline
+{\ttfamily \+\#include $<$initializer\+\_\+list$>$}\newline
+{\ttfamily \+\#include $<$string$>$}\newline
+{\ttfamily \+\#include $<$string\+\_\+view$>$}\newline
+\doxysubsubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \doxymbox{\hyperlink{struct_f_popup_frame_layout}{FPopup\+Frame\+Layout}}
+\item 
+class \doxymbox{\hyperlink{class_f_u_i_popup_base}{FUIPopup\+Base}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum class \doxymbox{\hyperlink{_u_i_popup_base_8h_a27a1627db9ed7cbd3aeee442c7a400ec}{EUIPopup\+Content\+Align}} \{ \doxymbox{\hyperlink{_u_i_popup_base_8h_a27a1627db9ed7cbd3aeee442c7a400eca945d5e233cf7d6240f6b783b36a374ff}{Left}}
+, \doxymbox{\hyperlink{_u_i_popup_base_8h_a27a1627db9ed7cbd3aeee442c7a400eca4f1f6016fc9f3f2353c0cc7c67b292bd}{Center}}
+, \doxymbox{\hyperlink{_u_i_popup_base_8h_a27a1627db9ed7cbd3aeee442c7a400eca92b09c7c48c520c3c55e497875da437c}{Right}}
+ \}
+\item 
+enum class \doxymbox{\hyperlink{_u_i_popup_base_8h_a6cd788de8a8bee68b0aff0957db765e8}{EUIPopup\+Content\+Text\+Size}} \{ \doxymbox{\hyperlink{_u_i_popup_base_8h_a6cd788de8a8bee68b0aff0957db765e8a2660064e68655415da2628c2ae2f7592}{Small}}
+, \doxymbox{\hyperlink{_u_i_popup_base_8h_a6cd788de8a8bee68b0aff0957db765e8a87f8a6ab85c9ced3702b4ea641ad4bb5}{Medium}}
+, \doxymbox{\hyperlink{_u_i_popup_base_8h_a6cd788de8a8bee68b0aff0957db765e8ad491538da818a2ba11a3195ba035cfd3}{Big}}
+ \}
+\item 
+enum class \doxymbox{\hyperlink{_u_i_popup_base_8h_a4502f6f451e4866d2bf38c75e7ea6f74}{EUIPopup\+Content\+Vertical\+Align}} \{ \doxymbox{\hyperlink{_u_i_popup_base_8h_a4502f6f451e4866d2bf38c75e7ea6f74aa4ffdcf0dc1f31b9acaf295d75b51d00}{Top}}
+, \doxymbox{\hyperlink{_u_i_popup_base_8h_a4502f6f451e4866d2bf38c75e7ea6f74a4f1f6016fc9f3f2353c0cc7c67b292bd}{Center}}
+ \}
+\end{DoxyCompactItemize}
+
+
+\label{doc-enum-members}
+\Hypertarget{_u_i_popup_base_8h_doc-enum-members}
+\doxysubsection{Enumeration Type Documentation}
+\Hypertarget{_u_i_popup_base_8h_a27a1627db9ed7cbd3aeee442c7a400ec}\index{UIPopupBase.h@{UIPopupBase.h}!EUIPopupContentAlign@{EUIPopupContentAlign}}
+\index{EUIPopupContentAlign@{EUIPopupContentAlign}!UIPopupBase.h@{UIPopupBase.h}}
+\doxysubsubsection{\texorpdfstring{EUIPopupContentAlign}{EUIPopupContentAlign}}
+{\footnotesize\ttfamily \label{_u_i_popup_base_8h_a27a1627db9ed7cbd3aeee442c7a400ec} 
+enum class \doxymbox{\hyperlink{_u_i_popup_base_8h_a27a1627db9ed7cbd3aeee442c7a400ec}{EUIPopup\+Content\+Align}}\hspace{0.3cm}{\ttfamily [strong]}}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Left@{Left}!UIPopupBase.h@{UIPopupBase.h}}
+\index{UIPopupBase.h@{UIPopupBase.h}!Left@{Left}}
+}\Hypertarget{_u_i_popup_base_8h_a27a1627db9ed7cbd3aeee442c7a400eca945d5e233cf7d6240f6b783b36a374ff}\label{_u_i_popup_base_8h_a27a1627db9ed7cbd3aeee442c7a400eca945d5e233cf7d6240f6b783b36a374ff} 
+Left&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Center@{Center}!UIPopupBase.h@{UIPopupBase.h}}
+\index{UIPopupBase.h@{UIPopupBase.h}!Center@{Center}}
+}\Hypertarget{_u_i_popup_base_8h_a27a1627db9ed7cbd3aeee442c7a400eca4f1f6016fc9f3f2353c0cc7c67b292bd}\label{_u_i_popup_base_8h_a27a1627db9ed7cbd3aeee442c7a400eca4f1f6016fc9f3f2353c0cc7c67b292bd} 
+Center&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Right@{Right}!UIPopupBase.h@{UIPopupBase.h}}
+\index{UIPopupBase.h@{UIPopupBase.h}!Right@{Right}}
+}\Hypertarget{_u_i_popup_base_8h_a27a1627db9ed7cbd3aeee442c7a400eca92b09c7c48c520c3c55e497875da437c}\label{_u_i_popup_base_8h_a27a1627db9ed7cbd3aeee442c7a400eca92b09c7c48c520c3c55e497875da437c} 
+Right&\\
+\hline
+
+\end{DoxyEnumFields}
+\Hypertarget{_u_i_popup_base_8h_a6cd788de8a8bee68b0aff0957db765e8}\index{UIPopupBase.h@{UIPopupBase.h}!EUIPopupContentTextSize@{EUIPopupContentTextSize}}
+\index{EUIPopupContentTextSize@{EUIPopupContentTextSize}!UIPopupBase.h@{UIPopupBase.h}}
+\doxysubsubsection{\texorpdfstring{EUIPopupContentTextSize}{EUIPopupContentTextSize}}
+{\footnotesize\ttfamily \label{_u_i_popup_base_8h_a6cd788de8a8bee68b0aff0957db765e8} 
+enum class \doxymbox{\hyperlink{_u_i_popup_base_8h_a6cd788de8a8bee68b0aff0957db765e8}{EUIPopup\+Content\+Text\+Size}}\hspace{0.3cm}{\ttfamily [strong]}}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Small@{Small}!UIPopupBase.h@{UIPopupBase.h}}
+\index{UIPopupBase.h@{UIPopupBase.h}!Small@{Small}}
+}\Hypertarget{_u_i_popup_base_8h_a6cd788de8a8bee68b0aff0957db765e8a2660064e68655415da2628c2ae2f7592}\label{_u_i_popup_base_8h_a6cd788de8a8bee68b0aff0957db765e8a2660064e68655415da2628c2ae2f7592} 
+Small&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Medium@{Medium}!UIPopupBase.h@{UIPopupBase.h}}
+\index{UIPopupBase.h@{UIPopupBase.h}!Medium@{Medium}}
+}\Hypertarget{_u_i_popup_base_8h_a6cd788de8a8bee68b0aff0957db765e8a87f8a6ab85c9ced3702b4ea641ad4bb5}\label{_u_i_popup_base_8h_a6cd788de8a8bee68b0aff0957db765e8a87f8a6ab85c9ced3702b4ea641ad4bb5} 
+Medium&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Big@{Big}!UIPopupBase.h@{UIPopupBase.h}}
+\index{UIPopupBase.h@{UIPopupBase.h}!Big@{Big}}
+}\Hypertarget{_u_i_popup_base_8h_a6cd788de8a8bee68b0aff0957db765e8ad491538da818a2ba11a3195ba035cfd3}\label{_u_i_popup_base_8h_a6cd788de8a8bee68b0aff0957db765e8ad491538da818a2ba11a3195ba035cfd3} 
+Big&\\
+\hline
+
+\end{DoxyEnumFields}
+\Hypertarget{_u_i_popup_base_8h_a4502f6f451e4866d2bf38c75e7ea6f74}\index{UIPopupBase.h@{UIPopupBase.h}!EUIPopupContentVerticalAlign@{EUIPopupContentVerticalAlign}}
+\index{EUIPopupContentVerticalAlign@{EUIPopupContentVerticalAlign}!UIPopupBase.h@{UIPopupBase.h}}
+\doxysubsubsection{\texorpdfstring{EUIPopupContentVerticalAlign}{EUIPopupContentVerticalAlign}}
+{\footnotesize\ttfamily \label{_u_i_popup_base_8h_a4502f6f451e4866d2bf38c75e7ea6f74} 
+enum class \doxymbox{\hyperlink{_u_i_popup_base_8h_a4502f6f451e4866d2bf38c75e7ea6f74}{EUIPopup\+Content\+Vertical\+Align}}\hspace{0.3cm}{\ttfamily [strong]}}
+
+\begin{DoxyEnumFields}[2]{Enumerator}
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Top@{Top}!UIPopupBase.h@{UIPopupBase.h}}
+\index{UIPopupBase.h@{UIPopupBase.h}!Top@{Top}}
+}\Hypertarget{_u_i_popup_base_8h_a4502f6f451e4866d2bf38c75e7ea6f74aa4ffdcf0dc1f31b9acaf295d75b51d00}\label{_u_i_popup_base_8h_a4502f6f451e4866d2bf38c75e7ea6f74aa4ffdcf0dc1f31b9acaf295d75b51d00} 
+Top&\\
+\hline
+
+\raisebox{\heightof{T}}[0pt][0pt]{\index{Center@{Center}!UIPopupBase.h@{UIPopupBase.h}}
+\index{UIPopupBase.h@{UIPopupBase.h}!Center@{Center}}
+}\Hypertarget{_u_i_popup_base_8h_a4502f6f451e4866d2bf38c75e7ea6f74a4f1f6016fc9f3f2353c0cc7c67b292bd}\label{_u_i_popup_base_8h_a4502f6f451e4866d2bf38c75e7ea6f74a4f1f6016fc9f3f2353c0cc7c67b292bd} 
+Center&\\
+\hline
+
+\end{DoxyEnumFields}

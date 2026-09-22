@@ -1,0 +1,49 @@
+\doxysection{packages/\+directxtk12\+\_\+desktop\+\_\+2019.2025.10.28.1/\+include/\+\+Buffer\+Helpers.h File Reference}
+\hypertarget{_buffer_helpers_8h}{}\label{_buffer_helpers_8h}\index{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/BufferHelpers.h@{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/BufferHelpers.h}}
+{\ttfamily \+\#include $<$d3d12.\+h$>$}\newline
+{\ttfamily \+\#include $<$cstddef$>$}\newline
+{\ttfamily \+\#include $<$cstdint$>$}\newline
+\doxysubsubsection*{Namespaces}
+\begin{DoxyCompactItemize}
+\item 
+namespace \doxymbox{\hyperlink{namespace_direct_x}{DirectX}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\+\#define \doxymbox{\hyperlink{_buffer_helpers_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}}
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} HRESULT \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{namespace_direct_x_a41cd3f49f5df156284b75c57af68393a}{Direct\+X::\+\+Create\+Static\+Buffer}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{Resource\+Upload\+Batch}} \&resource\+Upload, \+\_\+\+In\+\_\+reads\+\_\+bytes\+\_\+(count \texorpdfstring{$\ast$}{*}stride) const void \texorpdfstring{$\ast$}{*}ptr, size\+\_\+t count, size\+\_\+t stride, D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATES after\+State, \+\_\+\+COM\+\_\+\+Outptr\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}p\+Buffer, D3\+D12\+\_\+\+RESOURCE\+\_\+\+FLAGS res\+Flags=D3\+D12\+\_\+\+RESOURCE\+\_\+\+FLAG\+\_\+\+NONE) noexcept
+\item 
+{\footnotesize template$<$typename T$>$ }\\HRESULT \doxymbox{\hyperlink{namespace_direct_x_a0d58593bbd508fadb5d123b7b2b1b321}{Direct\+X::\+\+Create\+Static\+Buffer}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{Resource\+Upload\+Batch}} \&resource\+Upload, \+\_\+\+In\+\_\+reads\+\_\+(count) T const \texorpdfstring{$\ast$}{*}data, size\+\_\+t count, D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATES after\+State, \+\_\+\+COM\+\_\+\+Outptr\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}p\+Buffer, D3\+D12\+\_\+\+RESOURCE\+\_\+\+FLAGS res\+Flags=D3\+D12\+\_\+\+RESOURCE\+\_\+\+FLAG\+\_\+\+NONE) noexcept
+\item 
+{\footnotesize template$<$typename T$>$ }\\HRESULT \doxymbox{\hyperlink{namespace_direct_x_ab7c7ce9b2329eaa2b4a8424ea7c2a6e3}{Direct\+X::\+\+Create\+Static\+Buffer}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{Resource\+Upload\+Batch}} \&resource\+Upload, T const \&data, D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATES after\+State, \+\_\+\+COM\+\_\+\+Outptr\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}p\+Buffer, D3\+D12\+\_\+\+RESOURCE\+\_\+\+FLAGS res\+Flags=D3\+D12\+\_\+\+RESOURCE\+\_\+\+FLAG\+\_\+\+NONE) noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} HRESULT \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{namespace_direct_x_ab0165994fa70dfe1256288fe7598203e}{Direct\+X::\+\+Create\+UAVBuffer}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, uint64\+\_\+t buffer\+Size, \+\_\+\+COM\+\_\+\+Outptr\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}p\+Buffer, D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATES initial\+State=D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATE\+\_\+\+COMMON, D3\+D12\+\_\+\+RESOURCE\+\_\+\+FLAGS additional\+Res\+Flags=D3\+D12\+\_\+\+RESOURCE\+\_\+\+FLAG\+\_\+\+NONE) noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} HRESULT \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{namespace_direct_x_a4ece338664ba0f998aa87c4165aeef23}{Direct\+X::\+\+Create\+Upload\+Buffer}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \+\_\+\+In\+\_\+reads\+\_\+bytes\+\_\+opt\+\_\+(count \texorpdfstring{$\ast$}{*}stride) const void \texorpdfstring{$\ast$}{*}ptr, size\+\_\+t count, size\+\_\+t stride, \+\_\+\+COM\+\_\+\+Outptr\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}p\+Buffer, D3\+D12\+\_\+\+RESOURCE\+\_\+\+FLAGS res\+Flags=D3\+D12\+\_\+\+RESOURCE\+\_\+\+FLAG\+\_\+\+NONE) noexcept
+\item 
+{\footnotesize template$<$typename T$>$ }\\HRESULT \doxymbox{\hyperlink{namespace_direct_x_a29abbc600ec6b1138b8ad2b7fece4422}{Direct\+X::\+\+Create\+Upload\+Buffer}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \+\_\+\+In\+\_\+reads\+\_\+(count) T const \texorpdfstring{$\ast$}{*}data, size\+\_\+t count, \+\_\+\+COM\+\_\+\+Outptr\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}p\+Buffer, D3\+D12\+\_\+\+RESOURCE\+\_\+\+FLAGS res\+Flags=D3\+D12\+\_\+\+RESOURCE\+\_\+\+FLAG\+\_\+\+NONE) noexcept
+\item 
+{\footnotesize template$<$typename T$>$ }\\HRESULT \doxymbox{\hyperlink{namespace_direct_x_ac3108b3e2c740117d4d17b6f5f08a29f}{Direct\+X::\+\+Create\+Upload\+Buffer}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, T const \&data, \+\_\+\+COM\+\_\+\+Outptr\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}p\+Buffer, D3\+D12\+\_\+\+RESOURCE\+\_\+\+FLAGS res\+Flags=D3\+D12\+\_\+\+RESOURCE\+\_\+\+FLAG\+\_\+\+NONE) noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} HRESULT \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{namespace_direct_x_a421cb065e93712164a0809f15ad9d91c}{Direct\+X::\+\+Create\+Texture\+From\+Memory}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{Resource\+Upload\+Batch}} \&resource\+Upload, size\+\_\+t width, DXGI\+\_\+\+FORMAT format, const D3\+D12\+\_\+\+SUBRESOURCE\+\_\+\+DATA \&init\+Data, \+\_\+\+COM\+\_\+\+Outptr\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}texture, D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATES after\+State=D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATE\+\_\+\+PIXEL\+\_\+\+SHADER\+\_\+\+RESOURCE, D3\+D12\+\_\+\+RESOURCE\+\_\+\+FLAGS res\+Flags=D3\+D12\+\_\+\+RESOURCE\+\_\+\+FLAG\+\_\+\+NONE) noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} HRESULT \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{namespace_direct_x_aa774adc671d83b043adce660d55ebc7e}{Direct\+X::\+\+Create\+Texture\+From\+Memory}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{Resource\+Upload\+Batch}} \&resource\+Upload, size\+\_\+t width, size\+\_\+t height, DXGI\+\_\+\+FORMAT format, const D3\+D12\+\_\+\+SUBRESOURCE\+\_\+\+DATA \&init\+Data, \+\_\+\+COM\+\_\+\+Outptr\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}texture, bool generate\+Mips=false, D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATES after\+State=D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATE\+\_\+\+PIXEL\+\_\+\+SHADER\+\_\+\+RESOURCE, D3\+D12\+\_\+\+RESOURCE\+\_\+\+FLAGS res\+Flags=D3\+D12\+\_\+\+RESOURCE\+\_\+\+FLAG\+\_\+\+NONE) noexcept
+\item 
+\doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}} HRESULT \+\_\+\+\_\+cdecl \doxymbox{\hyperlink{namespace_direct_x_a55b8a580067ffe918b7ceb509bca7585}{Direct\+X::\+\+Create\+Texture\+From\+Memory}} (\+\_\+\+In\+\_\+ ID3\+D12\+Device \texorpdfstring{$\ast$}{*}device, \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{Resource\+Upload\+Batch}} \&resource\+Upload, size\+\_\+t width, size\+\_\+t height, size\+\_\+t depth, DXGI\+\_\+\+FORMAT format, const D3\+D12\+\_\+\+SUBRESOURCE\+\_\+\+DATA \&init\+Data, \+\_\+\+COM\+\_\+\+Outptr\+\_\+ ID3\+D12\+Resource \texorpdfstring{$\ast$}{*}\texorpdfstring{$\ast$}{*}texture, D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATES after\+State=D3\+D12\+\_\+\+RESOURCE\+\_\+\+STATE\+\_\+\+PIXEL\+\_\+\+SHADER\+\_\+\+RESOURCE, D3\+D12\+\_\+\+RESOURCE\+\_\+\+FLAGS res\+Flags=D3\+D12\+\_\+\+RESOURCE\+\_\+\+FLAG\+\_\+\+NONE) noexcept
+\end{DoxyCompactItemize}
+
+
+\label{doc-define-members}
+\Hypertarget{_buffer_helpers_8h_doc-define-members}
+\doxysubsection{Macro Definition Documentation}
+\Hypertarget{_buffer_helpers_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}\index{BufferHelpers.h@{BufferHelpers.h}!DIRECTX\_TOOLKIT\_API@{DIRECTX\_TOOLKIT\_API}}
+\index{DIRECTX\_TOOLKIT\_API@{DIRECTX\_TOOLKIT\_API}!BufferHelpers.h@{BufferHelpers.h}}
+\doxysubsubsection{\texorpdfstring{DIRECTX\_TOOLKIT\_API}{DIRECTX\_TOOLKIT\_API}}
+{\footnotesize\ttfamily \label{_buffer_helpers_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74} 
+\+\#define DIRECTX\+\_\+\+TOOLKIT\+\_\+\+API}
+

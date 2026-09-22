@@ -1,0 +1,69 @@
+\doxysection{Font\+Manager.\+h}
+\hypertarget{_font_manager_8h_source}{}\label{_font_manager_8h_source}\index{Render/FontManager.h@{Render/FontManager.h}}
+\doxymbox{\hyperlink{_font_manager_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <memory>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ <unordered\_map>}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_texture_8h}{Render/Texture.h}}"{}}}
+\DoxyCodeLine{00006\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_bitmap_font_8h}{Render/BitmapFont.h}}"{}}}
+\DoxyCodeLine{00007\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_text_quad_8h}{Render/TextQuad.h}}"{}}}
+\DoxyCodeLine{00008\ }
+\DoxyCodeLine{00009\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_font_tex_pair}{FontTexPair}}}
+\DoxyCodeLine{00010\ \{}
+\DoxyCodeLine{00011\ \ \ \ \ std::unique\_ptr<FBitmapFont>\ \doxymbox{\hyperlink{struct_font_tex_pair_a5ba9d13cbaeec88656ac8f7b320f3cf1}{Font}};}
+\DoxyCodeLine{00012\ \ \ \ \ std::unique\_ptr<FTexture>\ \doxymbox{\hyperlink{struct_font_tex_pair_a589dcd01cdb1471b3a1c5893d0efa3d9}{Tex}};}
+\DoxyCodeLine{00013\ \};}
+\DoxyCodeLine{00014\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_font_manager}{FFontManager}}}
+\DoxyCodeLine{00015\ \{}
+\DoxyCodeLine{00016\ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00017\ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \doxymbox{\hyperlink{class_f_font_manager_aa4ff57fe79e2417b9d6feb93d24158a7}{Register}}(\textcolor{keyword}{const}\ std::string\&\ Key,\ \textcolor{keyword}{const}\ std::string\&\ path,\ std::unique\_ptr<FTexture>\ Texture);}
+\DoxyCodeLine{00018\ \ \ \ \ \doxymbox{\hyperlink{struct_font_tex_pair}{FontTexPair}}*\ \doxymbox{\hyperlink{class_f_font_manager_a2afc1ea7909265f23a8ae08d093ebb03}{Get}}(\textcolor{keyword}{const}\ std::string\&\ Key)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00019\ \ \ \ \ \textcolor{keywordtype}{bool}\ \ \ \ \ \ \doxymbox{\hyperlink{class_f_font_manager_ae37465d9bb0660cfd3a6da05c089d951}{Has}}(\textcolor{keyword}{const}\ std::string\&\ Key)\ \textcolor{keyword}{const};}
+\DoxyCodeLine{00020\ }
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_font_manager_a9cfa641c9ebf51f09df5eac50fb11506}{Unload}}(\textcolor{keyword}{const}\ std::string\&\ Key);}
+\DoxyCodeLine{00022\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_font_manager_abcfe32d907caa0b839a209ed07c38077}{Clear}}();}
+\DoxyCodeLine{00023\ }
+\DoxyCodeLine{00024\ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00025\ \ \ \ \ std::unordered\_map<std::string,\ std::unique\_ptr<FontTexPair>>\ Fonts;}
+\DoxyCodeLine{00026\ \};}
+\DoxyCodeLine{00027\ }
+\DoxyCodeLine{00028\ }
+\DoxyCodeLine{00029\ \textcolor{keyword}{static}\ std::vector<FTextQuad>\ BuildQuads(\textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_f_bitmap_font}{FBitmapFont}}\&\ Font,}
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{keyword}{const}\ std::string\&\ Text,\ \textcolor{keywordtype}{float}\ StartX,\ \textcolor{keywordtype}{float}\ StartY,\ \textcolor{keywordtype}{float}\ ScaleFactor\ =\ 1.0f)}
+\DoxyCodeLine{00031\ \{}
+\DoxyCodeLine{00032\ \ \ \ \ std::vector<FTextQuad>\ Quads;}
+\DoxyCodeLine{00033\ \ \ \ \ \doxymbox{\hyperlink{struct_f_vec2}{FVec2}}\ Cursor;}
+\DoxyCodeLine{00034\ \ \ \ \ Cursor.\doxymbox{\hyperlink{struct_f_vec2_adb6b617a774d1714b824bdbaf153809b}{X}}\ =\ StartX;\ Cursor.\doxymbox{\hyperlink{struct_f_vec2_accb1f72779f7373fea3a5e2ef913f73f}{Y}}\ =\ StartY;}
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keywordflow}{for}\ (\textcolor{keywordtype}{char}\ c\ :\ Text)}
+\DoxyCodeLine{00036\ \ \ \ \ \{}
+\DoxyCodeLine{00037\ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ \doxymbox{\hyperlink{struct_f_glyph}{FGlyph}}*\ Glyph\ =\ Font.\doxymbox{\hyperlink{struct_f_bitmap_font_a137b7bc59f692fbd1263cef0acd8e8e3}{Get}}(c);}
+\DoxyCodeLine{00038\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{if}\ (!Glyph)}
+\DoxyCodeLine{00039\ \ \ \ \ \ \ \ \ \{}
+\DoxyCodeLine{00040\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{continue};}
+\DoxyCodeLine{00041\ \ \ \ \ \ \ \ \ \}}
+\DoxyCodeLine{00042\ }
+\DoxyCodeLine{00043\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{struct_f_text_quad}{FTextQuad}}\ Quad;}
+\DoxyCodeLine{00044\ \ \ \ \ \ \ \ \ Quad.\doxymbox{\hyperlink{struct_f_text_quad_ad0e8770507d5f8cbca4b7c972be098ae}{Width}}\ =\ Glyph-\/>\doxymbox{\hyperlink{struct_f_glyph_afe3a1d3b801b8beb40f0ee348cd8c99d}{Width}}\ *\ ScaleFactor;}
+\DoxyCodeLine{00045\ \ \ \ \ \ \ \ \ Quad.\doxymbox{\hyperlink{struct_f_text_quad_acf219d603807ca2f6a0bed2c015b061a}{Height}}\ =\ Glyph-\/>\doxymbox{\hyperlink{struct_f_glyph_a9809193acef7e44c565463d374674a1a}{Height}}\ *\ ScaleFactor;}
+\DoxyCodeLine{00046\ }
+\DoxyCodeLine{00047\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ BMFont\ offsets\ are\ relative\ to\ top-\/left\ of\ cursor.}}
+\DoxyCodeLine{00048\ \ \ \ \ \ \ \ \ \textcolor{comment}{//\ Since\ we\ draw\ from\ center\ (-\/0.5\ to\ 0.5),\ we\ add\ half-\/width/height.}}
+\DoxyCodeLine{00049\ \ \ \ \ \ \ \ \ Quad.\doxymbox{\hyperlink{struct_f_text_quad_a993a219859155593488d09ba6c165b7c}{ScreenX}}\ =\ Cursor.\doxymbox{\hyperlink{struct_f_vec2_adb6b617a774d1714b824bdbaf153809b}{X}}\ +\ Glyph-\/>\doxymbox{\hyperlink{struct_f_glyph_a908c24cc4fce04a92628e961e9272703}{XOffset}}\ *\ ScaleFactor\ +\ (Quad.\doxymbox{\hyperlink{struct_f_text_quad_ad0e8770507d5f8cbca4b7c972be098ae}{Width}}\ *\ 0.5f);}
+\DoxyCodeLine{00050\ \ \ \ \ \ \ \ \ Quad.\doxymbox{\hyperlink{struct_f_text_quad_a2b4400f8eb8f250e76c57f34bbbaba82}{ScreenY}}\ =\ Cursor.\doxymbox{\hyperlink{struct_f_vec2_accb1f72779f7373fea3a5e2ef913f73f}{Y}}\ +\ Glyph-\/>\doxymbox{\hyperlink{struct_f_glyph_a51e3560a24346ede3b475004e89133fc}{YOffset}}\ *\ ScaleFactor\ +\ (Quad.\doxymbox{\hyperlink{struct_f_text_quad_acf219d603807ca2f6a0bed2c015b061a}{Height}}\ *\ 0.5f);}
+\DoxyCodeLine{00051\ }
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ Quad.\doxymbox{\hyperlink{struct_f_text_quad_a2c917dd3c96122c44df5a5b4726ffc04}{U0}}\ =\ Glyph-\/>\doxymbox{\hyperlink{struct_f_glyph_a7949cc09ee1806d53d458057be785a3e}{X}}\ /\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{float}\textcolor{keyword}{>}(Font.\doxymbox{\hyperlink{struct_f_bitmap_font_af6983f85445d24579a3ebe859628b461}{ScaleW}});}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ Quad.\doxymbox{\hyperlink{struct_f_text_quad_a4cc9d86ba6f9fc96515d2e65d6c049e0}{V0}}\ =\ Glyph-\/>\doxymbox{\hyperlink{struct_f_glyph_a9d7a3c311d8e401be87e966ccaf66a3e}{Y}}\ /\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{float}\textcolor{keyword}{>}(Font.\doxymbox{\hyperlink{struct_f_bitmap_font_a340eeb4436b559f929d7489b40e21ee3}{ScaleH}});}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ Quad.\doxymbox{\hyperlink{struct_f_text_quad_a4fd01fb02263ca05bb32cdb91f70612c}{U1}}\ =\ (Glyph-\/>\doxymbox{\hyperlink{struct_f_glyph_a7949cc09ee1806d53d458057be785a3e}{X}}\ +\ Glyph-\/>\doxymbox{\hyperlink{struct_f_glyph_afe3a1d3b801b8beb40f0ee348cd8c99d}{Width}})\ /\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{float}\textcolor{keyword}{>}(Font.\doxymbox{\hyperlink{struct_f_bitmap_font_af6983f85445d24579a3ebe859628b461}{ScaleW}});}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ Quad.\doxymbox{\hyperlink{struct_f_text_quad_a82189edbc981e7a10e1cecb973cceb4b}{V1}}\ =\ (Glyph-\/>\doxymbox{\hyperlink{struct_f_glyph_a9d7a3c311d8e401be87e966ccaf66a3e}{Y}}\ +\ Glyph-\/>\doxymbox{\hyperlink{struct_f_glyph_a9809193acef7e44c565463d374674a1a}{Height}})\ /\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{float}\textcolor{keyword}{>}(Font.\doxymbox{\hyperlink{struct_f_bitmap_font_a340eeb4436b559f929d7489b40e21ee3}{ScaleH}});}
+\DoxyCodeLine{00056\ }
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ Cursor.\doxymbox{\hyperlink{struct_f_vec2_adb6b617a774d1714b824bdbaf153809b}{X}}\ +=\ \textcolor{keyword}{static\_cast<}\textcolor{keywordtype}{float}\textcolor{keyword}{>}(Glyph-\/>\doxymbox{\hyperlink{struct_f_glyph_a4e567d82dcf27c0b958785ffd6b96e7a}{XAdvance}})\ *\ ScaleFactor\ +\ Font.\doxymbox{\hyperlink{struct_f_bitmap_font_ace99f759261d4a570155dbc49091c844}{ThickNess}}\ *\ ScaleFactor;}
+\DoxyCodeLine{00058\ }
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ Quads.push\_back(Quad);}
+\DoxyCodeLine{00060\ \ \ \ \ \}}
+\DoxyCodeLine{00061\ }
+\DoxyCodeLine{00062\ \ \ \ \ \textcolor{keywordflow}{return}\ Quads;}
+\DoxyCodeLine{00063\ \}}
+
+\end{DoxyCode}

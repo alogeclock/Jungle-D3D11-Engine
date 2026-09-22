@@ -1,0 +1,9 @@
+BasedOnStyle: LLVM
+IndentWidth: 4
+NamespaceIndentation: All
+ColumnLimit: 100
+BreakBeforeBraces: Allman # 제어문도 break 하고싶다면 Allman으로 변경
+AlignConsecutiveDeclarations: true
+
+SortIncludes: false
+IncludeBlocks: Merge # 만약 카테고리 별로 띄우고싶으면 Regroup으로 변경

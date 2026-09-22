@@ -1,0 +1,46 @@
+\doxysection{Test\+Scene.\+h}
+\hypertarget{_test_scene_8h_source}{}\label{_test_scene_8h_source}\index{Scene/TestScene.h@{Scene/TestScene.h}}
+\doxymbox{\hyperlink{_test_scene_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00002\ }
+\DoxyCodeLine{00003\ \textcolor{preprocessor}{\#include\ <string>}}
+\DoxyCodeLine{00004\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_scene_8h}{Scene/Scene.h}}"{}}}
+\DoxyCodeLine{00005\ \textcolor{preprocessor}{\#include\ "{}\doxymbox{\hyperlink{_u_i_manager_8h}{UI/UIManager.h}}"{}}}
+\DoxyCodeLine{00006\ }
+\DoxyCodeLine{00007\ \textcolor{keyword}{struct\ }\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}};}
+\DoxyCodeLine{00008\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_u_i_popup_base}{FUIPopupBase}};}
+\DoxyCodeLine{00009\ \textcolor{keyword}{enum\ class}\ \doxymbox{\hyperlink{_u_i_popup_action_8h_aa5ecfd7a32541f889e86cd3acde85b1a}{EUIPopupAction}};}
+\DoxyCodeLine{00010\ }
+\DoxyCodeLine{00011\ \textcolor{keyword}{class\ }\doxymbox{\hyperlink{class_f_test_scene}{FTestScene}}\ :\ \textcolor{keyword}{public}\ \doxymbox{\hyperlink{class_i_scene}{IScene}}}
+\DoxyCodeLine{00012\ \{}
+\DoxyCodeLine{00013\ \ \ \textcolor{keyword}{public}:}
+\DoxyCodeLine{00014\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_test_scene_a51694c009b2c0dd288051b742c7856a1}{Update}}(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\ \&Context)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00015\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_f_test_scene_a6252f166d504f9e4dd2327e6fe353fd5}{Render}}(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\ \&Context)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00016\ }
+\DoxyCodeLine{00017\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00018\ \ \ \ \ \textcolor{keywordtype}{void}\ RenderBackground(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\ \&Context);}
+\DoxyCodeLine{00019\ \ \ \ \ \textcolor{keywordtype}{void}\ RenderMenu(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\ \&Context);}
+\DoxyCodeLine{00020\ \ \ \ \ \textcolor{keywordtype}{void}\ HandleMenuCommand(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\ \&Context);}
+\DoxyCodeLine{00021\ \ \ \ \ \textcolor{keywordtype}{void}\ HandlePopupResult(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\ \&Context);}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \ \ \ \ \textcolor{keywordtype}{void}\ OpenCreditPopup();}
+\DoxyCodeLine{00024\ \ \ \ \ \textcolor{keywordtype}{void}\ OpenScoreboardPopup();}
+\DoxyCodeLine{00025\ \ \ \ \ \textcolor{keywordtype}{void}\ OpenGameOverPopup();}
+\DoxyCodeLine{00026\ \ \ \ \ \textcolor{keywordtype}{void}\ OpenStageClearPopup(\textcolor{keywordtype}{bool}\ bAllCleared);}
+\DoxyCodeLine{00027\ \ \ \ \ \textcolor{keywordtype}{void}\ OpenSaveScorePopup();}
+\DoxyCodeLine{00028\ \ \ \ \ \textcolor{keywordtype}{void}\ \doxymbox{\hyperlink{class_i_scene_a32707d18a7aab5e72b71c8c6cc0217cb}{OpenGoToTitlePopup}}()\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00029\ }
+\DoxyCodeLine{00030\ \ \ \ \ \textcolor{keywordtype}{bool}\ HandleOwnPopupAction(\doxymbox{\hyperlink{struct_f_game_context}{FGameContext}}\ \&Context,\ \doxymbox{\hyperlink{class_f_u_i_popup_base}{FUIPopupBase}}\ \&Popup,}
+\DoxyCodeLine{00031\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{_u_i_popup_action_8h_aa5ecfd7a32541f889e86cd3acde85b1a}{EUIPopupAction}}\ Action)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00032\ \ \ \ \ \textcolor{keywordtype}{void}\ OnPopupActionDispatched(\doxymbox{\hyperlink{_u_i_popup_action_8h_aa5ecfd7a32541f889e86cd3acde85b1a}{EUIPopupAction}}\ Action)\ \textcolor{keyword}{override};}
+\DoxyCodeLine{00033\ }
+\DoxyCodeLine{00034\ \ \ \ \ \textcolor{keywordtype}{void}\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ SetLastActionText(\textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *Text);}
+\DoxyCodeLine{00035\ \ \ \ \ \textcolor{keyword}{static}\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{char}\ *ToActionText(\doxymbox{\hyperlink{_u_i_popup_action_8h_aa5ecfd7a32541f889e86cd3acde85b1a}{EUIPopupAction}}\ Action);}
+\DoxyCodeLine{00036\ }
+\DoxyCodeLine{00037\ \ \ \textcolor{keyword}{private}:}
+\DoxyCodeLine{00038\ \ \ \ \ \doxymbox{\hyperlink{class_f_u_i_manager}{FUIManager}}\ \ UIManager;}
+\DoxyCodeLine{00039\ \ \ \ \ std::string\ LastActionText\ =\ \textcolor{stringliteral}{"{}None"{}};}
+\DoxyCodeLine{00040\ \};}
+
+\end{DoxyCode}

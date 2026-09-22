@@ -1,0 +1,1109 @@
+{
+        "AssetPath" : "Asset/Mesh/Manny/Meshes/SKM_Manny_Simple_SkeletalMesh_PhysicsAsset.uasset",
+        "Bodies" : [{
+            "AngularDamping" : 0.000000,
+            "BodyType" : "Dynamic",
+            "Collision" : {
+              "CollisionEnabled" : "QueryAndPhysics",
+              "ObjectChannel" : "PhysicsBody",
+              "Responses" : []
+            },
+            "CollisionComplexity" : "UseSimpleAsComplex",
+            "GravityGroupIndex" : 0,
+            "LinearDamping" : 0.010000,
+            "Mass" : 2.573364,
+            "PhysMaterialOverride" : "",
+            "Shapes" : [{
+                "Collision" : {
+                  "CollisionEnabled" : "QueryAndPhysics",
+                  "ObjectChannel" : "PhysicsBody",
+                  "Responses" : []
+                },
+                "Length" : 4.846094,
+                "LocalTransform" : {
+                  "Location" : [1.935509, -0.639545, 0.000000],
+                  "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+                  "Scale" : [1.000000, 1.000000, 1.000000]
+                },
+                "Name" : "pelvis_Capsule",
+                "PhysicalMaterial" : "",
+                "Radius" : 14.678321,
+                "Type" : "Capsule"
+              }],
+            "SimpleCollisionPhysicalMaterial" : "",
+            "TargetBoneName" : "pelvis",
+            "bConsiderForBounds" : true,
+            "bDoubleSidedGeometry" : false,
+            "bEnableGravity" : true,
+            "bGyroscopicTorqueEnabled" : false,
+            "bNeverNeedsCookedCollisionData" : false,
+            "bOverrideMass" : false,
+            "bSimulationGeneratesHitEvents" : false,
+            "bSkipScaleFromAnimation" : false,
+            "bUpdateKinematicFromSimulation" : false
+          }, {
+            "AngularDamping" : 0.000000,
+            "BodyType" : "Dynamic",
+            "Collision" : {
+              "CollisionEnabled" : "QueryAndPhysics",
+              "ObjectChannel" : "PhysicsBody",
+              "Responses" : []
+            },
+            "CollisionComplexity" : "UseSimpleAsComplex",
+            "GravityGroupIndex" : 0,
+            "LinearDamping" : 0.010000,
+            "Mass" : 2.121111,
+            "PhysMaterialOverride" : "",
+            "Shapes" : [{
+                "Collision" : {
+                  "CollisionEnabled" : "QueryAndPhysics",
+                  "ObjectChannel" : "PhysicsBody",
+                  "Responses" : []
+                },
+                "Length" : 8.239765,
+                "LocalTransform" : {
+                  "Location" : [8.510902, -0.929132, 0.000001],
+                  "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+                  "Scale" : [1.000000, 1.000000, 1.000000]
+                },
+                "Name" : "spine_02_Capsule",
+                "PhysicalMaterial" : "",
+                "Radius" : 11.497830,
+                "Type" : "Capsule"
+              }],
+            "SimpleCollisionPhysicalMaterial" : "",
+            "TargetBoneName" : "spine_02",
+            "bConsiderForBounds" : true,
+            "bDoubleSidedGeometry" : false,
+            "bEnableGravity" : true,
+            "bGyroscopicTorqueEnabled" : false,
+            "bNeverNeedsCookedCollisionData" : false,
+            "bOverrideMass" : false,
+            "bSimulationGeneratesHitEvents" : false,
+            "bSkipScaleFromAnimation" : false,
+            "bUpdateKinematicFromSimulation" : false
+          }, {
+            "AngularDamping" : 0.000000,
+            "BodyType" : "Dynamic",
+            "Collision" : {
+              "CollisionEnabled" : "QueryAndPhysics",
+              "ObjectChannel" : "PhysicsBody",
+              "Responses" : []
+            },
+            "CollisionComplexity" : "UseSimpleAsComplex",
+            "GravityGroupIndex" : 0,
+            "LinearDamping" : 0.010000,
+            "Mass" : 3.215375,
+            "PhysMaterialOverride" : "",
+            "Shapes" : [{
+                "Collision" : {
+                  "CollisionEnabled" : "QueryAndPhysics",
+                  "ObjectChannel" : "PhysicsBody",
+                  "Responses" : []
+                },
+                "Length" : 6.577686,
+                "LocalTransform" : {
+                  "Location" : [17.895630, -0.608953, 0.000024],
+                  "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+                  "Scale" : [1.000000, 1.000000, 1.000000]
+                },
+                "Name" : "spine_04_Capsule",
+                "PhysicalMaterial" : "",
+                "Radius" : 18.683277,
+                "Type" : "Capsule"
+              }],
+            "SimpleCollisionPhysicalMaterial" : "",
+            "TargetBoneName" : "spine_04",
+            "bConsiderForBounds" : true,
+            "bDoubleSidedGeometry" : false,
+            "bEnableGravity" : true,
+            "bGyroscopicTorqueEnabled" : false,
+            "bNeverNeedsCookedCollisionData" : false,
+            "bOverrideMass" : false,
+            "bSimulationGeneratesHitEvents" : false,
+            "bSkipScaleFromAnimation" : false,
+            "bUpdateKinematicFromSimulation" : false
+          }, {
+            "AngularDamping" : 0.000000,
+            "BodyType" : "Dynamic",
+            "Collision" : {
+              "CollisionEnabled" : "QueryAndPhysics",
+              "ObjectChannel" : "PhysicsBody",
+              "Responses" : []
+            },
+            "CollisionComplexity" : "UseSimpleAsComplex",
+            "GravityGroupIndex" : 0,
+            "LinearDamping" : 0.010000,
+            "Mass" : 2.898663,
+            "PhysMaterialOverride" : "",
+            "Shapes" : [{
+                "Collision" : {
+                  "CollisionEnabled" : "QueryAndPhysics",
+                  "ObjectChannel" : "PhysicsBody",
+                  "Responses" : []
+                },
+                "Length" : 3.487698,
+                "LocalTransform" : {
+                  "Location" : [20.125072, 3.605213, 0.378159],
+                  "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+                  "Scale" : [1.000000, 1.000000, 1.000000]
+                },
+                "Name" : "spine_05_Capsule",
+                "PhysicalMaterial" : "",
+                "Radius" : 17.110975,
+                "Type" : "Capsule"
+              }],
+            "SimpleCollisionPhysicalMaterial" : "",
+            "TargetBoneName" : "spine_05",
+            "bConsiderForBounds" : true,
+            "bDoubleSidedGeometry" : false,
+            "bEnableGravity" : true,
+            "bGyroscopicTorqueEnabled" : false,
+            "bNeverNeedsCookedCollisionData" : false,
+            "bOverrideMass" : false,
+            "bSimulationGeneratesHitEvents" : false,
+            "bSkipScaleFromAnimation" : false,
+            "bUpdateKinematicFromSimulation" : false
+          }, {
+            "AngularDamping" : 0.000000,
+            "BodyType" : "Dynamic",
+            "Collision" : {
+              "CollisionEnabled" : "QueryAndPhysics",
+              "ObjectChannel" : "PhysicsBody",
+              "Responses" : []
+            },
+            "CollisionComplexity" : "UseSimpleAsComplex",
+            "GravityGroupIndex" : 0,
+            "LinearDamping" : 0.010000,
+            "Mass" : 2.089798,
+            "PhysMaterialOverride" : "",
+            "Shapes" : [{
+                "Collision" : {
+                  "CollisionEnabled" : "QueryAndPhysics",
+                  "ObjectChannel" : "PhysicsBody",
+                  "Responses" : []
+                },
+                "Length" : 19.421167,
+                "LocalTransform" : {
+                  "Location" : [10.746500, -0.334587, 0.014482],
+                  "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+                  "Scale" : [1.000000, 1.000000, 1.000000]
+                },
+                "Name" : "upperarm_l_Capsule",
+                "PhysicalMaterial" : "",
+                "Radius" : 8.740096,
+                "Type" : "Capsule"
+              }],
+            "SimpleCollisionPhysicalMaterial" : "",
+            "TargetBoneName" : "upperarm_l",
+            "bConsiderForBounds" : true,
+            "bDoubleSidedGeometry" : false,
+            "bEnableGravity" : true,
+            "bGyroscopicTorqueEnabled" : false,
+            "bNeverNeedsCookedCollisionData" : false,
+            "bOverrideMass" : false,
+            "bSimulationGeneratesHitEvents" : false,
+            "bSkipScaleFromAnimation" : false,
+            "bUpdateKinematicFromSimulation" : false
+          }, {
+            "AngularDamping" : 0.000000,
+            "BodyType" : "Dynamic",
+            "Collision" : {
+              "CollisionEnabled" : "QueryAndPhysics",
+              "ObjectChannel" : "PhysicsBody",
+              "Responses" : []
+            },
+            "CollisionComplexity" : "UseSimpleAsComplex",
+            "GravityGroupIndex" : 0,
+            "LinearDamping" : 0.010000,
+            "Mass" : 1.726335,
+            "PhysMaterialOverride" : "",
+            "Shapes" : [{
+                "Collision" : {
+                  "CollisionEnabled" : "QueryAndPhysics",
+                  "ObjectChannel" : "PhysicsBody",
+                  "Responses" : []
+                },
+                "Length" : 20.594677,
+                "LocalTransform" : {
+                  "Location" : [11.026047, -0.407412, -0.494154],
+                  "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+                  "Scale" : [1.000000, 1.000000, 1.000000]
+                },
+                "Name" : "lowerarm_l_Capsule",
+                "PhysicalMaterial" : "",
+                "Radius" : 5.469656,
+                "Type" : "Capsule"
+              }],
+            "SimpleCollisionPhysicalMaterial" : "",
+            "TargetBoneName" : "lowerarm_l",
+            "bConsiderForBounds" : true,
+            "bDoubleSidedGeometry" : false,
+            "bEnableGravity" : true,
+            "bGyroscopicTorqueEnabled" : false,
+            "bNeverNeedsCookedCollisionData" : false,
+            "bOverrideMass" : false,
+            "bSimulationGeneratesHitEvents" : false,
+            "bSkipScaleFromAnimation" : false,
+            "bUpdateKinematicFromSimulation" : false
+          }, {
+            "AngularDamping" : 0.000000,
+            "BodyType" : "Dynamic",
+            "Collision" : {
+              "CollisionEnabled" : "QueryAndPhysics",
+              "ObjectChannel" : "PhysicsBody",
+              "Responses" : []
+            },
+            "CollisionComplexity" : "UseSimpleAsComplex",
+            "GravityGroupIndex" : 0,
+            "LinearDamping" : 0.010000,
+            "Mass" : 1.248080,
+            "PhysMaterialOverride" : "",
+            "Shapes" : [{
+                "Collision" : {
+                  "CollisionEnabled" : "QueryAndPhysics",
+                  "ObjectChannel" : "PhysicsBody",
+                  "Responses" : []
+                },
+                "Length" : 7.030675,
+                "LocalTransform" : {
+                  "Location" : [8.174581, -1.630202, -1.328674],
+                  "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+                  "Scale" : [1.000000, 1.000000, 1.000000]
+                },
+                "Name" : "hand_l_Capsule",
+                "PhysicalMaterial" : "",
+                "Radius" : 6.475921,
+                "Type" : "Capsule"
+              }],
+            "SimpleCollisionPhysicalMaterial" : "",
+            "TargetBoneName" : "hand_l",
+            "bConsiderForBounds" : true,
+            "bDoubleSidedGeometry" : false,
+            "bEnableGravity" : true,
+            "bGyroscopicTorqueEnabled" : false,
+            "bNeverNeedsCookedCollisionData" : false,
+            "bOverrideMass" : false,
+            "bSimulationGeneratesHitEvents" : false,
+            "bSkipScaleFromAnimation" : false,
+            "bUpdateKinematicFromSimulation" : false
+          }, {
+            "AngularDamping" : 0.000000,
+            "BodyType" : "Dynamic",
+            "Collision" : {
+              "CollisionEnabled" : "QueryAndPhysics",
+              "ObjectChannel" : "PhysicsBody",
+              "Responses" : []
+            },
+            "CollisionComplexity" : "UseSimpleAsComplex",
+            "GravityGroupIndex" : 0,
+            "LinearDamping" : 0.010000,
+            "Mass" : 2.089798,
+            "PhysMaterialOverride" : "",
+            "Shapes" : [{
+                "Collision" : {
+                  "CollisionEnabled" : "QueryAndPhysics",
+                  "ObjectChannel" : "PhysicsBody",
+                  "Responses" : []
+                },
+                "Length" : 19.421150,
+                "LocalTransform" : {
+                  "Location" : [-10.746082, 0.334522, -0.014743],
+                  "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+                  "Scale" : [1.000000, 1.000000, 1.000000]
+                },
+                "Name" : "upperarm_r_Capsule",
+                "PhysicalMaterial" : "",
+                "Radius" : 8.740095,
+                "Type" : "Capsule"
+              }],
+            "SimpleCollisionPhysicalMaterial" : "",
+            "TargetBoneName" : "upperarm_r",
+            "bConsiderForBounds" : true,
+            "bDoubleSidedGeometry" : false,
+            "bEnableGravity" : true,
+            "bGyroscopicTorqueEnabled" : false,
+            "bNeverNeedsCookedCollisionData" : false,
+            "bOverrideMass" : false,
+            "bSimulationGeneratesHitEvents" : false,
+            "bSkipScaleFromAnimation" : false,
+            "bUpdateKinematicFromSimulation" : false
+          }, {
+            "AngularDamping" : 0.000000,
+            "BodyType" : "Dynamic",
+            "Collision" : {
+              "CollisionEnabled" : "QueryAndPhysics",
+              "ObjectChannel" : "PhysicsBody",
+              "Responses" : []
+            },
+            "CollisionComplexity" : "UseSimpleAsComplex",
+            "GravityGroupIndex" : 0,
+            "LinearDamping" : 0.010000,
+            "Mass" : 1.726335,
+            "PhysMaterialOverride" : "",
+            "Shapes" : [{
+                "Collision" : {
+                  "CollisionEnabled" : "QueryAndPhysics",
+                  "ObjectChannel" : "PhysicsBody",
+                  "Responses" : []
+                },
+                "Length" : 20.594673,
+                "LocalTransform" : {
+                  "Location" : [-11.026105, 0.407379, 0.493870],
+                  "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+                  "Scale" : [1.000000, 1.000000, 1.000000]
+                },
+                "Name" : "lowerarm_r_Capsule",
+                "PhysicalMaterial" : "",
+                "Radius" : 5.469656,
+                "Type" : "Capsule"
+              }],
+            "SimpleCollisionPhysicalMaterial" : "",
+            "TargetBoneName" : "lowerarm_r",
+            "bConsiderForBounds" : true,
+            "bDoubleSidedGeometry" : false,
+            "bEnableGravity" : true,
+            "bGyroscopicTorqueEnabled" : false,
+            "bNeverNeedsCookedCollisionData" : false,
+            "bOverrideMass" : false,
+            "bSimulationGeneratesHitEvents" : false,
+            "bSkipScaleFromAnimation" : false,
+            "bUpdateKinematicFromSimulation" : false
+          }, {
+            "AngularDamping" : 0.000000,
+            "BodyType" : "Dynamic",
+            "Collision" : {
+              "CollisionEnabled" : "QueryAndPhysics",
+              "ObjectChannel" : "PhysicsBody",
+              "Responses" : []
+            },
+            "CollisionComplexity" : "UseSimpleAsComplex",
+            "GravityGroupIndex" : 0,
+            "LinearDamping" : 0.010000,
+            "Mass" : 1.248080,
+            "PhysMaterialOverride" : "",
+            "Shapes" : [{
+                "Collision" : {
+                  "CollisionEnabled" : "QueryAndPhysics",
+                  "ObjectChannel" : "PhysicsBody",
+                  "Responses" : []
+                },
+                "Length" : 7.030677,
+                "LocalTransform" : {
+                  "Location" : [-8.174707, 1.629931, 1.328583],
+                  "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+                  "Scale" : [1.000000, 1.000000, 1.000000]
+                },
+                "Name" : "hand_r_Capsule",
+                "PhysicalMaterial" : "",
+                "Radius" : 6.475918,
+                "Type" : "Capsule"
+              }],
+            "SimpleCollisionPhysicalMaterial" : "",
+            "TargetBoneName" : "hand_r",
+            "bConsiderForBounds" : true,
+            "bDoubleSidedGeometry" : false,
+            "bEnableGravity" : true,
+            "bGyroscopicTorqueEnabled" : false,
+            "bNeverNeedsCookedCollisionData" : false,
+            "bOverrideMass" : false,
+            "bSimulationGeneratesHitEvents" : false,
+            "bSkipScaleFromAnimation" : false,
+            "bUpdateKinematicFromSimulation" : false
+          }, {
+            "AngularDamping" : 0.000000,
+            "BodyType" : "Dynamic",
+            "Collision" : {
+              "CollisionEnabled" : "QueryAndPhysics",
+              "ObjectChannel" : "PhysicsBody",
+              "Responses" : []
+            },
+            "CollisionComplexity" : "UseSimpleAsComplex",
+            "GravityGroupIndex" : 0,
+            "LinearDamping" : 0.010000,
+            "Mass" : 2.575478,
+            "PhysMaterialOverride" : "",
+            "Shapes" : [{
+                "Collision" : {
+                  "CollisionEnabled" : "QueryAndPhysics",
+                  "ObjectChannel" : "PhysicsBody",
+                  "Responses" : []
+                },
+                "Length" : 24.956835,
+                "LocalTransform" : {
+                  "Location" : [22.602581, -0.847634, -0.489611],
+                  "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+                  "Scale" : [1.000000, 1.000000, 1.000000]
+                },
+                "Name" : "thigh_r_Capsule",
+                "PhysicalMaterial" : "",
+                "Radius" : 10.012141,
+                "Type" : "Capsule"
+              }],
+            "SimpleCollisionPhysicalMaterial" : "",
+            "TargetBoneName" : "thigh_r",
+            "bConsiderForBounds" : true,
+            "bDoubleSidedGeometry" : false,
+            "bEnableGravity" : true,
+            "bGyroscopicTorqueEnabled" : false,
+            "bNeverNeedsCookedCollisionData" : false,
+            "bOverrideMass" : false,
+            "bSimulationGeneratesHitEvents" : false,
+            "bSkipScaleFromAnimation" : false,
+            "bUpdateKinematicFromSimulation" : false
+          }, {
+            "AngularDamping" : 0.000000,
+            "BodyType" : "Dynamic",
+            "Collision" : {
+              "CollisionEnabled" : "QueryAndPhysics",
+              "ObjectChannel" : "PhysicsBody",
+              "Responses" : []
+            },
+            "CollisionComplexity" : "UseSimpleAsComplex",
+            "GravityGroupIndex" : 0,
+            "LinearDamping" : 0.010000,
+            "Mass" : 3.164143,
+            "PhysMaterialOverride" : "",
+            "Shapes" : [{
+                "Collision" : {
+                  "CollisionEnabled" : "QueryAndPhysics",
+                  "ObjectChannel" : "PhysicsBody",
+                  "Responses" : []
+                },
+                "Length" : 28.204338,
+                "LocalTransform" : {
+                  "Location" : [25.334290, -2.398064, 0.647727],
+                  "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+                  "Scale" : [1.000000, 1.000000, 1.000000]
+                },
+                "Name" : "calf_r_Capsule",
+                "PhysicalMaterial" : "",
+                "Radius" : 13.661844,
+                "Type" : "Capsule"
+              }],
+            "SimpleCollisionPhysicalMaterial" : "",
+            "TargetBoneName" : "calf_r",
+            "bConsiderForBounds" : true,
+            "bDoubleSidedGeometry" : false,
+            "bEnableGravity" : true,
+            "bGyroscopicTorqueEnabled" : false,
+            "bNeverNeedsCookedCollisionData" : false,
+            "bOverrideMass" : false,
+            "bSimulationGeneratesHitEvents" : false,
+            "bSkipScaleFromAnimation" : false,
+            "bUpdateKinematicFromSimulation" : false
+          }, {
+            "AngularDamping" : 0.000000,
+            "BodyType" : "Dynamic",
+            "Collision" : {
+              "CollisionEnabled" : "QueryAndPhysics",
+              "ObjectChannel" : "PhysicsBody",
+              "Responses" : []
+            },
+            "CollisionComplexity" : "UseSimpleAsComplex",
+            "GravityGroupIndex" : 0,
+            "LinearDamping" : 0.010000,
+            "Mass" : 2.575478,
+            "PhysMaterialOverride" : "",
+            "Shapes" : [{
+                "Collision" : {
+                  "CollisionEnabled" : "QueryAndPhysics",
+                  "ObjectChannel" : "PhysicsBody",
+                  "Responses" : []
+                },
+                "Length" : 24.956821,
+                "LocalTransform" : {
+                  "Location" : [-22.601994, 0.856948, 0.491066],
+                  "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+                  "Scale" : [1.000000, 1.000000, 1.000000]
+                },
+                "Name" : "thigh_l_Capsule",
+                "PhysicalMaterial" : "",
+                "Radius" : 10.012140,
+                "Type" : "Capsule"
+              }],
+            "SimpleCollisionPhysicalMaterial" : "",
+            "TargetBoneName" : "thigh_l",
+            "bConsiderForBounds" : true,
+            "bDoubleSidedGeometry" : false,
+            "bEnableGravity" : true,
+            "bGyroscopicTorqueEnabled" : false,
+            "bNeverNeedsCookedCollisionData" : false,
+            "bOverrideMass" : false,
+            "bSimulationGeneratesHitEvents" : false,
+            "bSkipScaleFromAnimation" : false,
+            "bUpdateKinematicFromSimulation" : false
+          }, {
+            "AngularDamping" : 0.000000,
+            "BodyType" : "Dynamic",
+            "Collision" : {
+              "CollisionEnabled" : "QueryAndPhysics",
+              "ObjectChannel" : "PhysicsBody",
+              "Responses" : []
+            },
+            "CollisionComplexity" : "UseSimpleAsComplex",
+            "GravityGroupIndex" : 0,
+            "LinearDamping" : 0.010000,
+            "Mass" : 3.164143,
+            "PhysMaterialOverride" : "",
+            "Shapes" : [{
+                "Collision" : {
+                  "CollisionEnabled" : "QueryAndPhysics",
+                  "ObjectChannel" : "PhysicsBody",
+                  "Responses" : []
+                },
+                "Length" : 28.204334,
+                "LocalTransform" : {
+                  "Location" : [-25.332863, 2.407290, -0.646270],
+                  "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+                  "Scale" : [1.000000, 1.000000, 1.000000]
+                },
+                "Name" : "calf_l_Capsule",
+                "PhysicalMaterial" : "",
+                "Radius" : 13.661844,
+                "Type" : "Capsule"
+              }],
+            "SimpleCollisionPhysicalMaterial" : "",
+            "TargetBoneName" : "calf_l",
+            "bConsiderForBounds" : true,
+            "bDoubleSidedGeometry" : false,
+            "bEnableGravity" : true,
+            "bGyroscopicTorqueEnabled" : false,
+            "bNeverNeedsCookedCollisionData" : false,
+            "bOverrideMass" : false,
+            "bSimulationGeneratesHitEvents" : false,
+            "bSkipScaleFromAnimation" : false,
+            "bUpdateKinematicFromSimulation" : false
+          }],
+        "ClassName" : "PhysicsAsset",
+        "Constraints" : [{
+            "AngularLimit" : 45.000000,
+            "ChildBoneName" : "calf_r",
+            "ChildLocalFrame" : {
+              "Location" : [0.000000, 0.000000, 0.000000],
+              "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "ConstraintName" : "calf_r_Constraint",
+            "Damping" : 0.000000,
+            "JointType" : "D6",
+            "LinearLimit" : 0.000000,
+            "ParentBoneName" : "thigh_r",
+            "ParentLocalFrame" : {
+              "Location" : [43.341259, -0.000000, -0.000001],
+              "Rotation" : [-0.000000, 0.000000, 0.043662, 0.999046],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "Stiffness" : 0.000000,
+            "Swing1Motion" : "Limited",
+            "Swing2Motion" : "Limited",
+            "SwingLimitY" : 30.000000,
+            "SwingLimitZ" : 30.000000,
+            "TwistLimitMax" : 45.000000,
+            "TwistLimitMin" : -45.000000,
+            "TwistMotion" : "Limited",
+            "XMotion" : "Locked",
+            "YMotion" : "Locked",
+            "ZMotion" : "Locked",
+            "bDisableCollision" : true,
+            "bEnableMassConditioning" : true,
+            "bParentDominates" : false,
+            "bScaleLinearLimits" : true,
+            "bUseLinearJointSolver" : true
+          }, {
+            "AngularLimit" : 45.000000,
+            "ChildBoneName" : "upperarm_l",
+            "ChildLocalFrame" : {
+              "Location" : [0.000000, 0.000000, 0.000000],
+              "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "ConstraintName" : "upperarm_l_Constraint",
+            "Damping" : 0.000000,
+            "JointType" : "D6",
+            "LinearLimit" : 0.000000,
+            "ParentBoneName" : "spine_05",
+            "ParentLocalFrame" : {
+              "Location" : [2.984952, -2.597620, -19.009880],
+              "Rotation" : [-0.064568, 0.950904, 0.003413, 0.302655],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "Stiffness" : 0.000000,
+            "Swing1Motion" : "Limited",
+            "Swing2Motion" : "Limited",
+            "SwingLimitY" : 30.000000,
+            "SwingLimitZ" : 30.000000,
+            "TwistLimitMax" : 45.000000,
+            "TwistLimitMin" : -45.000000,
+            "TwistMotion" : "Limited",
+            "XMotion" : "Locked",
+            "YMotion" : "Locked",
+            "ZMotion" : "Locked",
+            "bDisableCollision" : true,
+            "bEnableMassConditioning" : true,
+            "bParentDominates" : false,
+            "bScaleLinearLimits" : true,
+            "bUseLinearJointSolver" : true
+          }, {
+            "AngularLimit" : 45.000000,
+            "ChildBoneName" : "spine_02",
+            "ChildLocalFrame" : {
+              "Location" : [0.000000, 0.000000, 0.000000],
+              "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "ConstraintName" : "spine_02_Constraint",
+            "Damping" : 0.000000,
+            "JointType" : "D6",
+            "LinearLimit" : 0.000000,
+            "ParentBoneName" : "pelvis",
+            "ParentLocalFrame" : {
+              "Location" : [10.256938, 1.696445, -0.000000],
+              "Rotation" : [-0.000000, 0.000000, 0.095784, 0.995402],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "Stiffness" : 0.000000,
+            "Swing1Motion" : "Limited",
+            "Swing2Motion" : "Limited",
+            "SwingLimitY" : 30.000000,
+            "SwingLimitZ" : 30.000000,
+            "TwistLimitMax" : 45.000000,
+            "TwistLimitMin" : -45.000000,
+            "TwistMotion" : "Limited",
+            "XMotion" : "Locked",
+            "YMotion" : "Locked",
+            "ZMotion" : "Locked",
+            "bDisableCollision" : true,
+            "bEnableMassConditioning" : true,
+            "bParentDominates" : false,
+            "bScaleLinearLimits" : true,
+            "bUseLinearJointSolver" : true
+          }, {
+            "AngularLimit" : 45.000000,
+            "ChildBoneName" : "spine_04",
+            "ChildLocalFrame" : {
+              "Location" : [0.000000, 0.000000, 0.000000],
+              "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "ConstraintName" : "spine_04_Constraint",
+            "Damping" : 0.000000,
+            "JointType" : "D6",
+            "LinearLimit" : 0.000000,
+            "ParentBoneName" : "spine_02",
+            "ParentLocalFrame" : {
+              "Location" : [15.607035, -1.618561, 0.000000],
+              "Rotation" : [-0.000004, 0.000001, -0.146196, 0.989256],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "Stiffness" : 0.000000,
+            "Swing1Motion" : "Limited",
+            "Swing2Motion" : "Limited",
+            "SwingLimitY" : 30.000000,
+            "SwingLimitZ" : 30.000000,
+            "TwistLimitMax" : 45.000000,
+            "TwistLimitMin" : -45.000000,
+            "TwistMotion" : "Limited",
+            "XMotion" : "Locked",
+            "YMotion" : "Locked",
+            "ZMotion" : "Locked",
+            "bDisableCollision" : true,
+            "bEnableMassConditioning" : true,
+            "bParentDominates" : false,
+            "bScaleLinearLimits" : true,
+            "bUseLinearJointSolver" : true
+          }, {
+            "AngularLimit" : 45.000000,
+            "ChildBoneName" : "upperarm_r",
+            "ChildLocalFrame" : {
+              "Location" : [0.000000, 0.000000, 0.000000],
+              "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "ConstraintName" : "upperarm_r_Constraint",
+            "Damping" : 0.000000,
+            "JointType" : "D6",
+            "LinearLimit" : 0.000000,
+            "ParentBoneName" : "spine_05",
+            "ParentLocalFrame" : {
+              "Location" : [2.984470, -2.597744, 19.009884],
+              "Rotation" : [0.950904, 0.064568, -0.302655, 0.003413],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "Stiffness" : 0.000000,
+            "Swing1Motion" : "Limited",
+            "Swing2Motion" : "Limited",
+            "SwingLimitY" : 30.000000,
+            "SwingLimitZ" : 30.000000,
+            "TwistLimitMax" : 45.000000,
+            "TwistLimitMin" : -45.000000,
+            "TwistMotion" : "Limited",
+            "XMotion" : "Locked",
+            "YMotion" : "Locked",
+            "ZMotion" : "Locked",
+            "bDisableCollision" : true,
+            "bEnableMassConditioning" : true,
+            "bParentDominates" : false,
+            "bScaleLinearLimits" : true,
+            "bUseLinearJointSolver" : true
+          }, {
+            "AngularLimit" : 45.000000,
+            "ChildBoneName" : "spine_05",
+            "ChildLocalFrame" : {
+              "Location" : [0.000000, 0.000000, 0.000000],
+              "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "ConstraintName" : "spine_05_Constraint",
+            "Damping" : 0.000000,
+            "JointType" : "D6",
+            "LinearLimit" : 0.000000,
+            "ParentBoneName" : "spine_04",
+            "ParentLocalFrame" : {
+              "Location" : [19.439802, 0.000001, -0.000000],
+              "Rotation" : [0.000004, 0.000000, -0.005946, 0.999982],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "Stiffness" : 0.000000,
+            "Swing1Motion" : "Limited",
+            "Swing2Motion" : "Limited",
+            "SwingLimitY" : 30.000000,
+            "SwingLimitZ" : 30.000000,
+            "TwistLimitMax" : 45.000000,
+            "TwistLimitMin" : -45.000000,
+            "TwistMotion" : "Limited",
+            "XMotion" : "Locked",
+            "YMotion" : "Locked",
+            "ZMotion" : "Locked",
+            "bDisableCollision" : true,
+            "bEnableMassConditioning" : true,
+            "bParentDominates" : false,
+            "bScaleLinearLimits" : true,
+            "bUseLinearJointSolver" : true
+          }, {
+            "AngularLimit" : 45.000000,
+            "ChildBoneName" : "lowerarm_l",
+            "ChildLocalFrame" : {
+              "Location" : [0.000000, 0.000000, 0.000000],
+              "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "ConstraintName" : "lowerarm_l_Constraint",
+            "Damping" : 0.000000,
+            "JointType" : "D6",
+            "LinearLimit" : 0.000000,
+            "ParentBoneName" : "upperarm_l",
+            "ParentLocalFrame" : {
+              "Location" : [27.771137, -0.000000, 0.000011],
+              "Rotation" : [0.000000, -0.000000, 0.333633, 0.942703],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "Stiffness" : 0.000000,
+            "Swing1Motion" : "Limited",
+            "Swing2Motion" : "Limited",
+            "SwingLimitY" : 30.000000,
+            "SwingLimitZ" : 30.000000,
+            "TwistLimitMax" : 45.000000,
+            "TwistLimitMin" : -45.000000,
+            "TwistMotion" : "Limited",
+            "XMotion" : "Locked",
+            "YMotion" : "Locked",
+            "ZMotion" : "Locked",
+            "bDisableCollision" : true,
+            "bEnableMassConditioning" : true,
+            "bParentDominates" : false,
+            "bScaleLinearLimits" : true,
+            "bUseLinearJointSolver" : true
+          }, {
+            "AngularLimit" : 45.000000,
+            "ChildBoneName" : "hand_l",
+            "ChildLocalFrame" : {
+              "Location" : [0.000000, 0.000000, 0.000000],
+              "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "ConstraintName" : "hand_l_Constraint",
+            "Damping" : 0.000000,
+            "JointType" : "D6",
+            "LinearLimit" : 0.000000,
+            "ParentBoneName" : "lowerarm_l",
+            "ParentLocalFrame" : {
+              "Location" : [27.251080, -0.000013, -0.000008],
+              "Rotation" : [0.557587, 0.001678, -0.020561, 0.829862],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "Stiffness" : 0.000000,
+            "Swing1Motion" : "Limited",
+            "Swing2Motion" : "Limited",
+            "SwingLimitY" : 30.000000,
+            "SwingLimitZ" : 30.000000,
+            "TwistLimitMax" : 45.000000,
+            "TwistLimitMin" : -45.000000,
+            "TwistMotion" : "Limited",
+            "XMotion" : "Locked",
+            "YMotion" : "Locked",
+            "ZMotion" : "Locked",
+            "bDisableCollision" : true,
+            "bEnableMassConditioning" : true,
+            "bParentDominates" : false,
+            "bScaleLinearLimits" : true,
+            "bUseLinearJointSolver" : true
+          }, {
+            "AngularLimit" : 45.000000,
+            "ChildBoneName" : "lowerarm_r",
+            "ChildLocalFrame" : {
+              "Location" : [0.000000, 0.000000, 0.000000],
+              "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "ConstraintName" : "lowerarm_r_Constraint",
+            "Damping" : 0.000000,
+            "JointType" : "D6",
+            "LinearLimit" : 0.000000,
+            "ParentBoneName" : "upperarm_r",
+            "ParentLocalFrame" : {
+              "Location" : [-27.770695, 0.000001, 0.000010],
+              "Rotation" : [0.000000, -0.000000, 0.333633, 0.942703],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "Stiffness" : 0.000000,
+            "Swing1Motion" : "Limited",
+            "Swing2Motion" : "Limited",
+            "SwingLimitY" : 30.000000,
+            "SwingLimitZ" : 30.000000,
+            "TwistLimitMax" : 45.000000,
+            "TwistLimitMin" : -45.000000,
+            "TwistMotion" : "Limited",
+            "XMotion" : "Locked",
+            "YMotion" : "Locked",
+            "ZMotion" : "Locked",
+            "bDisableCollision" : true,
+            "bEnableMassConditioning" : true,
+            "bParentDominates" : false,
+            "bScaleLinearLimits" : true,
+            "bUseLinearJointSolver" : true
+          }, {
+            "AngularLimit" : 45.000000,
+            "ChildBoneName" : "hand_r",
+            "ChildLocalFrame" : {
+              "Location" : [0.000000, 0.000000, 0.000000],
+              "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "ConstraintName" : "hand_r_Constraint",
+            "Damping" : 0.000000,
+            "JointType" : "D6",
+            "LinearLimit" : 0.000000,
+            "ParentBoneName" : "lowerarm_r",
+            "ParentLocalFrame" : {
+              "Location" : [-27.251007, 0.000003, -0.000004],
+              "Rotation" : [0.557587, 0.001678, -0.020561, 0.829862],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "Stiffness" : 0.000000,
+            "Swing1Motion" : "Limited",
+            "Swing2Motion" : "Limited",
+            "SwingLimitY" : 30.000000,
+            "SwingLimitZ" : 30.000000,
+            "TwistLimitMax" : 45.000000,
+            "TwistLimitMin" : -45.000000,
+            "TwistMotion" : "Limited",
+            "XMotion" : "Locked",
+            "YMotion" : "Locked",
+            "ZMotion" : "Locked",
+            "bDisableCollision" : true,
+            "bEnableMassConditioning" : true,
+            "bParentDominates" : false,
+            "bScaleLinearLimits" : true,
+            "bUseLinearJointSolver" : true
+          }, {
+            "AngularLimit" : 45.000000,
+            "ChildBoneName" : "thigh_r",
+            "ChildLocalFrame" : {
+              "Location" : [0.000000, 0.000000, 0.000000],
+              "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "ConstraintName" : "thigh_r_Constraint",
+            "Damping" : 0.000000,
+            "JointType" : "D6",
+            "LinearLimit" : 0.000000,
+            "ParentBoneName" : "pelvis",
+            "ParentLocalFrame" : {
+              "Location" : [-2.365727, 0.119488, 9.969091],
+              "Rotation" : [0.029462, -0.072405, 0.996519, -0.028969],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "Stiffness" : 0.000000,
+            "Swing1Motion" : "Limited",
+            "Swing2Motion" : "Limited",
+            "SwingLimitY" : 30.000000,
+            "SwingLimitZ" : 30.000000,
+            "TwistLimitMax" : 45.000000,
+            "TwistLimitMin" : -45.000000,
+            "TwistMotion" : "Limited",
+            "XMotion" : "Locked",
+            "YMotion" : "Locked",
+            "ZMotion" : "Locked",
+            "bDisableCollision" : true,
+            "bEnableMassConditioning" : true,
+            "bParentDominates" : false,
+            "bScaleLinearLimits" : true,
+            "bUseLinearJointSolver" : true
+          }, {
+            "AngularLimit" : 45.000000,
+            "ChildBoneName" : "thigh_l",
+            "ChildLocalFrame" : {
+              "Location" : [0.000000, 0.000000, 0.000000],
+              "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "ConstraintName" : "thigh_l_Constraint",
+            "Damping" : 0.000000,
+            "JointType" : "D6",
+            "LinearLimit" : 0.000000,
+            "ParentBoneName" : "pelvis",
+            "ParentLocalFrame" : {
+              "Location" : [-2.365718, 0.110044, -9.969203],
+              "Rotation" : [-0.072405, -0.029462, 0.028969, 0.996519],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "Stiffness" : 0.000000,
+            "Swing1Motion" : "Limited",
+            "Swing2Motion" : "Limited",
+            "SwingLimitY" : 30.000000,
+            "SwingLimitZ" : 30.000000,
+            "TwistLimitMax" : 45.000000,
+            "TwistLimitMin" : -45.000000,
+            "TwistMotion" : "Limited",
+            "XMotion" : "Locked",
+            "YMotion" : "Locked",
+            "ZMotion" : "Locked",
+            "bDisableCollision" : true,
+            "bEnableMassConditioning" : true,
+            "bParentDominates" : false,
+            "bScaleLinearLimits" : true,
+            "bUseLinearJointSolver" : true
+          }, {
+            "AngularLimit" : 45.000000,
+            "ChildBoneName" : "calf_l",
+            "ChildLocalFrame" : {
+              "Location" : [0.000000, 0.000000, 0.000000],
+              "Rotation" : [0.000000, 0.000000, 0.000000, 1.000000],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "ConstraintName" : "calf_l_Constraint",
+            "Damping" : 0.000000,
+            "JointType" : "D6",
+            "LinearLimit" : 0.000000,
+            "ParentBoneName" : "thigh_l",
+            "ParentLocalFrame" : {
+              "Location" : [-43.341301, 0.000001, 0.000000],
+              "Rotation" : [-0.000000, 0.000000, 0.043662, 0.999046],
+              "Scale" : [1.000000, 1.000000, 1.000000]
+            },
+            "Stiffness" : 0.000000,
+            "Swing1Motion" : "Limited",
+            "Swing2Motion" : "Limited",
+            "SwingLimitY" : 30.000000,
+            "SwingLimitZ" : 30.000000,
+            "TwistLimitMax" : 45.000000,
+            "TwistLimitMin" : -45.000000,
+            "TwistMotion" : "Limited",
+            "XMotion" : "Locked",
+            "YMotion" : "Locked",
+            "ZMotion" : "Locked",
+            "bDisableCollision" : true,
+            "bEnableMassConditioning" : true,
+            "bParentDominates" : false,
+            "bScaleLinearLimits" : true,
+            "bUseLinearJointSolver" : true
+          }],
+        "GraphViewState" : {
+          "NodeLayouts" : [{
+              "NodeKey" : "Body:pelvis",
+              "Position" : [540.000000, 0.000000, 0.000000]
+            }, {
+              "NodeKey" : "Body:spine_02",
+              "Position" : [1080.000000, 354.000000, 0.000000]
+            }, {
+              "NodeKey" : "Body:spine_04",
+              "Position" : [1620.000000, 708.000000, 0.000000]
+            }, {
+              "NodeKey" : "Body:spine_05",
+              "Position" : [1890.000000, 826.000000, 0.000000]
+            }, {
+              "NodeKey" : "Body:upperarm_l",
+              "Position" : [2430.000000, 944.000000, 0.000000]
+            }, {
+              "NodeKey" : "Body:lowerarm_l",
+              "Position" : [2700.000000, 1180.000000, 0.000000]
+            }, {
+              "NodeKey" : "Body:hand_l",
+              "Position" : [2970.000000, 1416.000000, 0.000000]
+            }, {
+              "NodeKey" : "Body:upperarm_r",
+              "Position" : [2430.000000, 1062.000000, 0.000000]
+            }, {
+              "NodeKey" : "Body:lowerarm_r",
+              "Position" : [2700.000000, 1298.000000, 0.000000]
+            }, {
+              "NodeKey" : "Body:hand_r",
+              "Position" : [2970.000000, 1534.000000, 0.000000]
+            }, {
+              "NodeKey" : "Body:thigh_r",
+              "Position" : [810.000000, 118.000000, 0.000000]
+            }, {
+              "NodeKey" : "Body:calf_r",
+              "Position" : [1080.000000, 472.000000, 0.000000]
+            }, {
+              "NodeKey" : "Body:thigh_l",
+              "Position" : [810.000000, 236.000000, 0.000000]
+            }, {
+              "NodeKey" : "Body:calf_l",
+              "Position" : [1080.000000, 590.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:calf_r_Constraint:thigh_r:calf_r",
+              "Position" : [945.000000, 295.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:upperarm_l_Constraint:spine_05:upperarm_l",
+              "Position" : [2160.000000, 885.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:spine_02_Constraint:pelvis:spine_02",
+              "Position" : [810.000000, 177.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:spine_04_Constraint:spine_02:spine_04",
+              "Position" : [1350.000000, 531.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:upperarm_r_Constraint:spine_05:upperarm_r",
+              "Position" : [2160.000000, 944.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:spine_05_Constraint:spine_04:spine_05",
+              "Position" : [1755.000000, 767.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:lowerarm_l_Constraint:upperarm_l:lowerarm_l",
+              "Position" : [2565.000000, 1062.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:hand_l_Constraint:lowerarm_l:hand_l",
+              "Position" : [2835.000000, 1298.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:lowerarm_r_Constraint:upperarm_r:lowerarm_r",
+              "Position" : [2565.000000, 1180.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:hand_r_Constraint:lowerarm_r:hand_r",
+              "Position" : [2835.000000, 1416.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:thigh_r_Constraint:pelvis:thigh_r",
+              "Position" : [675.000000, 59.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:thigh_l_Constraint:pelvis:thigh_l",
+              "Position" : [675.000000, 118.000000, 0.000000]
+            }, {
+              "NodeKey" : "Constraint:calf_l_Constraint:thigh_l:calf_l",
+              "Position" : [945.000000, 413.000000, 0.000000]
+            }],
+          "Pan" : [-265.000000, 32.000000, 0.000000],
+          "Zoom" : 0.550000
+        },
+        "PreviewSkeletalMeshPath" : "Asset/Mesh/Manny/Meshes/SKM_Manny_Simple_SkeletalMesh.uasset"
+      }

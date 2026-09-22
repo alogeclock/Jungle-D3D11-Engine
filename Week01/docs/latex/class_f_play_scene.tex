@@ -1,0 +1,86 @@
+\doxysection{FPlay\+Scene Class Reference}
+\hypertarget{class_f_play_scene}{}\label{class_f_play_scene}\index{FPlayScene@{FPlayScene}}
+
+
+{\ttfamily \+\#include $<$Play\+Scene.\+h$>$}
+
+Inheritance diagram for FPlay\+Scene:\+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_f_play_scene}
+\end{center}
+\end{figure}
+\doxysubsubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\doxymbox{\hyperlink{class_f_play_scene_aee00047ed25bac8905195ff3ff347fb3}{FPlay\+Scene}} (int In\+Stage\+Index, int In\+Accumulated\+Score=0, const std::\+string \&In\+Player\+Skin\+Key="{}player\+\_\+otaku"{})
+\item 
+void \doxymbox{\hyperlink{class_f_play_scene_afd49d1c64f2553201b96c70884366ca7}{Update}} (\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&Context) override
+\item 
+void \doxymbox{\hyperlink{class_f_play_scene_a0c45ecd9ee46d0766898ec84f32c26a5}{Render}} (\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&Context) override
+\end{DoxyCompactItemize}
+\doxysubsection*{Public Member Functions inherited from \doxymbox{\hyperlink{class_i_scene}{IScene}}}
+\begin{DoxyCompactItemize}
+\item 
+virtual \doxymbox{\hyperlink{class_i_scene_a146b1101069efb7a46b3bb6e419bc2bc}{\texorpdfstring{$\sim$}{\string~}\+IScene}} ()=default
+\item 
+\doxymbox{\hyperlink{struct_f_scene_command}{FScene\+Command}} \doxymbox{\hyperlink{class_i_scene_a7316409ac97b08fba543cd523e555121}{Consume\+Command}} ()
+\end{DoxyCompactItemize}
+\doxysubsubsection*{Additional Inherited Members}
+\doxysubsection*{Protected Member Functions inherited from \doxymbox{\hyperlink{class_i_scene}{IScene}}}
+\begin{DoxyCompactItemize}
+\item 
+void \doxymbox{\hyperlink{class_i_scene_ade55669e20b8ab34674321ee7964d9d0}{Set\+Scene\+Command}} (const \doxymbox{\hyperlink{struct_f_scene_command}{FScene\+Command}} \&Command)
+\item 
+void \doxymbox{\hyperlink{class_i_scene_a6e2f65a65fff325dd5ce68f8e418d17b}{Change\+Scene}} (\doxymbox{\hyperlink{_scene_type_8h_ab6949df4214b79a5795967590fe95bc9}{EScene\+Type}} Next\+Scene)
+\item 
+void \doxymbox{\hyperlink{class_i_scene_a535b76f8dfa4a7fa4f6e9a9c6097111a}{Change\+Scene}} (\doxymbox{\hyperlink{_scene_type_8h_ab6949df4214b79a5795967590fe95bc9}{EScene\+Type}} Next\+Scene, int Next\+Stage\+Index, int Accumulated\+Score=0, const std::\+string \&Player\+Skin\+Key="{}"{})
+\item 
+void \doxymbox{\hyperlink{class_i_scene_aab3356a84a89d0ae8bd011e55d25a010}{Quit\+Game}} ()
+\item 
+void \doxymbox{\hyperlink{class_i_scene_a373ea6b6ebf14d0bfa5224727cb0e95b}{Dispatch\+Popup\+Action}} (\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&Context, \doxymbox{\hyperlink{class_f_u_i_popup_base}{FUIPopup\+Base}} \&Popup, \doxymbox{\hyperlink{_u_i_popup_action_8h_aa5ecfd7a32541f889e86cd3acde85b1a}{EUIPopup\+Action}} Action)
+\item 
+virtual void \doxymbox{\hyperlink{class_i_scene_acfdf07ebc1e55472a32ddbd8d8959f5a}{On\+Popup\+Action\+Dispatched}} (\doxymbox{\hyperlink{_u_i_popup_action_8h_aa5ecfd7a32541f889e86cd3acde85b1a}{EUIPopup\+Action}} Action)
+\end{DoxyCompactItemize}
+
+
+\label{doc-constructors}
+\Hypertarget{class_f_play_scene_doc-constructors}
+\doxysubsection{Constructor \& Destructor Documentation}
+\Hypertarget{class_f_play_scene_aee00047ed25bac8905195ff3ff347fb3}\index{FPlayScene@{FPlayScene}!FPlayScene@{FPlayScene}}
+\index{FPlayScene@{FPlayScene}!FPlayScene@{FPlayScene}}
+\doxysubsubsection{\texorpdfstring{FPlayScene()}{FPlayScene()}}
+{\footnotesize\ttfamily \label{class_f_play_scene_aee00047ed25bac8905195ff3ff347fb3} 
+FPlay\+Scene::\+\+FPlay\+Scene (\begin{DoxyParamCaption}\item[{int}]{In\+Stage\+Index}{, }\item[{int}]{In\+Accumulated\+Score}{ = {\ttfamily 0}, }\item[{const std::\+string \&}]{In\+Player\+Skin\+Key}{ = {\ttfamily "{}player\+\_\+otaku"{}}}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [explicit]}}
+
+
+
+\label{doc-func-members}
+\Hypertarget{class_f_play_scene_doc-func-members}
+\doxysubsection{Member Function Documentation}
+\Hypertarget{class_f_play_scene_a0c45ecd9ee46d0766898ec84f32c26a5}\index{FPlayScene@{FPlayScene}!Render@{Render}}
+\index{Render@{Render}!FPlayScene@{FPlayScene}}
+\doxysubsubsection{\texorpdfstring{Render()}{Render()}}
+{\footnotesize\ttfamily \label{class_f_play_scene_a0c45ecd9ee46d0766898ec84f32c26a5} 
+void FPlay\+Scene::\+\+Render (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&}]{Context}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \doxymbox{\hyperlink{class_i_scene_ace723c09a94c7febce67b45c8aef49c1}{IScene}}.
+
+\Hypertarget{class_f_play_scene_afd49d1c64f2553201b96c70884366ca7}\index{FPlayScene@{FPlayScene}!Update@{Update}}
+\index{Update@{Update}!FPlayScene@{FPlayScene}}
+\doxysubsubsection{\texorpdfstring{Update()}{Update()}}
+{\footnotesize\ttfamily \label{class_f_play_scene_afd49d1c64f2553201b96c70884366ca7} 
+void FPlay\+Scene::\+\+Update (\begin{DoxyParamCaption}\item[{\doxymbox{\hyperlink{struct_f_game_context}{FGame\+Context}} \&}]{Context}{}\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [override]}, {\ttfamily [virtual]}}
+
+
+
+Implements \doxymbox{\hyperlink{class_i_scene_aaac68ad3611a9ef3cad7697b87dd92f4}{IScene}}.
+
+
+
+The documentation for this class was generated from the following files:\+\begin{DoxyCompactItemize}
+\item 
+Scene/\+\doxymbox{\hyperlink{_play_scene_8h}{Play\+Scene.\+h}}\item 
+Scene/\+\doxymbox{\hyperlink{_play_scene_8cpp}{Play\+Scene.\+cpp}}\end{DoxyCompactItemize}

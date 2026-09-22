@@ -1,0 +1,35 @@
+# Visual Studio
+.vs/
+**/Debug/
+**/Release/
+**/x64/
+**/Win64/
+*.obj
+*.pch
+*.pdb
+*.ilk
+*.exp
+*.lib
+*.dll
+*.exe
+**/packages/
+
+# Source folders named Debug are build inputs.
+!**/Source/**/Debug/
+!**/Source/**/Debug/**
+
+# Unreal-style generated directories
+**/Binaries/
+**/Intermediate/
+**/DerivedDataCache/
+**/Saved/
+
+# Dumps, logs, caches, and archives
+*.dmp
+*.dump
+*.log
+*.cache
+*.tmp
+*.zip
+*.7z
+*.rar

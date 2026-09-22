@@ -1,0 +1,166 @@
+\doxysection{Buffer\+Helpers.\+h}
+\hypertarget{_buffer_helpers_8h_source}{}\label{_buffer_helpers_8h_source}\index{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/BufferHelpers.h@{packages/directxtk12\_desktop\_2019.2025.10.28.1/include/BufferHelpers.h}}
+\doxymbox{\hyperlink{_buffer_helpers_8h}{Go to the documentation of this file.}}
+\begin{DoxyCode}{0}
+\DoxyCodeLine{00001\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00002\ \textcolor{comment}{//\ File:\ BufferHelpers.h}}
+\DoxyCodeLine{00003\ \textcolor{comment}{//}}
+\DoxyCodeLine{00004\ \textcolor{comment}{//\ Copyright\ (c)\ Microsoft\ Corporation.}}
+\DoxyCodeLine{00005\ \textcolor{comment}{//\ Licensed\ under\ the\ MIT\ License.}}
+\DoxyCodeLine{00006\ \textcolor{comment}{//}}
+\DoxyCodeLine{00007\ \textcolor{comment}{//\ http://go.microsoft.com/fwlink/?LinkID=615561}}
+\DoxyCodeLine{00008\ \textcolor{comment}{//-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/-\/}}
+\DoxyCodeLine{00009\ }
+\DoxyCodeLine{00010\ \textcolor{preprocessor}{\#pragma\ once}}
+\DoxyCodeLine{00011\ }
+\DoxyCodeLine{00012\ \textcolor{preprocessor}{\#ifdef\ \_GAMING\_XBOX\_SCARLETT}}
+\DoxyCodeLine{00013\ \textcolor{preprocessor}{\#include\ <d3d12\_xs.h>}}
+\DoxyCodeLine{00014\ \textcolor{preprocessor}{\#elif\ (defined(\_XBOX\_ONE)\ \&\&\ defined(\_TITLE))\ ||\ defined(\_GAMING\_XBOX)}}
+\DoxyCodeLine{00015\ \textcolor{preprocessor}{\#include\ <d3d12\_x.h>}}
+\DoxyCodeLine{00016\ \textcolor{preprocessor}{\#elif\ defined(USING\_DIRECTX\_HEADERS)}}
+\DoxyCodeLine{00017\ \textcolor{preprocessor}{\#include\ <directx/d3d12.h>}}
+\DoxyCodeLine{00018\ \textcolor{preprocessor}{\#include\ <dxguids/dxguids.h>}}
+\DoxyCodeLine{00019\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00020\ \textcolor{preprocessor}{\#include\ <d3d12.h>}}
+\DoxyCodeLine{00021\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00022\ }
+\DoxyCodeLine{00023\ \textcolor{preprocessor}{\#include\ <cstddef>}}
+\DoxyCodeLine{00024\ \textcolor{preprocessor}{\#include\ <cstdint>}}
+\DoxyCodeLine{00025\ }
+\DoxyCodeLine{00026\ \textcolor{preprocessor}{\#ifndef\ DIRECTX\_TOOLKIT\_API}}
+\DoxyCodeLine{00027\ \textcolor{preprocessor}{\#ifdef\ DIRECTX\_TOOLKIT\_EXPORT}}
+\DoxyCodeLine{00028\ \textcolor{preprocessor}{\#ifdef\ \_\_GNUC\_\_}}
+\DoxyCodeLine{00029\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_attribute\_\_\ ((dllexport))}}
+\DoxyCodeLine{00030\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00031\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_declspec(dllexport)}}
+\DoxyCodeLine{00032\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00033\ \textcolor{preprocessor}{\#elif\ defined(DIRECTX\_TOOLKIT\_IMPORT)}}
+\DoxyCodeLine{00034\ \textcolor{preprocessor}{\#ifdef\ \_\_GNUC\_\_}}
+\DoxyCodeLine{00035\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_attribute\_\_\ ((dllimport))}}
+\DoxyCodeLine{00036\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00037\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API\ \_\_declspec(dllimport)}}
+\DoxyCodeLine{00038\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00039\ \textcolor{preprocessor}{\#else}}
+\DoxyCodeLine{00040\ \textcolor{preprocessor}{\#define\ DIRECTX\_TOOLKIT\_API}}
+\DoxyCodeLine{00041\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00042\ \textcolor{preprocessor}{\#endif}}
+\DoxyCodeLine{00043\ }
+\DoxyCodeLine{00044\ }
+\DoxyCodeLine{00045\ \textcolor{keyword}{namespace\ }\doxymbox{\hyperlink{namespace_direct_x}{DirectX}}}
+\DoxyCodeLine{00046\ \{}
+\DoxyCodeLine{00047\ \ \ \ \ \textcolor{keyword}{class\ }ResourceUploadBatch;}
+\DoxyCodeLine{00048\ }
+\DoxyCodeLine{00049\ \ \ \ \ \textcolor{comment}{//\ Helpers\ for\ creating\ initialized\ Direct3D\ buffer\ resources.}}
+\DoxyCodeLine{00050\ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}}
+\DoxyCodeLine{00051\ \ \ \ \ \ \ \ \ HRESULT\ \_\_cdecl\ \doxymbox{\hyperlink{namespace_direct_x_a41cd3f49f5df156284b75c57af68393a}{CreateStaticBuffer}}(}
+\DoxyCodeLine{00052\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00053\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{ResourceUploadBatch}}\&\ resourceUpload,}
+\DoxyCodeLine{00054\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_reads\_bytes\_(count*\ stride)\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{void}*\ ptr,}
+\DoxyCodeLine{00055\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ count,}
+\DoxyCodeLine{00056\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ stride,}
+\DoxyCodeLine{00057\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_RESOURCE\_STATES\ afterState,}
+\DoxyCodeLine{00058\ \ \ \ \ \ \ \ \ \ \ \ \ \_COM\_Outptr\_\ ID3D12Resource**\ pBuffer,}
+\DoxyCodeLine{00059\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_RESOURCE\_FLAGS\ resFlags\ =\ D3D12\_RESOURCE\_FLAG\_NONE)\ \textcolor{keyword}{noexcept};}
+\DoxyCodeLine{00060\ }
+\DoxyCodeLine{00061\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00062\ \ \ \ \ HRESULT\ \doxymbox{\hyperlink{namespace_direct_x_a41cd3f49f5df156284b75c57af68393a}{CreateStaticBuffer}}(}
+\DoxyCodeLine{00063\ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00064\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{ResourceUploadBatch}}\&\ resourceUpload,}
+\DoxyCodeLine{00065\ \ \ \ \ \ \ \ \ \_In\_reads\_(count)\ T\ \textcolor{keyword}{const}*\ data,}
+\DoxyCodeLine{00066\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ count,}
+\DoxyCodeLine{00067\ \ \ \ \ \ \ \ \ D3D12\_RESOURCE\_STATES\ afterState,}
+\DoxyCodeLine{00068\ \ \ \ \ \ \ \ \ \_COM\_Outptr\_\ ID3D12Resource**\ pBuffer,}
+\DoxyCodeLine{00069\ \ \ \ \ \ \ \ \ D3D12\_RESOURCE\_FLAGS\ resFlags\ =\ D3D12\_RESOURCE\_FLAG\_NONE)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00070\ \ \ \ \ \{}
+\DoxyCodeLine{00071\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{namespace_direct_x_a41cd3f49f5df156284b75c57af68393a}{CreateStaticBuffer}}(device,\ resourceUpload,\ data,\ count,\ \textcolor{keyword}{sizeof}(T),\ afterState,\ pBuffer,\ resFlags);}
+\DoxyCodeLine{00072\ \ \ \ \ \}}
+\DoxyCodeLine{00073\ }
+\DoxyCodeLine{00074\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00075\ \ \ \ \ HRESULT\ \doxymbox{\hyperlink{namespace_direct_x_a41cd3f49f5df156284b75c57af68393a}{CreateStaticBuffer}}(}
+\DoxyCodeLine{00076\ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00077\ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{ResourceUploadBatch}}\&\ resourceUpload,}
+\DoxyCodeLine{00078\ \ \ \ \ \ \ \ \ T\ \textcolor{keyword}{const}\&\ data,}
+\DoxyCodeLine{00079\ \ \ \ \ \ \ \ \ D3D12\_RESOURCE\_STATES\ afterState,}
+\DoxyCodeLine{00080\ \ \ \ \ \ \ \ \ \_COM\_Outptr\_\ ID3D12Resource**\ pBuffer,}
+\DoxyCodeLine{00081\ \ \ \ \ \ \ \ \ D3D12\_RESOURCE\_FLAGS\ resFlags\ =\ D3D12\_RESOURCE\_FLAG\_NONE)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00082\ \ \ \ \ \{}
+\DoxyCodeLine{00083\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{namespace_direct_x_a41cd3f49f5df156284b75c57af68393a}{CreateStaticBuffer}}(device,\ resourceUpload,\ data.data(),\ data.size(),\ \textcolor{keyword}{sizeof}(\textcolor{keyword}{typename}\ T::value\_type),}
+\DoxyCodeLine{00084\ \ \ \ \ \ \ \ \ \ \ \ \ afterState,\ pBuffer,\ resFlags);}
+\DoxyCodeLine{00085\ \ \ \ \ \}}
+\DoxyCodeLine{00086\ }
+\DoxyCodeLine{00087\ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}}
+\DoxyCodeLine{00088\ \ \ \ \ \ \ \ \ HRESULT\ \_\_cdecl\ \doxymbox{\hyperlink{namespace_direct_x_ab0165994fa70dfe1256288fe7598203e}{CreateUAVBuffer}}(}
+\DoxyCodeLine{00089\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00090\ \ \ \ \ \ \ \ \ \ \ \ \ uint64\_t\ bufferSize,}
+\DoxyCodeLine{00091\ \ \ \ \ \ \ \ \ \ \ \ \ \_COM\_Outptr\_\ ID3D12Resource**\ pBuffer,}
+\DoxyCodeLine{00092\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_RESOURCE\_STATES\ initialState\ =\ D3D12\_RESOURCE\_STATE\_COMMON,}
+\DoxyCodeLine{00093\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_RESOURCE\_FLAGS\ additionalResFlags\ =\ D3D12\_RESOURCE\_FLAG\_NONE)\ \textcolor{keyword}{noexcept};}
+\DoxyCodeLine{00094\ }
+\DoxyCodeLine{00095\ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}}
+\DoxyCodeLine{00096\ \ \ \ \ \ \ \ \ HRESULT\ \_\_cdecl\ \doxymbox{\hyperlink{namespace_direct_x_a4ece338664ba0f998aa87c4165aeef23}{CreateUploadBuffer}}(}
+\DoxyCodeLine{00097\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00098\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_reads\_bytes\_opt\_(count*\ stride)\ \textcolor{keyword}{const}\ \textcolor{keywordtype}{void}*\ ptr,}
+\DoxyCodeLine{00099\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ count,}
+\DoxyCodeLine{00100\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ stride,}
+\DoxyCodeLine{00101\ \ \ \ \ \ \ \ \ \ \ \ \ \_COM\_Outptr\_\ ID3D12Resource**\ pBuffer,}
+\DoxyCodeLine{00102\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_RESOURCE\_FLAGS\ resFlags\ =\ D3D12\_RESOURCE\_FLAG\_NONE)\ \textcolor{keyword}{noexcept};}
+\DoxyCodeLine{00103\ }
+\DoxyCodeLine{00104\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00105\ \ \ \ \ HRESULT\ \doxymbox{\hyperlink{namespace_direct_x_a4ece338664ba0f998aa87c4165aeef23}{CreateUploadBuffer}}(}
+\DoxyCodeLine{00106\ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00107\ \ \ \ \ \ \ \ \ \_In\_reads\_(count)\ T\ \textcolor{keyword}{const}*\ data,}
+\DoxyCodeLine{00108\ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ count,}
+\DoxyCodeLine{00109\ \ \ \ \ \ \ \ \ \_COM\_Outptr\_\ ID3D12Resource**\ pBuffer,}
+\DoxyCodeLine{00110\ \ \ \ \ \ \ \ \ D3D12\_RESOURCE\_FLAGS\ resFlags\ =\ D3D12\_RESOURCE\_FLAG\_NONE)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00111\ \ \ \ \ \{}
+\DoxyCodeLine{00112\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{namespace_direct_x_a4ece338664ba0f998aa87c4165aeef23}{CreateUploadBuffer}}(device,\ data,\ count,\ \textcolor{keyword}{sizeof}(T),\ pBuffer,\ resFlags);}
+\DoxyCodeLine{00113\ \ \ \ \ \}}
+\DoxyCodeLine{00114\ }
+\DoxyCodeLine{00115\ \ \ \ \ \textcolor{keyword}{template}<\textcolor{keyword}{typename}\ T>}
+\DoxyCodeLine{00116\ \ \ \ \ HRESULT\ \doxymbox{\hyperlink{namespace_direct_x_a4ece338664ba0f998aa87c4165aeef23}{CreateUploadBuffer}}(}
+\DoxyCodeLine{00117\ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00118\ \ \ \ \ \ \ \ \ T\ \textcolor{keyword}{const}\&\ data,}
+\DoxyCodeLine{00119\ \ \ \ \ \ \ \ \ \_COM\_Outptr\_\ ID3D12Resource**\ pBuffer,}
+\DoxyCodeLine{00120\ \ \ \ \ \ \ \ \ D3D12\_RESOURCE\_FLAGS\ resFlags\ =\ D3D12\_RESOURCE\_FLAG\_NONE)\ \textcolor{keyword}{noexcept}}
+\DoxyCodeLine{00121\ \ \ \ \ \{}
+\DoxyCodeLine{00122\ \ \ \ \ \ \ \ \ \textcolor{keywordflow}{return}\ \doxymbox{\hyperlink{namespace_direct_x_a4ece338664ba0f998aa87c4165aeef23}{CreateUploadBuffer}}(device,\ data.data(),\ data.size(),\ \textcolor{keyword}{sizeof}(\textcolor{keyword}{typename}\ T::value\_type),}
+\DoxyCodeLine{00123\ \ \ \ \ \ \ \ \ \ \ \ \ pBuffer,\ resFlags);}
+\DoxyCodeLine{00124\ \ \ \ \ \}}
+\DoxyCodeLine{00125\ }
+\DoxyCodeLine{00126\ \ \ \ \ \textcolor{comment}{//\ Helpers\ for\ creating\ texture\ from\ memory\ arrays.}}
+\DoxyCodeLine{00127\ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}}
+\DoxyCodeLine{00128\ \ \ \ \ \ \ \ \ HRESULT\ \_\_cdecl\ \doxymbox{\hyperlink{namespace_direct_x_a421cb065e93712164a0809f15ad9d91c}{CreateTextureFromMemory}}(}
+\DoxyCodeLine{00129\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00130\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{ResourceUploadBatch}}\&\ resourceUpload,}
+\DoxyCodeLine{00131\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ width,}
+\DoxyCodeLine{00132\ \ \ \ \ \ \ \ \ \ \ \ \ DXGI\_FORMAT\ format,}
+\DoxyCodeLine{00133\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ D3D12\_SUBRESOURCE\_DATA\&\ initData,}
+\DoxyCodeLine{00134\ \ \ \ \ \ \ \ \ \ \ \ \ \_COM\_Outptr\_\ ID3D12Resource**\ texture,}
+\DoxyCodeLine{00135\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_RESOURCE\_STATES\ afterState\ =\ D3D12\_RESOURCE\_STATE\_PIXEL\_SHADER\_RESOURCE,}
+\DoxyCodeLine{00136\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_RESOURCE\_FLAGS\ resFlags\ =\ D3D12\_RESOURCE\_FLAG\_NONE)\ \textcolor{keyword}{noexcept};}
+\DoxyCodeLine{00137\ }
+\DoxyCodeLine{00138\ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}}
+\DoxyCodeLine{00139\ \ \ \ \ \ \ \ \ HRESULT\ \_\_cdecl\ \doxymbox{\hyperlink{namespace_direct_x_a421cb065e93712164a0809f15ad9d91c}{CreateTextureFromMemory}}(}
+\DoxyCodeLine{00140\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00141\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{ResourceUploadBatch}}\&\ resourceUpload,}
+\DoxyCodeLine{00142\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ width,\ \textcolor{keywordtype}{size\_t}\ height,}
+\DoxyCodeLine{00143\ \ \ \ \ \ \ \ \ \ \ \ \ DXGI\_FORMAT\ format,}
+\DoxyCodeLine{00144\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ D3D12\_SUBRESOURCE\_DATA\&\ initData,}
+\DoxyCodeLine{00145\ \ \ \ \ \ \ \ \ \ \ \ \ \_COM\_Outptr\_\ ID3D12Resource**\ texture,}
+\DoxyCodeLine{00146\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{bool}\ generateMips\ =\ \textcolor{keyword}{false},}
+\DoxyCodeLine{00147\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_RESOURCE\_STATES\ afterState\ =\ D3D12\_RESOURCE\_STATE\_PIXEL\_SHADER\_RESOURCE,}
+\DoxyCodeLine{00148\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_RESOURCE\_FLAGS\ resFlags\ =\ D3D12\_RESOURCE\_FLAG\_NONE)\ \textcolor{keyword}{noexcept};}
+\DoxyCodeLine{00149\ }
+\DoxyCodeLine{00150\ \ \ \ \ \doxymbox{\hyperlink{_audio_8h_ad40e6cf0b6fc56ca63e1e1d41a96ef74}{DIRECTX\_TOOLKIT\_API}}}
+\DoxyCodeLine{00151\ \ \ \ \ \ \ \ \ HRESULT\ \_\_cdecl\ \doxymbox{\hyperlink{namespace_direct_x_a421cb065e93712164a0809f15ad9d91c}{CreateTextureFromMemory}}(}
+\DoxyCodeLine{00152\ \ \ \ \ \ \ \ \ \ \ \ \ \_In\_\ ID3D12Device*\ device,}
+\DoxyCodeLine{00153\ \ \ \ \ \ \ \ \ \ \ \ \ \doxymbox{\hyperlink{class_direct_x_1_1_resource_upload_batch}{ResourceUploadBatch}}\&\ resourceUpload,}
+\DoxyCodeLine{00154\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keywordtype}{size\_t}\ width,\ \textcolor{keywordtype}{size\_t}\ height,\ \textcolor{keywordtype}{size\_t}\ depth,}
+\DoxyCodeLine{00155\ \ \ \ \ \ \ \ \ \ \ \ \ DXGI\_FORMAT\ format,}
+\DoxyCodeLine{00156\ \ \ \ \ \ \ \ \ \ \ \ \ \textcolor{keyword}{const}\ D3D12\_SUBRESOURCE\_DATA\&\ initData,}
+\DoxyCodeLine{00157\ \ \ \ \ \ \ \ \ \ \ \ \ \_COM\_Outptr\_\ ID3D12Resource**\ texture,}
+\DoxyCodeLine{00158\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_RESOURCE\_STATES\ afterState\ =\ D3D12\_RESOURCE\_STATE\_PIXEL\_SHADER\_RESOURCE,}
+\DoxyCodeLine{00159\ \ \ \ \ \ \ \ \ \ \ \ \ D3D12\_RESOURCE\_FLAGS\ resFlags\ =\ D3D12\_RESOURCE\_FLAG\_NONE)\ \textcolor{keyword}{noexcept};}
+\DoxyCodeLine{00160\ \}}
+
+\end{DoxyCode}
